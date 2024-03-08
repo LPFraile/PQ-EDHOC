@@ -34,6 +34,9 @@ enum hash_alg { SHA_256 = -16 };
 enum ecdh_alg {
 	P256 = 1,
 	X25519 = 4,
+	KYBER_LEVEL1 = 5, // TODO: Na ta allaxoume se pio swsta
+	KYBER_LEVEL3 = 6,
+	KYBER_LEVEL5 = 7
 };
 
 enum sign_alg {

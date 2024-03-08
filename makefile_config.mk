@@ -104,7 +104,7 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 ################################################################################
 # The uoscore-uedhoc can be used with different crypto engines. 
 # The user can provide as well additional crypto engines by providing 
-# implementations of the function defined (as week) in the crypto_wrapper file.
+# implementations of the function defined (as weak) in the crypto_wrapper file.
 # Currently we have build in support for the following engines which 
 # allow fowling modes of operation and suites:
 #
@@ -161,3 +161,4 @@ CRYPTO_ENGINE += -DTINYCRYPT
 CRYPTO_ENGINE += -DCOMPACT25519
 CRYPTO_ENGINE += -DMBEDTLS
 CRYPTO_ENGINE += -DPQCLEAN
+CRYPTO_ENGINE += -DLIBOQS

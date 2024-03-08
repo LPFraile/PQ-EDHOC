@@ -63,6 +63,10 @@ modify setting in include/psa/crypto_config.h
 #include <tinycrypt/ecc_dh.h>
 #endif
 
+#ifdef LIBOQS
+#include <liboqs/src/oqs.h>
+#endif
+
 #ifdef MBEDTLS
 #define TRY_EXPECT_PSA(x, expected_result, key_id, err_code)                   \
 	do {                                                                   \
@@ -903,3 +907,79 @@ enum err WEAK hash(enum hash_alg alg, const struct byte_array *in,
 
 	return crypto_operation_not_implemented;
 }
+
+
+#ifdef LIBOQS
+
+static const char* OQS_ID2name(int id) {
+    switch (id) {
+        case KYBER_LEVEL1: return OQS_KEM_alg_kyber_512;
+        case KYBER_LEVEL3: return OQS_KEM_alg_kyber_768;
+        case KYBER_LEVEL5: return OQS_KEM_alg_kyber_1024;
+        default:           break;
+    }
+    return NULL;
+}
+
+enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
+				   struct byte_array *sk,
+				   struct byte_array *pk)
+{
+
+	const char* algName = NULL;
+    OQS_KEM *kem = NULL;
+	int ret = 0;
+
+	if (ret == 0) {
+        algName = OQS_ID2name(alg);
+        if (algName == NULL) {
+            ret = BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        kem = OQS_KEM_new(algName);
+        if (kem == NULL) {
+            ret = BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	/* Key lengths */
+
+	if (ret == 0) {
+        switch (alg) {
+        case KYBER_LEVEL1:
+            pk->len = OQS_KEM_kyber_512_length_public_key;
+			sk->len = OQS_KEM_kyber_512_length_secret_key;
+            break;
+        case KYBER_LEVEL3:
+			pk->len = OQS_KEM_kyber_768_length_public_key;
+			sk->len = OQS_KEM_kyber_768_length_secret_key;
+            break;
+        case KYBER_LEVEL5:
+			pk->len = OQS_KEM_kyber_1024_length_public_key;
+			sk->len = OQS_KEM_kyber_1024_length_secret_key;
+            break;
+        default:
+            /* No other values supported. */
+            ret = -1; // Na to allaxw
+            break;
+        }
+    }
+
+
+	if (OQS_KEM_keypair(kem, pk->ptr, sk->ptr) !=
+		OQS_SUCCESS) {
+		ret = -1; // Na to allaxw
+	}
+    
+
+	ret ok;
+
+}
+
+
+
+
+
+#endif
