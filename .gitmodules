@@ -28,3 +28,6 @@
 [submodule "externals/wolfssl"]
 	path = externals/wolfssl
 	url = git@github.com:wolfSSL/wolfssl.git
+[submodule "externals/liboqs"]
+	path = externals/liboqs
+	url = git@github.com:open-quantum-safe/liboqs.git
