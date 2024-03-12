@@ -157,8 +157,18 @@ ifeq ($(findstring ZCBOR,$(EXTENDED_CFLAGS)),ZCBOR)
 C_INCLUDES += -Iexternals/zcbor/include
 endif
 
+ifeq ($(findstring LIBOQS,$(EXTENDED_CFLAGS)),LIBOQS)
+#C_INCLUDES += -Iexternals/liboqs
+C_INCLUDES += -Iexternals/liboqs/build/include
+#C_INCLUDES += -Isamples/linux_edhoc/include
+endif
+
 #add include paths
 EXTENDED_CFLAGS += $(C_INCLUDES)
+
+# Path to the external static library
+EXTERNAL_LIB_PATH = externals/liboqs/build/lib
+EXTERNAL_STATIC_LIB = liboqs.a
 
 $(info    EXTENDED_CFLAGS are $(EXTENDED_CFLAGS))
 ################################################################################
@@ -167,14 +177,14 @@ $(info    EXTENDED_CFLAGS are $(EXTENDED_CFLAGS))
 OBJ = $(addprefix $(DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 #$(info    \n OBJ is $(OBJ))
 
-
-$(DIR)/$(LIB_NAME): $(OBJ) 
+$(DIR)/$(LIB_NAME): $(OBJ) $(EXTERNAL_LIB_PATH)/$(EXTERNAL_STATIC_LIB)
 	@echo "[Link (Static)]"
 	@$(AR) -rcs $@ $^
 
+
 $(DIR)/%.o: %.c Makefile makefile_config.mk
 	@echo [Compile] $<
-	@$(CC) -c $(EXTENDED_CFLAGS) $< -o $@
+	@$(CC) -c $(EXTENDED_CFLAGS)  $< -o $@ -L$(EXTERNAL_LIB_PATH) -loqs
 
 clean:
 	rm -fR $(DIR)

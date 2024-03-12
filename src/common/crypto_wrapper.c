@@ -64,7 +64,7 @@ modify setting in include/psa/crypto_config.h
 #endif
 
 #ifdef LIBOQS
-#include <liboqs/src/oqs.h>
+#include <oqs/kem.h>
 #endif
 
 #ifdef MBEDTLS
@@ -933,14 +933,14 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
 	if (ret == 0) {
         algName = OQS_ID2name(alg);
         if (algName == NULL) {
-            ret = BAD_FUNC_ARG; // Na to allaxw
+            ret = KEM_BAD_FUNC_ARG; // Na to allaxw
         }
     }
 
 	if (ret == 0) {
         kem = OQS_KEM_new(algName);
         if (kem == NULL) {
-            ret = BAD_FUNC_ARG; // Na to allaxw
+            ret = KEM_BAD_FUNC_ARG; // Na to allaxw
         }
     }
 
@@ -974,7 +974,7 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
 	}
     
 
-	ret ok;
+	return ok;
 
 }
 

@@ -94,6 +94,11 @@ C_INCLUDES += -I../../../externals/mbedtls/include/mbedtls
 C_INCLUDES += -I../../../externals/mbedtls/include/psa 
 endif
 
+
+ifeq ($(findstring LIBOQS,$(CRYPTO_ENGINE)),LIBOQS)
+C_INCLUDES += -I../../../externals/liboqs/build/include
+endif
+
 # C defines
 # make PRINT_ARRAY macro usable in the main file
 C_DEFS += -DDEBUG_PRINT
@@ -107,6 +112,13 @@ LDFLAGS += $(LD_LIBRARY_PATH)
 LDFLAGS += -luoscore-uedhoc
 LDFLAGS += -lstdc++
 LDFLAGS += $(ARCH) 
+
+# liboqs path
+LIBOQS_PATH = $(ROOT_DIR)/externals/liboqs
+LIBOQS_BUILD_PATH = $(LIBOQS_PATH)/build
+LIBOQS_LIB_PATH = $(LIBOQS_BUILD_PATH)/lib
+C_LIB +=  -L$(LIBOQS_LIB_PATH) 
+C_LIB +=  -loqs
 ##########################################
 # CFLAGS
 ##########################################
@@ -115,6 +127,7 @@ CFLAGS += \
     $(ARCH) \
 	$(C_DEFS) \
 	$(C_INCLUDES) \
+	$(C_LIB)\
 	$(OPT) \
 	-Wall \
 	-fstack-usage
