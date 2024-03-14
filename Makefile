@@ -158,9 +158,7 @@ C_INCLUDES += -Iexternals/zcbor/include
 endif
 
 ifeq ($(findstring LIBOQS,$(EXTENDED_CFLAGS)),LIBOQS)
-#C_INCLUDES += -Iexternals/liboqs
 C_INCLUDES += -Iexternals/liboqs/build/include
-#C_INCLUDES += -Isamples/linux_edhoc/include
 endif
 
 #add include paths
