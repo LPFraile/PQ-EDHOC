@@ -29,6 +29,13 @@ BUILD_DIR = build
 USOCORE_UEDHOC_PATH = ../../../
 USOCORE_UEDHOC_BUILD_PATH = $(USOCORE_UEDHOC_PATH)build
 
+# liboqs path
+ROOT_DIR := ../../..
+LIBOQS_PATH = $(ROOT_DIR)/externals/liboqs
+LIBOQS_BUILD_PATH = $(LIBOQS_PATH)/build
+LIBOQS_LIB_PATH =$(LIBOQS_BUILD_PATH)/lib
+
+
 ifeq ($(ARCH_32_ONLY), 1)
 # build for 32 bit x68
 # export the variable so that it is available in the uoscore-uedhoc Makefile 
@@ -96,7 +103,7 @@ endif
 
 
 ifeq ($(findstring LIBOQS,$(CRYPTO_ENGINE)),LIBOQS)
-C_INCLUDES += -I../../../externals/liboqs/build/include
+C_INCLUDES += -I${LIBOQS_BUILD_PATH}/include 
 endif
 
 # C defines
@@ -106,19 +113,16 @@ C_DEFS += -DDEBUG_PRINT
 C_DEFS += $(ENV_DEFS)
 
 # Linked libraries
+LD_LIBRARY_PATH += -L$(LIBOQS_LIB_PATH)
 LD_LIBRARY_PATH += -L$(USOCORE_UEDHOC_BUILD_PATH)
 
 LDFLAGS += $(LD_LIBRARY_PATH)
 LDFLAGS += -luoscore-uedhoc
+LDFLAGS += -loqs
 LDFLAGS += -lstdc++
 LDFLAGS += $(ARCH) 
 
-# liboqs path
-LIBOQS_PATH = $(ROOT_DIR)/externals/liboqs
-LIBOQS_BUILD_PATH = $(LIBOQS_PATH)/build
-LIBOQS_LIB_PATH = $(LIBOQS_BUILD_PATH)/lib
-C_LIB +=  -L$(LIBOQS_LIB_PATH) 
-C_LIB +=  -loqs
+
 ##########################################
 # CFLAGS
 ##########################################
@@ -173,7 +177,7 @@ $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) -L$(LIBOQS_LIB_PATH) -loqs $< -o $@
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) Makefile $(USOCORE_UEDHOC_PATH)/Makefile
 	$(MAKE) -C $(USOCORE_UEDHOC_PATH)
