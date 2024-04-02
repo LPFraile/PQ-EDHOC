@@ -213,7 +213,20 @@ int main()
 	c_i.x.len = X_random.len;
 	PRINT_ARRAY("secret ephemeral DH key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("public ephemeral DH key", c_i.x.ptr, c_i.x.len);
-
+     
+    /*Key generation for KEMs*/
+	struct edhoc_initiator_context c_i_2;
+	
+	BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
+	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
+	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1,seed, &PQ_secret_random,&PQ_public_random));
+	c_i_2.g_x.ptr = PQ_public_random.ptr;
+	c_i_2.g_x.len = PQ_public_random.len;
+	c_i_2.x.ptr = PQ_secret_random.ptr;
+	c_i_2.x.len = PQ_secret_random.len;
+	PRINT_ARRAY("secret ephemeral PQ Key", c_i_2.g_x.ptr, c_i_2.g_x.len);
+	PRINT_ARRAY("public ephemeral PQ Key", c_i_2.x.ptr, c_i_2.x.len);
+    
 #endif
 
 #ifdef TINYCRYPT

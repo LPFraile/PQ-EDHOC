@@ -132,10 +132,10 @@ enum err hkdf_sha_256(struct byte_array *master_secret,
 
 #ifdef LIBOQS
 
-enum err ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
+/*enum err ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
 				   struct byte_array *sk,
 				   struct byte_array *pk);
-
+*/
 /*enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 			      const struct byte_array *pk,
 				  const struct byte_array *ct,

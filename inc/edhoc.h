@@ -95,6 +95,21 @@ enum err WEAK ephemeral_dh_key_gen(enum ecdh_alg alg, uint32_t seed,
 				   struct byte_array *sk,
 				   struct byte_array *pk);
 
+
+
+/**
+ * @brief   			Generates ephemeral PQ KEM keys 
+ *			
+ * @param alg			The KEM to be used
+ * @param seed			Not need for seed
+ * @param[out] sk 		The newly generated private key.
+ * @param[out] pk 		The newly generated public key.
+ * @return 			Ok or error code.
+ */
+enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
+				   struct byte_array *sk,
+				   struct byte_array *pk);
+
 /**
  * @brief   			Executes EDHOC on the initiator side.
  * 
@@ -107,6 +122,7 @@ enum err WEAK ephemeral_dh_key_gen(enum ecdh_alg alg, uint32_t seed,
  * @param ead_process		A callback function for processing EAD.
  * @return 			Ok or error code.
  */
+
 enum err edhoc_initiator_run(
 	const struct edhoc_initiator_context *c,
 	struct cred_array *cred_r_array, struct byte_array *err_msg,
