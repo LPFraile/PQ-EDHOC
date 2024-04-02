@@ -22,12 +22,6 @@
 	path = externals/zcbor
 	url = https://github.com/NordicSemiconductor/zcbor.git
 	ignore = dirty
-[submodule "externals/PQClean"]
-	path = externals/PQClean
-	url = git@github.com:PQClean/PQClean.git
-[submodule "externals/wolfssl"]
-	path = externals/wolfssl
-	url = git@github.com:wolfSSL/wolfssl.git
 [submodule "externals/liboqs"]
 	path = externals/liboqs
 	url = git@github.com:open-quantum-safe/liboqs.git
