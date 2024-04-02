@@ -64,8 +64,9 @@ LD_LIBRARY_PATH += -L$(USOCORE_UEDHOC_BUILD_PATH)
 LDFLAGS += $(LD_LIBRARY_PATH)
 #LDFLAGS += -l:liboqs-internal.a
 #LDFLAGS += -loqs-internal
-LDFLAGS += -loqs
+#LDFLAGS += -loqs
 LDFLAGS += -luoscore-uedhoc
+LDFLAGS += -loqs
 LDFLAGS += -lstdc++
 LDFLAGS += $(ARCH) 
 
