@@ -216,6 +216,9 @@ int main()
      
     /*Key generation for KEMs*/
 	struct edhoc_initiator_context c_i_2;
+	struct byte_array ss;
+	struct byte_array ss_r;
+	struct byte_array ct;
 	
 	BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
 	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
@@ -224,9 +227,60 @@ int main()
 	c_i_2.g_x.len = PQ_public_random.len;
 	c_i_2.x.ptr = PQ_secret_random.ptr;
 	c_i_2.x.len = PQ_secret_random.len;
+	BYTE_ARRAY_NEW(PQ_CT, 768, 768);
+	BYTE_ARRAY_NEW(PQ_SS, 32, 32);
+	ss.ptr = PQ_SS.ptr;
+	ss.len = PQ_SS.len;
+	ct.ptr = PQ_CT.ptr;
+	ct.len = PQ_CT.len;
 	PRINT_ARRAY("secret ephemeral PQ Key", c_i_2.g_x.ptr, c_i_2.g_x.len);
 	PRINT_ARRAY("public ephemeral PQ Key", c_i_2.x.ptr, c_i_2.x.len);
-    
+    TRY(kem_encapsulate(KYBER_LEVEL1,&PQ_public_random,&PQ_CT,&PQ_SS));
+	PRINT_ARRAY("ciphertext",ct.ptr, ct.len);
+	BYTE_ARRAY_NEW(PQ_SS_R, 32, 32);
+	ss_r.ptr = PQ_SS_R.ptr;
+	ss_r.len = PQ_SS_R.len;
+	PRINT_ARRAY("public SS initiator", ss.ptr, ss.len);
+	kem_decapsulate(KYBER_LEVEL1, &PQ_CT, &PQ_secret_random,&PQ_SS_R );
+	PRINT_ARRAY("public SS responder", ss_r.ptr, ss_r.len);
+ 
+	BYTE_ARRAY_NEW(PQ_public_static_random, 897, 897);
+	BYTE_ARRAY_NEW(PQ_secret_static_random, 1281, 1281);
+
+	struct byte_array spk;
+	struct byte_array ssk;
+
+	static_signature_key_gen(FALCON_PADDED_LEVEL1,&PQ_public_static_random,&PQ_secret_static_random);
+	spk.ptr = PQ_public_static_random.ptr;
+	spk.len = PQ_public_static_random.len;
+	ssk.ptr = PQ_secret_static_random.ptr;
+	ssk.len = PQ_secret_static_random.len;
+	PRINT_ARRAY("public static key", spk.ptr, spk.len);
+	PRINT_ARRAY("secret static key", ssk.ptr, ssk.len);
+
+	BYTE_ARRAY_NEW(MSG, 100, 100);
+	BYTE_ARRAY_NEW(SIG, 752, 752);
+
+	struct byte_array mmsg;
+	struct byte_array msig;
+
+	for (size_t i = 0; i < 100; i++)
+	{
+		MSG.ptr[i] = i;
+	}
+	
+	mmsg.ptr = MSG.ptr;
+	mmsg.len = MSG.len;
+	msig.ptr = SIG.ptr;
+	msig.len = SIG.len;
+	int ret = sign_signature(FALCON_LEVEL1,&PQ_secret_static_random, &MSG,&SIG);
+	printf("Verification signature %d \n",ret);
+
+	PRINT_ARRAY("message", mmsg.ptr, mmsg.len);
+	PRINT_ARRAY("signature", msig.ptr, msig.len);
+	int val = sign_verify(FALCON_LEVEL1,&PQ_public_static_random, &MSG,&SIG);
+	printf("Verification %d \n",val);
+
 #endif
 
 #ifdef TINYCRYPT

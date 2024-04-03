@@ -42,6 +42,16 @@ enum ecdh_alg {
 enum sign_alg {
 	ES256 = -7,
 	EdDSA = -8,
+	DILITHIUM_LEVEL2 = -9,
+	DILITHIUM_LEVEL3 = -10,
+	DILITHIUM_LEVEL5 = -11,
+	FALCON_LEVEL1 = -12,
+	FALCON_LEVEL5 = -13,
+	FALCON_PADDED_LEVEL1 = -14,
+	FALCON_PADDED_LEVEL5 = -15,
+	ML_DSA_LEVEL2 = -16,
+	ML_DSA_LEVEL3 = -17,
+	ML_DSA_LEVEL5 = -18
 };
 
 enum mac_len {

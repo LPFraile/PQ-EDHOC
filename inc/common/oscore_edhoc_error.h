@@ -80,6 +80,7 @@ enum err {
 	oscore_interaction_not_found = 222,
 	oscore_wrong_uri_path = 223,
 	KEM_BAD_FUNC_ARG = 224,
+	SIG_BAD_FUNC_ARG = 225,
 };
 
 /*This macro checks if a function returns an error and if so it propagates 

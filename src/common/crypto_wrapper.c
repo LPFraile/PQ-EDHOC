@@ -916,6 +916,10 @@ static const char* OQS_ID2name(int id) {
         case KYBER_LEVEL1: return OQS_KEM_alg_kyber_512;
         case KYBER_LEVEL3: return OQS_KEM_alg_kyber_768;
         case KYBER_LEVEL5: return OQS_KEM_alg_kyber_1024;
+		case FALCON_LEVEL1: return OQS_SIG_alg_falcon_512;
+		case FALCON_LEVEL5: return OQS_SIG_alg_falcon_1024;
+		case FALCON_PADDED_LEVEL1: return OQS_SIG_alg_falcon_padded_512;
+		case FALCON_PADDED_LEVEL5: return OQS_SIG_alg_falcon_padded_1024;
         default:           break;
     }
     return NULL;
@@ -973,13 +977,203 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
 		ret = -1; // Na to allaxw
 	}
     
-
+	OQS_KEM_free(kem);
 	return ok;
 
 }
 
+enum err WEAK kem_encapsulate(enum ecdh_alg alg,
+			    const struct byte_array *pk,
+				  const struct byte_array *ct,
+				const struct byte_array *shared_secret){
+
+	const char* algName = NULL;
+    OQS_KEM *kem = NULL;
+	int ret = 0;
+
+	if (ret == 0) {
+        algName = OQS_ID2name(alg);
+        if (algName == NULL) {
+            ret = KEM_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        kem = OQS_KEM_new(algName);
+        if (kem == NULL) {
+            ret = KEM_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        if (OQS_KEM_encaps(kem, ct->ptr, shared_secret->ptr, pk->ptr) != OQS_SUCCESS) {
+            ret = KEM_BAD_FUNC_ARG;
+        }
+    }
+
+	OQS_KEM_free(kem);
+}
+
+enum err WEAK kem_decapsulate(enum ecdh_alg alg,
+			      const struct byte_array *ct,
+				  const struct byte_array *sk,
+			      const struct byte_array * shared_secret){
+
+const char* algName = NULL;
+    OQS_KEM *kem = NULL;
+	int ret = 0;
+
+	if (ret == 0) {
+        algName = OQS_ID2name(alg);
+        if (algName == NULL) {
+            ret = KEM_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        kem = OQS_KEM_new(algName);
+        if (kem == NULL) {
+            ret = KEM_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        if (OQS_KEM_decaps(kem, shared_secret->ptr, ct->ptr, sk->ptr) != OQS_SUCCESS) {
+            ret = KEM_BAD_FUNC_ARG;
+        }
+    }
+
+	OQS_KEM_free(kem);
+}
+
+enum err WEAK static_signature_key_gen(enum sign_alg alg,
+				   struct byte_array *sk,
+				   struct byte_array *pk)
+{
+
+	const char* algName = NULL;
+    OQS_SIG *sig = NULL;
+	int ret = 0;
+
+	if (ret == 0) {
+        algName = OQS_ID2name(alg);
+        if (algName == NULL) {
+            ret = SIG_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        sig = OQS_SIG_new(algName);
+        if (sig == NULL) {
+            ret = SIG_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	/* Key lengths */
+
+	if (ret == 0) {
+        switch (alg) {
+        case FALCON_LEVEL1:
+            pk->len = OQS_SIG_falcon_512_length_public_key;
+			sk->len = OQS_SIG_falcon_512_length_secret_key;
+            break;
+        case FALCON_LEVEL5:
+			pk->len = OQS_SIG_falcon_1024_length_public_key;
+			sk->len = OQS_SIG_falcon_1024_length_secret_key;
+            break;
+		case FALCON_PADDED_LEVEL1:
+            pk->len = OQS_SIG_falcon_padded_512_length_public_key;
+			sk->len = OQS_SIG_falcon_padded_512_length_secret_key;
+            break;
+        case FALCON_PADDED_LEVEL5:
+			 pk->len = OQS_SIG_falcon_padded_1024_length_public_key;
+			sk->len = OQS_SIG_falcon_padded_1024_length_secret_key;
+            break;
+        default:
+            /* No other values supported. */
+            ret = -1; // Na to allaxw
+            break;
+        }
+    }
 
 
+	if (OQS_SIG_keypair(sig, pk->ptr, sk->ptr) !=
+		OQS_SUCCESS) {
+		ret = -1; // Na to allaxw
+	}
+    
+	OQS_SIG_free(sig);
+	return ok;
 
+}
+
+enum err WEAK sign_signature(enum sign_alg alg, const struct byte_array *sk,
+	       const struct byte_array *msg,
+	       const struct byte_array *signature){
+
+	const char* algName = NULL;
+    OQS_SIG *sig = NULL;
+	int ret = 0;
+	size_t localOutLen = 0;
+
+	if (ret == 0) {
+        algName = OQS_ID2name(alg);
+        if (algName == NULL) {
+            ret = SIG_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        sig = OQS_SIG_new(algName);
+        if (sig == NULL) {
+            ret = SIG_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	 if ((ret == 0) &&
+        (OQS_SIG_sign(sig, signature->ptr,&localOutLen , msg->ptr, msg->len, sk->ptr)
+         != OQS_SUCCESS)) {
+    
+		ret = SIG_BAD_FUNC_ARG;
+    }
+    print_array( msg->ptr, msg->len);
+	print_array( signature->ptr, localOutLen);
+
+
+	OQS_SIG_free(sig);
+
+}
+
+enum err WEAK sign_verify(enum sign_alg alg, const struct byte_array *pk,
+	       const struct byte_array *msg,
+	       const struct byte_array *signature){
+
+	const char* algName = NULL;
+    OQS_SIG *sig = NULL;
+	int ret = 0;
+
+	if (ret == 0) {
+        algName = OQS_ID2name(alg);
+        if (algName == NULL) {
+            ret = SIG_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	if (ret == 0) {
+        sig = OQS_SIG_new(algName);
+        if (sig == NULL) {
+            ret = SIG_BAD_FUNC_ARG; // Na to allaxw
+        }
+    }
+
+	 if ((ret == 0) &&
+        (OQS_SIG_verify(sig, msg->ptr, msg->len, signature->ptr,signature->len , pk->ptr)
+         == OQS_ERROR)) {
+        ret = SIG_BAD_FUNC_ARG;
+    }
+
+	OQS_SIG_free(sig);
+
+}
 
 #endif
