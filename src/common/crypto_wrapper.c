@@ -978,7 +978,7 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
 	}
     
 	OQS_KEM_free(kem);
-	return ok;
+	return ret;
 
 }
 
@@ -1012,6 +1012,8 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg,
     }
 
 	OQS_KEM_free(kem);
+
+	return ret;
 }
 
 enum err WEAK kem_decapsulate(enum ecdh_alg alg,
@@ -1044,6 +1046,8 @@ const char* algName = NULL;
     }
 
 	OQS_KEM_free(kem);
+
+	return ret;
 }
 
 enum err WEAK static_signature_key_gen(enum sign_alg alg,
@@ -1103,13 +1107,14 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 	}
     
 	OQS_SIG_free(sig);
-	return ok;
+	return ret;
 
 }
 
-enum err WEAK sign_signature(enum sign_alg alg, const struct byte_array *sk,
-	       const struct byte_array *msg,
-	       const struct byte_array *signature){
+enum err WEAK sign_signature(const enum sign_alg alg, 
+		   const struct byte_array *sk,
+	       struct byte_array *msg,
+	       struct byte_array *signature){
 
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
@@ -1131,20 +1136,23 @@ enum err WEAK sign_signature(enum sign_alg alg, const struct byte_array *sk,
     }
 
 	 if ((ret == 0) &&
-        (OQS_SIG_sign(sig, signature->ptr,&localOutLen , msg->ptr, msg->len, sk->ptr)
+        (OQS_SIG_sign(sig, signature->ptr, &localOutLen, msg->ptr, msg->len, sk->ptr)
          != OQS_SUCCESS)) {
-    
 		ret = SIG_BAD_FUNC_ARG;
     }
-    print_array( msg->ptr, msg->len);
-	print_array( signature->ptr, localOutLen);
+	// printf("sig_size: %ld\n", localOutLen);
+    // print_array( msg->ptr, msg->len);
+	// print_array( signature->ptr, (uint32_t) localOutLen);
 
 
 	OQS_SIG_free(sig);
 
+	return ret;
+
 }
 
-enum err WEAK sign_verify(enum sign_alg alg, const struct byte_array *pk,
+enum err WEAK sign_verify(enum sign_alg alg, 
+		   const struct byte_array *pk,
 	       const struct byte_array *msg,
 	       const struct byte_array *signature){
 
@@ -1173,7 +1181,8 @@ enum err WEAK sign_verify(enum sign_alg alg, const struct byte_array *pk,
     }
 
 	OQS_SIG_free(sig);
-
+	
+	return ret;
 }
 
 #endif

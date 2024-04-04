@@ -222,7 +222,8 @@ int main()
 	
 	BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
 	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
-	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1,seed, &PQ_secret_random,&PQ_public_random));
+	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1,seed, &PQ_secret_random, 
+								&PQ_public_random));
 	c_i_2.g_x.ptr = PQ_public_random.ptr;
 	c_i_2.g_x.len = PQ_public_random.len;
 	c_i_2.x.ptr = PQ_secret_random.ptr;
@@ -250,7 +251,8 @@ int main()
 	struct byte_array spk;
 	struct byte_array ssk;
 
-	static_signature_key_gen(FALCON_LEVEL1,&PQ_secret_static_random,&PQ_public_static_random);
+	static_signature_key_gen(FALCON_LEVEL1,
+	&PQ_secret_static_random,&PQ_public_static_random);
 	spk.ptr = PQ_public_static_random.ptr;
 	spk.len = PQ_public_static_random.len;
 	ssk.ptr = PQ_secret_static_random.ptr;
@@ -273,12 +275,14 @@ int main()
 	mmsg.len = MSG.len;
 	msig.ptr = SIG.ptr;
 	msig.len = SIG.len;
-	int ret = sign_signature(FALCON_LEVEL1,&PQ_secret_static_random, &MSG,&msig);
-	printf("Verification signature %d \n",ret);
+	int ret = sign_signature(FALCON_LEVEL1, &PQ_secret_static_random,
+							 &mmsg,&msig);
+	printf("Signature %d \n",ret);
 
 	PRINT_ARRAY("message", mmsg.ptr, mmsg.len);
 	PRINT_ARRAY("signature", msig.ptr, msig.len);
-	int val = sign_verify(FALCON_LEVEL1,&PQ_public_static_random, &MSG,&SIG);
+	int val = sign_verify(FALCON_LEVEL1, &PQ_public_static_random,
+						 &MSG,&SIG);
 	printf("Verification %d \n",val);
 
 #endif

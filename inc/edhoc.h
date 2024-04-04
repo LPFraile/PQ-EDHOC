@@ -176,9 +176,10 @@ enum err WEAK kem_decapsulate(enum ecdh_alg alg,
 	 * @param[out] signature The signature on the message represented as a byte string.
 	 * @return OQS_SUCCESS or OQS_ERROR
 	 */
-enum err WEAK sign_signature(enum sign_alg alg, const struct byte_array *sk,
-	       const struct byte_array *msg,
-	       const struct byte_array *signature);
+enum err WEAK sign_signature(const enum sign_alg alg, 
+		   const struct byte_array *sk,
+	       struct byte_array *msg,
+	       struct byte_array *signature);
 
 
 /**
