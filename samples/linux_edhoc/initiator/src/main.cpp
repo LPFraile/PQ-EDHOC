@@ -250,7 +250,7 @@ int main()
 	struct byte_array spk;
 	struct byte_array ssk;
 
-	static_signature_key_gen(FALCON_PADDED_LEVEL1,&PQ_public_static_random,&PQ_secret_static_random);
+	static_signature_key_gen(FALCON_LEVEL1,&PQ_secret_static_random,&PQ_public_static_random);
 	spk.ptr = PQ_public_static_random.ptr;
 	spk.len = PQ_public_static_random.len;
 	ssk.ptr = PQ_secret_static_random.ptr;
@@ -273,7 +273,7 @@ int main()
 	mmsg.len = MSG.len;
 	msig.ptr = SIG.ptr;
 	msig.len = SIG.len;
-	int ret = sign_signature(FALCON_LEVEL1,&PQ_secret_static_random, &MSG,&SIG);
+	int ret = sign_signature(FALCON_LEVEL1,&PQ_secret_static_random, &MSG,&msig);
 	printf("Verification signature %d \n",ret);
 
 	PRINT_ARRAY("message", mmsg.ptr, mmsg.len);
