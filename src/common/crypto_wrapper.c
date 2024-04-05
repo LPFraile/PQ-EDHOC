@@ -1119,7 +1119,6 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
 	int ret = 0;
-	size_t localOutLen = 0;
 
 	if (ret == 0) {
         algName = OQS_ID2name(alg);
@@ -1136,14 +1135,10 @@ enum err WEAK sign_signature(const enum sign_alg alg,
     }
 
 	 if ((ret == 0) &&
-        (OQS_SIG_sign(sig, signature->ptr, &localOutLen, msg->ptr, msg->len, sk->ptr)
+        (OQS_SIG_sign(sig, signature->ptr, &signature->len, msg->ptr, msg->len, sk->ptr)
          != OQS_SUCCESS)) {
 		ret = SIG_BAD_FUNC_ARG;
     }
-	// printf("sig_size: %ld\n", localOutLen);
-    // print_array( msg->ptr, msg->len);
-	// print_array( signature->ptr, (uint32_t) localOutLen);
-
 
 	OQS_SIG_free(sig);
 
