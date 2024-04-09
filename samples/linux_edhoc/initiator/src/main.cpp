@@ -282,7 +282,7 @@ int main()
 	PRINT_ARRAY("message", mmsg.ptr, mmsg.len);
 	PRINT_ARRAY("signature", msig.ptr, msig.len);
 	int val = sign_verify(FALCON_LEVEL1, &PQ_public_static_random,
-						 &MSG,&SIG);
+						 &mmsg,&msig);
 	printf("Verification %d \n",val);
 
 #endif
