@@ -25,7 +25,7 @@ OPT = -O0
 ################################################################################
 # Print helpful debug messages
 ################################################################################
-#DEBUG_PRINT += -DDEBUG_PRINT
+DEBUG_PRINT += -DDEBUG_PRINT
 
 ################################################################################
 # Use Address Sanitizer, e.g. with native_posix
@@ -72,10 +72,10 @@ FEATURES += -DC_I_SIZE=1
 FEATURES += -DC_R_SIZE=1
 
 # Size of ID_CRED_R
-FEATURES += -DID_CRED_R_SIZE=296 
+FEATURES += -DID_CRED_R_SIZE=296
 
 # Size of ID_CRED_I
-FEATURES += -DID_CRED_I_SIZE=296 
+FEATURES += -DID_CRED_I_SIZE=296
 
 # Size of CRED_R
 FEATURES += -DCRED_R_SIZE=293 
@@ -85,6 +85,23 @@ FEATURES += -DCRED_I_SIZE=293
 
 # Number of supported suites by the initiator
 FEATURES += -DSUITES_I_SIZE=1 
+
+################################################################################
+# Add PQ sizes for Gx Gy Gr and Gi in order to reserve enough memory buffers
+
+#Responder ephemeral public key for ECDH. Ciphertext for KEMs
+FEATURES += -DG_Y_SIZE=1000
+
+#Initiator ephemeral public key for ECDH. PQ ephemeral public key for KEMs
+FEATURES += -DG_X_SIZE=1000
+
+
+#Initiator ephemeral private key for ECDH. PQ ephemeral private key for KEMs
+FEATURES += -DG_I_SIZE=2000
+
+#Responder ephemeral private key for ECDH. Nothing for KEMs
+FEATURES += -DG_R_SIZE=2000
+
 
 ################################################################################
 # RAM optimization OSCORE
@@ -155,9 +172,10 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | 0/1     | 3       | MBEDTLS or (COMPACT25519 with TINYCRYPT)
 # | EDHOC  | 2/3     | 0/1/2/3 | MBEDTLS
 # | EDHOC  | 0/1/2/3 | 0/1/2/3 | MBEDTLS and COMPACT25519
+# | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
 
 CRYPTO_ENGINE += -DTINYCRYPT
 CRYPTO_ENGINE += -DCOMPACT25519
-CRYPTO_ENGINE += -DMBEDTLS
+#CRYPTO_ENGINE += -DMBEDTLS
 CRYPTO_ENGINE += -DLIBOQS

@@ -22,6 +22,7 @@ enum suite_label {
 	SUITE_1 = 1,
 	SUITE_2 = 2,
 	SUITE_3 = 3,
+	SUITE__22 = 22,
 };
 
 enum aead_alg {
@@ -42,16 +43,16 @@ enum ecdh_alg {
 enum sign_alg {
 	ES256 = -7,
 	EdDSA = -8,
-	DILITHIUM_LEVEL2 = -9,
+	/*DILITHIUM_LEVEL2 = -9,
 	DILITHIUM_LEVEL3 = -10,
-	DILITHIUM_LEVEL5 = -11,
+	DILITHIUM_LEVEL5 = -11,*/
 	FALCON_LEVEL1 = -12,
 	FALCON_LEVEL5 = -13,
 	FALCON_PADDED_LEVEL1 = -14,
 	FALCON_PADDED_LEVEL5 = -15,
-	ML_DSA_LEVEL2 = -16,
+	/*ML_DSA_LEVEL2 = -16,
 	ML_DSA_LEVEL3 = -17,
-	ML_DSA_LEVEL5 = -18
+	ML_DSA_LEVEL5 = -18*/
 };
 
 enum mac_len {
@@ -127,5 +128,14 @@ uint32_t get_signature_len(enum sign_alg alg);
  * @retval 			The length.
  */
 uint32_t get_ecdh_pk_len(enum ecdh_alg alg);
+
+
+/**
+ * @brief 			Gets the length of the CC size on KEMs.
+ * 
+ * @param alg 			The used KEM algorithm. 
+ * @retval 			The length.
+ */
+uint32_t get_kem_cc_len(enum ecdh_alg alg);
 
 #endif

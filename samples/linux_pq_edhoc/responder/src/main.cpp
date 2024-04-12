@@ -180,7 +180,7 @@ int main()
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 4;
+	uint8_t TEST_VEC_NUM = 7;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	TRY_EXPECT(start_coap_server(&sockfd), 0);
@@ -198,14 +198,14 @@ int main()
 	c_r.id_cred_r.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_r;
 	c_r.cred_r.len = test_vectors[vec_num_i].cred_r_len;
 	c_r.cred_r.ptr = (uint8_t *)test_vectors[vec_num_i].cred_r;
-	c_r.g_y.len = test_vectors[vec_num_i].g_y_raw_len;
+	/*c_r.g_y.len = test_vectors[vec_num_i].g_y_raw_len;
 	c_r.g_y.ptr = (uint8_t *)test_vectors[vec_num_i].g_y_raw;
 	c_r.y.len = test_vectors[vec_num_i].y_raw_len;
 	c_r.y.ptr = (uint8_t *)test_vectors[vec_num_i].y_raw;
 	c_r.g_r.len = test_vectors[vec_num_i].g_r_raw_len;
 	c_r.g_r.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;
 	c_r.r.len = test_vectors[vec_num_i].r_raw_len;
-	c_r.r.ptr = (uint8_t *)test_vectors[vec_num_i].r_raw;
+	c_r.r.ptr = (uint8_t *)test_vectors[vec_num_i].r_raw;*/
 	c_r.sk_r.len = test_vectors[vec_num_i].sk_r_raw_len;
 	c_r.sk_r.ptr = (uint8_t *)test_vectors[vec_num_i].sk_r_raw;
 	c_r.pk_r.len = test_vectors[vec_num_i].pk_r_raw_len;
@@ -215,14 +215,14 @@ int main()
 	cred_i.id_cred.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_i;
 	cred_i.cred.len = test_vectors[vec_num_i].cred_i_len;
 	cred_i.cred.ptr = (uint8_t *)test_vectors[vec_num_i].cred_i;
-	cred_i.g.len = test_vectors[vec_num_i].g_i_raw_len;
-	cred_i.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;
+	/*cred_i.g.len = test_vectors[vec_num_i].g_i_raw_len;
+	cred_i.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;*/
 	cred_i.pk.len = test_vectors[vec_num_i].pk_i_raw_len;
 	cred_i.pk.ptr = (uint8_t *)test_vectors[vec_num_i].pk_i_raw;
-	cred_i.ca.len = test_vectors[vec_num_i].ca_i_len;
+	/*cred_i.ca.len = test_vectors[vec_num_i].ca_i_len;
 	cred_i.ca.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i;
 	cred_i.ca_pk.len = test_vectors[vec_num_i].ca_i_pk_len;
-	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;
+	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;*/
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
 
@@ -245,19 +245,21 @@ int main()
 		uint64_t seed_len =
 			fread((uint8_t *)&seed, 1, sizeof(seed), fp);
 		fclose(fp);
+		PRINT_MSG("Responder ready to receive EDHOC DH request\n")
 		PRINT_ARRAY("seed", (uint8_t *)&seed, seed_len);
-
+        c_r.g_y.len = G_Y_random.len;
+		c_r.y.len = Y_random.len;
 		TRY(ephemeral_dh_key_gen(P256, seed, &Y_random, &G_Y_random));
-		PRINT_ARRAY("secret ephemeral DH key", c_r.g_y.ptr,
+		PRINT_ARRAY("public ephemeral DH key", c_r.g_y.ptr,
 			    c_r.g_y.len);
-		PRINT_ARRAY("public ephemeral DH key", c_r.y.ptr, c_r.y.len);
+		PRINT_ARRAY("secret ephemeral DH key", c_r.y.ptr, c_r.y.len);
 #endif
 
 #ifdef TINYCRYPT
 		/* Register RNG function */
 		uECC_set_rng(default_CSPRNG);
 #endif
-
+		PRINT_MSG("Responder ready to Receive EDHOC PQ request \n")
 		TRY(edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out,
 					tx, rx, ead_process));
 		PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);

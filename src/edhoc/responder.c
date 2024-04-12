@@ -214,16 +214,30 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	authentication_type_get(method, &rc->static_dh_i, &static_dh_r);
 
 	/******************* create and send message 2*************************/
+	
+	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
+	
+	if(suites_i.ptr[suites_i.len -1] == SUITE__22){
+		/* 	PQ Proposal 1 - key generation with KEMs
+		*	Encapsulate the ephemeral key (in g_x) enc(ephpk)->(ss,c) ( enc(g_x)->(g_xy,g_y))
+		*   Set the g_y with the ciphertex message c   
+		*/
+	    PRINT_MSG("PQ KEM encapsulation\n");
+	    PRINT_ARRAY("PQ DEV - g_x ", g_x.ptr, g_x.len);
+		TRY(kem_encapsulate(rc->suite.edhoc_ecdh,&g_x,&c->g_y,&g_xy));
+		PRINT_ARRAY("G_XY (PQ SS)", g_xy.ptr, g_xy.len);
+		PRINT_ARRAY("G_Y (PQ C)", c->g_y.ptr, c->g_y.len);
+	} 
+	else{
+		/*calculate the DH shared secret*/
+		TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->y, &g_x, g_xy.ptr));
+		PRINT_ARRAY("G_XY (ECDH shared secret) ", g_xy.ptr, g_xy.len);
+	}	
+
 	BYTE_ARRAY_NEW(th2, HASH_SIZE, get_hash_len(rc->suite.edhoc_hash));
 	TRY(hash(rc->suite.edhoc_hash, &rc->msg, &rc->msg1_hash));
 	TRY(th2_calculate(rc->suite.edhoc_hash, &rc->msg1_hash, &c->g_y,
 			  &c->c_r, &th2));
-
-	/*calculate the DH shared secret*/
-	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
-	TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->y, &g_x, g_xy.ptr));
-
-	PRINT_ARRAY("G_XY (ECDH shared secret) ", g_xy.ptr, g_xy.len);
 
 	BYTE_ARRAY_NEW(PRK_2e, PRK_SIZE, PRK_SIZE);
 	TRY(hkdf_extract(rc->suite.edhoc_hash, &th2, &g_xy, PRK_2e.ptr));
@@ -237,7 +251,6 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	/*compute signature_or_MAC_2*/
 	BYTE_ARRAY_NEW(sign_or_mac_2, SIGNATURE_SIZE,
 		       get_signature_len(rc->suite.edhoc_sign));
-
 	TRY(signature_or_mac(GENERATE, static_dh_r, &rc->suite, &c->sk_r,
 			     &c->pk_r, &rc->prk_3e2m, &th2, &c->id_cred_r,
 			     &c->cred_r, &c->ead_2, MAC_2, &sign_or_mac_2));
@@ -301,9 +314,6 @@ enum err msg3_process(struct edhoc_responder_context *c,
 
 	TRY(retrieve_cred(rc->static_dh_i, cred_i_array, &id_cred_i, &cred_i,
 			  &pk, &g_i));
-	PRINT_ARRAY("CRED_I", cred_i.ptr, cred_i.len);
-	PRINT_ARRAY("pk", pk.ptr, pk.len);
-	PRINT_ARRAY("g_i", g_i.ptr, g_i.len);
 
 	/* Export public key. */
 	if ((NULL != initiator_pk) && (NULL != initiator_pk->ptr)) {
@@ -328,6 +338,7 @@ enum err msg3_process(struct edhoc_responder_context *c,
 	/*PRK_out*/
 	TRY(edhoc_kdf(rc->suite.edhoc_hash, &rc->prk_4e3m, PRK_out, &rc->th4,
 		      prk_out));
+	
 	return ok;
 }
 

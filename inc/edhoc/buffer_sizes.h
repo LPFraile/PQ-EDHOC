@@ -39,6 +39,8 @@
 #define SUITES_I_SIZE 6
 #endif
 
+
+
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 #define BSTR_ENCODING_OVERHEAD(x)                                              \
@@ -49,12 +51,32 @@
 #define P_256_PUB_KEY_UNCOMPRESSED_SIZE 65
 #define P_256_PUB_KEY_X_CORD_SIZE 32
 #define PK_SIZE P_256_PUB_KEY_UNCOMPRESSED_SIZE
+
+#ifndef G_Y_SIZE
 #define G_Y_SIZE P_256_PUB_KEY_X_CORD_SIZE
+#endif
+
+#ifndef G_X_SIZE
 #define G_X_SIZE P_256_PUB_KEY_X_CORD_SIZE
+#endif
+
+#ifndef G_R_SIZE
 #define G_R_SIZE P_256_PUB_KEY_UNCOMPRESSED_SIZE
+#endif
+
+#ifndef G_I_SIZE
 #define G_I_SIZE P_256_PUB_KEY_UNCOMPRESSED_SIZE
+#endif
+
+
+#ifndef SIGNATURE_SIZE
 #define SIGNATURE_SIZE 64
-#define ECDH_SECRET_SIZE 32
+#endif
+
+  
+#define ECDH_SECRET_SIZE 32 /*PQ shared secret has the same size than ecdh secret */
+
+
 #define PRK_SIZE 32
 #define HASH_SIZE 32
 #define AEAD_IV_SIZE 13

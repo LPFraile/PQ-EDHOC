@@ -597,7 +597,6 @@ enum err WEAK hkdf_expand(enum hash_alg alg, const struct byte_array *prk,
 	if (iterations > 255) {
 		return hkdf_failed;
 	}
-
 #ifdef TINYCRYPT
 	uint8_t t[32] = { 0 };
 	struct tc_hmac_state_struct h;
@@ -925,7 +924,7 @@ static const char* OQS_ID2name(int id) {
     return NULL;
 }
 
-enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
+enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
 				   struct byte_array *sk,
 				   struct byte_array *pk)
 {
@@ -984,8 +983,8 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, uint32_t seed,
 
 enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 			    const struct byte_array *pk,
-				  const struct byte_array *ct,
-				const struct byte_array *shared_secret){
+				struct byte_array *ct,
+				struct byte_array *shared_secret){
 
 	const char* algName = NULL;
     OQS_KEM *kem = NULL;
@@ -1011,6 +1010,26 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg,
         }
     }
 
+	if (ret == 0) {
+        switch (alg) {
+        case KYBER_LEVEL1:
+			ct->len = OQS_KEM_kyber_512_length_ciphertext;
+            shared_secret->len = OQS_KEM_kyber_512_length_shared_secret;
+            break;
+        case KYBER_LEVEL3:
+			ct->len = OQS_KEM_kyber_768_length_ciphertext;
+            shared_secret->len = OQS_KEM_kyber_768_length_shared_secret;
+            break;
+        case KYBER_LEVEL5:
+			ct->len = OQS_KEM_kyber_1024_length_ciphertext;
+            shared_secret->len = OQS_KEM_kyber_1024_length_shared_secret;
+            break;
+        default:
+            /* No other values supported. */
+            ret = -1; // Na to allaxw
+            break;
+        }
+    }
 	OQS_KEM_free(kem);
 
 	return ret;
@@ -1135,7 +1154,7 @@ enum err WEAK sign_signature(const enum sign_alg alg,
     }
 
 	 if ((ret == 0) &&
-        (OQS_SIG_sign(sig, signature->ptr, &signature->len, msg->ptr, msg->len, sk->ptr)
+        (OQS_SIG_sign(sig, signature->ptr, (size_t *)&signature->len, msg->ptr, msg->len, sk->ptr)
          != OQS_SUCCESS)) {
 		ret = SIG_BAD_FUNC_ARG;
     }

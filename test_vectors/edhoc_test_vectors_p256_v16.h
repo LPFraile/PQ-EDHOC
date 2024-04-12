@@ -6532,6 +6532,299 @@ static const uint8_t test_vector_6_oscore_salt_key_update_raw[] = {
 	0xde, 0x3d, 0x21, 0xa9, 0x28, 0x31, 0x8c, 0x50};
 
 
+/***************** test_vector_7 (PQ proposal 1) ************/
+
+static const uint8_t test_vector_7_method[] = {
+	0x00};
+static const uint8_t test_vector_7_SUITES_I[] = {
+	SUITE__22};
+static const uint8_t test_vector_7_SUITES_R[] = {
+	SUITE__22};
+static const uint8_t test_vector_7_x_raw[] = {
+};
+static const uint8_t test_vector_7_g_x_raw[] = {
+};
+static const uint8_t test_vector_7_g_x_raw_y_coordinate[] = {
+};
+static const uint8_t test_vector_7_g_x[] = {
+};
+int32_t test_vector_7_c_i_raw = -24;
+static const uint8_t test_vector_7_c_i[] = {
+	0x37};
+static const uint8_t test_vector_7_ead_1[] = {
+	};
+static const uint8_t test_vector_7_message_1[] = {
+	};
+static const uint8_t test_vector_7_y_raw[] = {
+	};
+static const uint8_t test_vector_7_g_y_raw[] = {
+	};
+static const uint8_t test_vector_7_g_y_raw_y_coordinate[] = {
+	};
+static const uint8_t test_vector_7_g_y[] = {
+	};
+static const uint8_t test_vector_7_g_xy_raw[] = {
+	};
+static const uint8_t test_vector_7_salt_raw[] = {
+	};
+static const uint8_t test_vector_7_prk_2e_raw[] = {
+	};
+static const uint8_t test_vector_7_salt_3e2m[] = {
+	};
+static const uint8_t test_vector_7_sk_r_raw[] = {
+	0x72, 0xcc, 0x47, 0x61, 0xdb, 0xd4, 0xc7, 0x8f, 
+	0x75, 0x89, 0x31, 0xaa, 0x58, 0x9d, 0x34, 0x8d, 
+	0x1e, 0xf8, 0x74, 0xa7, 0xe3, 0x03, 0xed, 0xe2, 
+	0xf1, 0x40, 0xdc, 0xf3, 0xe6, 0xaa, 0x4a, 0xac};
+static const uint8_t test_vector_7_pk_r_raw[] = {
+	0x04, 0xbb, 0xc3, 0x49, 0x60, 0x52, 0x6e, 0xa4, 
+	0xd3, 0x2e, 0x94, 0x0c, 0xad, 0x2a, 0x23, 0x41, 
+	0x48, 0xdd, 0xc2, 0x17, 0x91, 0xa1, 0x2a, 0xfb, 
+	0xcb, 0xac, 0x93, 0x62, 0x20, 0x46, 0xdd, 0x44, 
+	0xf0, 0x45, 0x19, 0xe2, 0x57, 0x23, 0x6b, 0x2a, 
+	0x0c, 0xe2, 0x02, 0x3f, 0x09, 0x31, 0xf1, 0xf3, 
+	0x86, 0xca, 0x7a, 0xfd, 0xa6, 0x4f, 0xcd, 0xe0, 
+	0x10, 0x8c, 0x22, 0x4c, 0x51, 0xea, 0xbf, 0x60, 
+	0x72};
+static const uint8_t test_vector_7_prk_3e2m_raw[] = {
+	};
+int32_t test_vector_7_c_r_raw = -8;
+static const uint8_t test_vector_7_c_r[] = {
+	0x27};
+static const uint8_t test_vector_7_h_message_1_raw[] = {
+	};
+static const uint8_t test_vector_7_h_message_1[] = {
+	};
+static const uint8_t test_vector_7_input_th_2[] = {
+	};
+static const uint8_t test_vector_7_th_2_raw[] = {
+	};
+static const uint8_t test_vector_7_th_2[] = {
+	};
+static const uint8_t test_vector_7_id_cred_r[] = {
+	0xa1, 0x04, 0x32};
+static const uint8_t test_vector_7_cred_r[] = {
+	0x59, 0x01, 0x22, 0x30, 0x82, 0x01, 0x1e, 0x30, 
+	0x81, 0xc5, 0xa0, 0x03, 0x02, 0x01, 0x02, 0x02, 
+	0x04, 0x61, 0xe9, 0x98, 0x1e, 0x30, 0x0a, 0x06, 
+	0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x04, 0x03, 
+	0x02, 0x30, 0x15, 0x31, 0x13, 0x30, 0x11, 0x06, 
+	0x03, 0x55, 0x04, 0x03, 0x0c, 0x0a, 0x45, 0x44, 
+	0x48, 0x4f, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 
+	0x30, 0x1e, 0x17, 0x0d, 0x32, 0x32, 0x30, 0x31, 
+	0x32, 0x30, 0x31, 0x37, 0x31, 0x33, 0x30, 0x32, 
+	0x5a, 0x17, 0x0d, 0x32, 0x39, 0x31, 0x32, 0x33, 
+	0x31, 0x32, 0x33, 0x30, 0x30, 0x30, 0x30, 0x5a, 
+	0x30, 0x1a, 0x31, 0x18, 0x30, 0x16, 0x06, 0x03, 
+	0x55, 0x04, 0x03, 0x0c, 0x0f, 0x45, 0x44, 0x48, 
+	0x4f, 0x43, 0x20, 0x52, 0x65, 0x73, 0x70, 0x6f, 
+	0x6e, 0x64, 0x65, 0x72, 0x30, 0x59, 0x30, 0x13, 
+	0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 
+	0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 
+	0x03, 0x01, 0x07, 0x03, 0x42, 0x00, 0x04, 0xbb, 
+	0xc3, 0x49, 0x60, 0x52, 0x6e, 0xa4, 0xd3, 0x2e, 
+	0x94, 0x0c, 0xad, 0x2a, 0x23, 0x41, 0x48, 0xdd, 
+	0xc2, 0x17, 0x91, 0xa1, 0x2a, 0xfb, 0xcb, 0xac, 
+	0x93, 0x62, 0x20, 0x46, 0xdd, 0x44, 0xf0, 0x45, 
+	0x19, 0xe2, 0x57, 0x23, 0x6b, 0x2a, 0x0c, 0xe2, 
+	0x02, 0x3f, 0x09, 0x31, 0xf1, 0xf3, 0x86, 0xca, 
+	0x7a, 0xfd, 0xa6, 0x4f, 0xcd, 0xe0, 0x10, 0x8c, 
+	0x22, 0x4c, 0x51, 0xea, 0xbf, 0x60, 0x72, 0x30, 
+	0x0a, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 
+	0x04, 0x03, 0x02, 0x03, 0x48, 0x00, 0x30, 0x45, 
+	0x02, 0x20, 0x30, 0x19, 0x4e, 0xf5, 0xfc, 0x65, 
+	0xc8, 0xb7, 0x95, 0xcd, 0xcd, 0x0b, 0xb4, 0x31, 
+	0xbf, 0x83, 0xee, 0x67, 0x41, 0xc1, 0x37, 0x0c, 
+	0x22, 0xc8, 0xeb, 0x8e, 0xe9, 0xed, 0xd2, 0xa7, 
+	0x05, 0x19, 0x02, 0x21, 0x00, 0xb5, 0x83, 0x0e, 
+	0x9c, 0x89, 0xa6, 0x2a, 0xc7, 0x3c, 0xe1, 0xeb, 
+	0xce, 0x00, 0x61, 0x70, 0x7d, 0xb8, 0xa8, 0x8e, 
+	0x23, 0x70, 0x9b, 0x4a, 0xcc, 0x58, 0xa1, 0x31, 
+	0x3b, 0x13, 0x3d, 0x05, 0x58};
+static const uint8_t test_vector_7_ca_r[] = {
+	};
+static const uint8_t test_vector_7_ca_r_pk[] = {
+	};
+static const uint8_t test_vector_7_ead_2[] = {
+	};
+static const uint8_t test_vector_7_info_mac_2[] = {
+	};
+static const uint8_t test_vector_7_mac_2_raw[] = {
+	};
+static const uint8_t test_vector_7_mac_2[] = {
+	};
+static const uint8_t test_vector_7_m_2[] = {
+	};
+static const uint8_t test_vector_7_sig_or_mac_2_raw[] = {
+	};
+static const uint8_t test_vector_7_sig_or_mac_2[] = {
+	};
+static const uint8_t test_vector_7_plaintext_2[] = {
+	};
+static const uint8_t test_vector_7_info_keystream_2[] = {
+	};
+static const uint8_t test_vector_7_keystream_2_raw[] = {
+	};
+static const uint8_t test_vector_7_ciphertext_2_raw[] = {
+	};
+static const uint8_t test_vector_7_ciphertext_2[] = {
+	};
+static const uint8_t test_vector_7_message_2[] = {
+	};
+static const uint8_t test_vector_7_sk_i_raw[] = {
+	0xfb, 0x13, 0xad, 0xeb, 0x65, 0x18, 0xce, 0xe5, 
+	0xf8, 0x84, 0x17, 0x66, 0x08, 0x41, 0x14, 0x2e, 
+	0x83, 0x0a, 0x81, 0xfe, 0x33, 0x43, 0x80, 0xa9, 
+	0x53, 0x40, 0x6a, 0x13, 0x05, 0xe8, 0x70, 0x6b};
+static const uint8_t test_vector_7_pk_i_raw[] = {
+	0x04, 0xac, 0x75, 0xe9, 0xec, 0xe3, 0xe5, 0x0b, 
+	0xfc, 0x8e, 0xd6, 0x03, 0x99, 0x88, 0x95, 0x22, 
+	0x40, 0x5c, 0x47, 0xbf, 0x16, 0xdf, 0x96, 0x66, 
+	0x0a, 0x41, 0x29, 0x8c, 0xb4, 0x30, 0x7f, 0x7e, 
+	0xb6, 0x6e, 0x5d, 0xe6, 0x11, 0x38, 0x8a, 0x4b, 
+	0x8a, 0x82, 0x11, 0x33, 0x4a, 0xc7, 0xd3, 0x7e, 
+	0xcb, 0x52, 0xa3, 0x87, 0xd2, 0x57, 0xe6, 0xdb, 
+	0x3c, 0x2a, 0x93, 0xdf, 0x21, 0xff, 0x3a, 0xff, 
+	0xc8};
+static const uint8_t test_vector_7_salt_4e3m[] = {
+	};
+static const uint8_t test_vector_7_prk_4e3m_raw[] = {
+	};
+static const uint8_t test_vector_7_input_TH_3[] = {
+	};
+static const uint8_t test_vector_7_th_3_raw[] = {
+	};
+static const uint8_t test_vector_7_th_3[] = {
+	};
+static const uint8_t test_vector_7_id_cred_i[] = {
+	0xa1, 0x04, 0x2b};
+static const uint8_t test_vector_7_cred_i[] = {
+	0x59, 0x01, 0x22, 0x30, 0x82, 0x01, 0x1e, 0x30, 
+	0x81, 0xc5, 0xa0, 0x03, 0x02, 0x01, 0x02, 0x02, 
+	0x04, 0x62, 0x32, 0xef, 0x6f, 0x30, 0x0a, 0x06, 
+	0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x04, 0x03, 
+	0x02, 0x30, 0x15, 0x31, 0x13, 0x30, 0x11, 0x06, 
+	0x03, 0x55, 0x04, 0x03, 0x0c, 0x0a, 0x45, 0x44, 
+	0x48, 0x4f, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 
+	0x30, 0x1e, 0x17, 0x0d, 0x32, 0x32, 0x30, 0x33, 
+	0x31, 0x37, 0x30, 0x38, 0x32, 0x31, 0x30, 0x33, 
+	0x5a, 0x17, 0x0d, 0x32, 0x39, 0x31, 0x32, 0x33, 
+	0x31, 0x32, 0x33, 0x30, 0x30, 0x30, 0x30, 0x5a, 
+	0x30, 0x1a, 0x31, 0x18, 0x30, 0x16, 0x06, 0x03, 
+	0x55, 0x04, 0x03, 0x0c, 0x0f, 0x45, 0x44, 0x48, 
+	0x4f, 0x43, 0x20, 0x49, 0x6e, 0x69, 0x74, 0x69, 
+	0x61, 0x74, 0x6f, 0x72, 0x30, 0x59, 0x30, 0x13, 
+	0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 
+	0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 
+	0x03, 0x01, 0x07, 0x03, 0x42, 0x00, 0x04, 0xac, 
+	0x75, 0xe9, 0xec, 0xe3, 0xe5, 0x0b, 0xfc, 0x8e, 
+	0xd6, 0x03, 0x99, 0x88, 0x95, 0x22, 0x40, 0x5c, 
+	0x47, 0xbf, 0x16, 0xdf, 0x96, 0x66, 0x0a, 0x41, 
+	0x29, 0x8c, 0xb4, 0x30, 0x7f, 0x7e, 0xb6, 0x6e, 
+	0x5d, 0xe6, 0x11, 0x38, 0x8a, 0x4b, 0x8a, 0x82, 
+	0x11, 0x33, 0x4a, 0xc7, 0xd3, 0x7e, 0xcb, 0x52, 
+	0xa3, 0x87, 0xd2, 0x57, 0xe6, 0xdb, 0x3c, 0x2a, 
+	0x93, 0xdf, 0x21, 0xff, 0x3a, 0xff, 0xc8, 0x30, 
+	0x0a, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 
+	0x04, 0x03, 0x02, 0x03, 0x48, 0x00, 0x30, 0x45, 
+	0x02, 0x21, 0x00, 0x8c, 0x32, 0x3a, 0x1f, 0x33, 
+	0x21, 0x38, 0xaa, 0xb9, 0xd0, 0xbe, 0xaf, 0xb8, 
+	0x5f, 0x8d, 0x5a, 0x44, 0x07, 0x3c, 0x58, 0x0f, 
+	0x59, 0x5b, 0xc5, 0x21, 0xef, 0x91, 0x3f, 0x6e, 
+	0xf4, 0x8d, 0x11, 0x02, 0x20, 0x6c, 0x0a, 0xf1, 
+	0xa1, 0x85, 0xa4, 0xe4, 0xde, 0x06, 0x35, 0x36, 
+	0x99, 0x23, 0x1c, 0x73, 0x3a, 0x6e, 0x8d, 0xd2, 
+	0xdf, 0x65, 0x13, 0x96, 0x6c, 0x91, 0x30, 0x15, 
+	0x2a, 0x07, 0xa2, 0xbe, 0xde};
+static const uint8_t test_vector_7_ca_i[] = {
+	};
+static const uint8_t test_vector_7_ca_i_pk[] = {
+	};
+static const uint8_t test_vector_7_ead_3[] = {
+	};
+static const uint8_t test_vector_7_info_mac_3[] = {
+	};
+static const uint8_t test_vector_7_mac_3_raw[] = {
+	};
+static const uint8_t test_vector_7_mac_3[] = {
+	};
+static const uint8_t test_vector_7_m_3[] = {
+	};
+static const uint8_t test_vector_7_sig_or_mac_3_raw[] = {
+	};
+static const uint8_t test_vector_7_sig_or_mac_3[] = {
+	};
+static const uint8_t test_vector_7_p_3[] = {
+	};
+static const uint8_t test_vector_7_a_3[] = {
+	};
+static const uint8_t test_vector_7_info_k_3[] = {
+	};
+static const uint8_t test_vector_7_k_3_raw[] = {
+	};
+static const uint8_t test_vector_7_info_iv_3[] = {
+	};
+static const uint8_t test_vector_7_iv_3_raw[] = {
+	};
+static const uint8_t test_vector_7_ciphertext_3_raw[] = {
+	};
+static const uint8_t test_vector_7_ciphertext_3[] = {
+	};
+static const uint8_t test_vector_7_message_3[] = {
+	};
+static const uint8_t test_vector_7_input_th_4[] = {
+	};
+static const uint8_t test_vector_7_th_4_raw[] = {
+	};
+static const uint8_t test_vector_7_th_4[] = {
+	};
+static const uint8_t test_vector_7_ead_4[] = {
+	};
+static const uint8_t test_vector_7_p_4[] = {
+	};
+static const uint8_t test_vector_7_a_4[] = {
+	};
+static const uint8_t test_vector_7_info_k_4[] = {
+	};
+static const uint8_t test_vector_7_k_4_raw[] = {
+	};
+static const uint8_t test_vector_7_info_iv_4[] = {
+	};
+static const uint8_t test_vector_7_iv_4_raw[] = {
+	};
+static const uint8_t test_vector_7_ciphertext_4_raw[] = {
+	};
+static const uint8_t test_vector_7_ciphertext_4[] = {
+	};
+static const uint8_t test_vector_7_message_4[] = {
+	};
+static const uint8_t test_vector_7_prk_out[] = {
+	};
+static const uint8_t test_vector_7_prk_exporter[] = {
+	};
+int32_t test_vector_7_oscore_aead_alg = 10;
+int32_t test_vector_7_oscore_hash_alg = -16;
+static const uint8_t test_vector_7_client_sender_id_raw[] = {
+	0x27};
+static const uint8_t test_vector_7_server_sender_id_raw[] = {
+	0x37};
+static const uint8_t test_vector_7_info_oscore_secret[] = {
+	};
+static const uint8_t test_vector_7_oscore_secret_raw[] = {
+	};
+static const uint8_t test_vector_7_info_oscore_salt[] = {
+	};
+static const uint8_t test_vector_7_oscore_salt_raw[] = {
+	};
+static const uint8_t test_vector_7_prk_out_updated[] = {
+	};
+static const uint8_t test_vector_7_prk_exporter_update[] = {
+	};
+static const uint8_t test_vector_7_oscore_secret_key_update_raw[] = {
+	};
+static const uint8_t test_vector_7_oscore_salt_key_update_raw[] = {
+	};
+
 struct test_vector test_vectors[] = {
 
 /*--------------- test_vector_1 ------------*/
@@ -8315,5 +8608,302 @@ struct test_vector test_vectors[] = {
         .c_r_raw = NULL,
         .c_r_raw_len = 0,
         .c_r_raw_int =  &test_vector_6_c_r_raw,
+	},
+	/*--------------- test_vector_7 ------------*/
+ 
+	{
+        .method = test_vector_7_method,
+        .method_len = sizeof(test_vector_7_method),
+        
+        .SUITES_I = test_vector_7_SUITES_I,
+        .SUITES_I_len = sizeof(test_vector_7_SUITES_I),
+        
+        .SUITES_R = test_vector_7_SUITES_R,
+        .SUITES_R_len = sizeof(test_vector_7_SUITES_R),
+        
+        .x_raw = test_vector_7_x_raw,
+        .x_raw_len = sizeof(test_vector_7_x_raw),
+        
+        .g_x_raw = test_vector_7_g_x_raw,
+        .g_x_raw_len = sizeof(test_vector_7_g_x_raw),
+        
+        .g_x = test_vector_7_g_x,
+        .g_x_len = sizeof(test_vector_7_g_x),
+        
+        .c_i = test_vector_7_c_i,
+        .c_i_len = sizeof(test_vector_7_c_i),
+        
+        .ead_1 = test_vector_7_ead_1,
+        .ead_1_len = sizeof(test_vector_7_ead_1),
+        
+        .message_1 = test_vector_7_message_1,
+        .message_1_len = sizeof(test_vector_7_message_1),
+        
+        .y_raw = test_vector_7_y_raw,
+        .y_raw_len = sizeof(test_vector_7_y_raw),
+        
+        .g_y_raw = test_vector_7_g_y_raw,
+        .g_y_raw_len = sizeof(test_vector_7_g_y_raw),
+        
+        .g_y = test_vector_7_g_y,
+        .g_y_len = sizeof(test_vector_7_g_y),
+        
+        .g_xy_raw = test_vector_7_g_xy_raw,
+        .g_xy_raw_len = sizeof(test_vector_7_g_xy_raw),
+        
+        .salt_raw = test_vector_7_salt_raw,
+        .salt_raw_len = sizeof(test_vector_7_salt_raw),
+        
+        .prk_2e_raw = test_vector_7_prk_2e_raw,
+        .prk_2e_raw_len = sizeof(test_vector_7_prk_2e_raw),
+        
+        .sk_r_raw = test_vector_7_sk_r_raw,
+        .sk_r_raw_len = sizeof(test_vector_7_sk_r_raw),
+        
+        .pk_r_raw = test_vector_7_pk_r_raw,
+        .pk_r_raw_len = sizeof(test_vector_7_pk_r_raw),
+        
+        .prk_3e2m_raw = test_vector_7_prk_3e2m_raw,
+        .prk_3e2m_raw_len = sizeof(test_vector_7_prk_3e2m_raw),
+        
+        .c_r = test_vector_7_c_r,
+        .c_r_len = sizeof(test_vector_7_c_r),
+        
+        .h_message_1_raw = test_vector_7_h_message_1_raw,
+        .h_message_1_raw_len = sizeof(test_vector_7_h_message_1_raw),
+        
+        .h_message_1 = test_vector_7_h_message_1,
+        .h_message_1_len = sizeof(test_vector_7_h_message_1),
+        
+        .input_th_2 = test_vector_7_input_th_2,
+        .input_th_2_len = sizeof(test_vector_7_input_th_2),
+        
+        .th_2_raw = test_vector_7_th_2_raw,
+        .th_2_raw_len = sizeof(test_vector_7_th_2_raw),
+        
+        .th_2 = test_vector_7_th_2,
+        .th_2_len = sizeof(test_vector_7_th_2),
+        
+        .id_cred_r = test_vector_7_id_cred_r,
+        .id_cred_r_len = sizeof(test_vector_7_id_cred_r),
+        
+        .cred_r = test_vector_7_cred_r,
+        .cred_r_len = sizeof(test_vector_7_cred_r),
+        
+        .ead_2 = test_vector_7_ead_2,
+        .ead_2_len = sizeof(test_vector_7_ead_2),
+        
+        .info_mac_2 = test_vector_7_info_mac_2,
+        .info_mac_2_len = sizeof(test_vector_7_info_mac_2),
+        
+        .mac_2_raw = test_vector_7_mac_2_raw,
+        .mac_2_raw_len = sizeof(test_vector_7_mac_2_raw),
+        
+        .mac_2 = test_vector_7_mac_2,
+        .mac_2_len = sizeof(test_vector_7_mac_2),
+        
+        .m_2 = test_vector_7_m_2,
+        .m_2_len = sizeof(test_vector_7_m_2),
+        
+        .sig_or_mac_2_raw = test_vector_7_sig_or_mac_2_raw,
+        .sig_or_mac_2_raw_len = sizeof(test_vector_7_sig_or_mac_2_raw),
+        
+        .sig_or_mac_2 = test_vector_7_sig_or_mac_2,
+        .sig_or_mac_2_len = sizeof(test_vector_7_sig_or_mac_2),
+        
+        .plaintext_2 = test_vector_7_plaintext_2,
+        .plaintext_2_len = sizeof(test_vector_7_plaintext_2),
+        
+        .info_keystream_2 = test_vector_7_info_keystream_2,
+        .info_keystream_2_len = sizeof(test_vector_7_info_keystream_2),
+        
+        .keystream_2_raw = test_vector_7_keystream_2_raw,
+        .keystream_2_raw_len = sizeof(test_vector_7_keystream_2_raw),
+        
+        .ciphertext_2_raw = test_vector_7_ciphertext_2_raw,
+        .ciphertext_2_raw_len = sizeof(test_vector_7_ciphertext_2_raw),
+        
+        .ciphertext_2 = test_vector_7_ciphertext_2,
+        .ciphertext_2_len = sizeof(test_vector_7_ciphertext_2),
+        
+        .message_2 = test_vector_7_message_2,
+        .message_2_len = sizeof(test_vector_7_message_2),
+        
+        .sk_i_raw = test_vector_7_sk_i_raw,
+        .sk_i_raw_len = sizeof(test_vector_7_sk_i_raw),
+        
+        .pk_i_raw = test_vector_7_pk_i_raw,
+        .pk_i_raw_len = sizeof(test_vector_7_pk_i_raw),
+        
+        .prk_4x3m_raw = NULL,
+        .prk_4x3m_raw_len = 0,
+        
+        .input_TH_3 = test_vector_7_input_TH_3,
+        .input_TH_3_len = sizeof(test_vector_7_input_TH_3),
+        
+        .th_3_raw = test_vector_7_th_3_raw,
+        .th_3_raw_len = sizeof(test_vector_7_th_3_raw),
+        
+        .th_3 = test_vector_7_th_3,
+        .th_3_len = sizeof(test_vector_7_th_3),
+        
+        .id_cred_i = test_vector_7_id_cred_i,
+        .id_cred_i_len = sizeof(test_vector_7_id_cred_i),
+        
+        .cred_i = test_vector_7_cred_i,
+        .cred_i_len = sizeof(test_vector_7_cred_i),
+        
+        .ead_3 = test_vector_7_ead_3,
+        .ead_3_len = sizeof(test_vector_7_ead_3),
+        
+        .info_mac_3 = test_vector_7_info_mac_3,
+        .info_mac_3_len = sizeof(test_vector_7_info_mac_3),
+        
+        .mac_3_raw = test_vector_7_mac_3_raw,
+        .mac_3_raw_len = sizeof(test_vector_7_mac_3_raw),
+        
+        .mac_3 = test_vector_7_mac_3,
+        .mac_3_len = sizeof(test_vector_7_mac_3),
+        
+        .m_3 = test_vector_7_m_3,
+        .m_3_len = sizeof(test_vector_7_m_3),
+        
+        .sig_or_mac_3_raw = test_vector_7_sig_or_mac_3_raw,
+        .sig_or_mac_3_raw_len = sizeof(test_vector_7_sig_or_mac_3_raw),
+        
+        .sig_or_mac_3 = test_vector_7_sig_or_mac_3,
+        .sig_or_mac_3_len = sizeof(test_vector_7_sig_or_mac_3),
+        
+        .p_3 = test_vector_7_p_3,
+        .p_3_len = sizeof(test_vector_7_p_3),
+        
+        .a_3 = test_vector_7_a_3,
+        .a_3_len = sizeof(test_vector_7_a_3),
+        
+        .info_k_3 = test_vector_7_info_k_3,
+        .info_k_3_len = sizeof(test_vector_7_info_k_3),
+        
+        .k_3_raw = test_vector_7_k_3_raw,
+        .k_3_raw_len = sizeof(test_vector_7_k_3_raw),
+        
+        .info_iv_3 = test_vector_7_info_iv_3,
+        .info_iv_3_len = sizeof(test_vector_7_info_iv_3),
+        
+        .iv_3_raw = test_vector_7_iv_3_raw,
+        .iv_3_raw_len = sizeof(test_vector_7_iv_3_raw),
+        
+        .ciphertext_3_raw = test_vector_7_ciphertext_3_raw,
+        .ciphertext_3_raw_len = sizeof(test_vector_7_ciphertext_3_raw),
+        
+        .ciphertext_3 = test_vector_7_ciphertext_3,
+        .ciphertext_3_len = sizeof(test_vector_7_ciphertext_3),
+        
+        .message_3 = test_vector_7_message_3,
+        .message_3_len = sizeof(test_vector_7_message_3),
+        
+        .input_th_4 = test_vector_7_input_th_4,
+        .input_th_4_len = sizeof(test_vector_7_input_th_4),
+        
+        .th_4_raw = test_vector_7_th_4_raw,
+        .th_4_raw_len = sizeof(test_vector_7_th_4_raw),
+        
+        .th_4 = test_vector_7_th_4,
+        .th_4_len = sizeof(test_vector_7_th_4),
+        
+        .ead_4 = test_vector_7_ead_4,
+        .ead_4_len = sizeof(test_vector_7_ead_4),
+        
+        .p_4 = test_vector_7_p_4,
+        .p_4_len = sizeof(test_vector_7_p_4),
+        
+        .a_4 = test_vector_7_a_4,
+        .a_4_len = sizeof(test_vector_7_a_4),
+        
+        .info_k_4 = test_vector_7_info_k_4,
+        .info_k_4_len = sizeof(test_vector_7_info_k_4),
+        
+        .k_4_raw = test_vector_7_k_4_raw,
+        .k_4_raw_len = sizeof(test_vector_7_k_4_raw),
+        
+        .info_iv_4 = test_vector_7_info_iv_4,
+        .info_iv_4_len = sizeof(test_vector_7_info_iv_4),
+        
+        .iv_4_raw = test_vector_7_iv_4_raw,
+        .iv_4_raw_len = sizeof(test_vector_7_iv_4_raw),
+        
+        .ciphertext_4_raw = test_vector_7_ciphertext_4_raw,
+        .ciphertext_4_raw_len = sizeof(test_vector_7_ciphertext_4_raw),
+        
+        .ciphertext_4 = test_vector_7_ciphertext_4,
+        .ciphertext_4_len = sizeof(test_vector_7_ciphertext_4),
+        
+        .message_4 = test_vector_7_message_4,
+        .message_4_len = sizeof(test_vector_7_message_4),
+        
+        .oscore_aead_alg = &test_vector_7_oscore_aead_alg,
+        
+        .oscore_hash_alg = &test_vector_7_oscore_hash_alg,
+        
+        .client_sender_id_raw = test_vector_7_client_sender_id_raw,
+        .client_sender_id_raw_len = sizeof(test_vector_7_client_sender_id_raw),
+        
+        .server_sender_id_raw = test_vector_7_server_sender_id_raw,
+        .server_sender_id_raw_len = sizeof(test_vector_7_server_sender_id_raw),
+        
+        .info_oscore_secret = test_vector_7_info_oscore_secret,
+        .info_oscore_secret_len = sizeof(test_vector_7_info_oscore_secret),
+        
+        .oscore_secret_raw = test_vector_7_oscore_secret_raw,
+        .oscore_secret_raw_len = sizeof(test_vector_7_oscore_secret_raw),
+        
+        .info_oscore_salt = test_vector_7_info_oscore_salt,
+        .info_oscore_salt_len = sizeof(test_vector_7_info_oscore_salt),
+        
+        .oscore_salt_raw = test_vector_7_oscore_salt_raw,
+        .oscore_salt_raw_len = sizeof(test_vector_7_oscore_salt_raw),
+        
+        .key_update_nonce_raw = NULL,
+        .key_update_nonce_raw_len = 0,
+        
+        .prk_4x3m_key_update_raw = NULL,
+        .prk_4x3m_key_update_raw_len = 0,
+        
+        .oscore_secret_key_update_raw = test_vector_7_oscore_secret_key_update_raw,
+        .oscore_secret_key_update_raw_len = sizeof(test_vector_7_oscore_secret_key_update_raw),
+        
+        .oscore_salt_key_update_raw = test_vector_7_oscore_salt_key_update_raw,
+        .oscore_salt_key_update_raw_len = sizeof(test_vector_7_oscore_salt_key_update_raw),
+        
+        .ca_r = test_vector_7_ca_r,
+        .ca_r_len = sizeof(test_vector_7_ca_r),
+        
+        .ca_i = test_vector_7_ca_i,
+        .ca_i_len = sizeof(test_vector_7_ca_i),
+        
+        .ca_r_pk = test_vector_7_ca_r_pk,
+        .ca_r_pk_len = sizeof(test_vector_7_ca_r_pk),
+        
+        .ca_i_pk = test_vector_7_ca_i_pk,
+        .ca_i_pk_len = sizeof(test_vector_7_ca_i_pk),
+        
+        .i_raw = NULL,
+        .i_raw_len = 0,
+        
+        .g_i_raw = NULL,
+        .g_i_raw_len = 0,
+        
+        .r_raw = NULL,
+        .r_raw_len = 0,
+        
+        .g_r_raw = NULL,
+        .g_r_raw_len = 0,
+        
+        .c_i_raw = NULL,
+        .c_i_raw_len = 0,
+        .c_i_raw_int =  &test_vector_7_c_i_raw,
+        
+        .c_r_raw = NULL,
+        .c_r_raw_len = 0,
+        .c_r_raw_int =  &test_vector_7_c_r_raw,
 	},
 };

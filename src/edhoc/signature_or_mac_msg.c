@@ -82,7 +82,9 @@ static enum err mac(const struct byte_array *prk, const struct byte_array *th,
 		mac->len = suite->edhoc_mac_len_static_dh;
 
 	} else {
+		
 		mac->len = get_hash_len(suite->edhoc_hash);
+		PRINTF("is not DH, %d\n",mac->len);
 	}
 
 	TRY(edhoc_kdf(suite->edhoc_hash, prk, mac_label, &context_mac, mac));
@@ -144,6 +146,7 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 		/*we always calculate the mac*/
 		TRY(mac(prk, th, id_cred, cred, ead, mac_label, static_dh,
 			suite, signature_or_mac));
+		PRINT_MSG("Always calculate MAC\n");
 
 		if (static_dh) {
 			/*signature_or_mac is mac when the caller of this function authenticates with static DH keys*/

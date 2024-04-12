@@ -105,7 +105,7 @@ enum err msg1_gen(const struct edhoc_initiator_context *c,
 	m1._message_1_G_X.len = c->g_x.len;
 
 	/* C_I connection ID  of the initiator*/
-	PRINT_ARRAY("C_I", c->c_i.ptr, c->c_i.len);
+
 	if (c->c_i.len == 1 &&
 	    ((0x00 <= c->c_i.ptr[0] && c->c_i.ptr[0] < 0x18) ||
 	     (0x1F < c->c_i.ptr[0] && c->c_i.ptr[0] <= 0x37))) {
@@ -125,7 +125,7 @@ enum err msg1_gen(const struct edhoc_initiator_context *c,
 	} else {
 		m1._message_1_ead_1_present = false;
 	}
-
+	
 	size_t payload_len_out;
 	TRY_EXPECT(cbor_encode_message_1(rc->msg.ptr, rc->msg.len, &m1,
 					 &payload_len_out),
@@ -148,9 +148,19 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			     bool static_dh_r, struct byte_array *th3,
 			     struct byte_array *PRK_3e2m)
 {
-	BYTE_ARRAY_NEW(g_y, G_Y_SIZE, get_ecdh_pk_len(rc->suite.edhoc_ecdh));
+	uint32_t g_y_size = 0;
+	if(c->suites_i.ptr[c->suites_i.len -1] == SUITE__22){
+		/*Set Gy size to the ciphertext size for KEMs*/
+		g_y_size = get_kem_cc_len(rc->suite.edhoc_ecdh);
+	}
+	else{
+		/*Set Gy size to the dh key size for DH*/
+		g_y_size =  get_ecdh_pk_len(rc->suite.edhoc_ecdh);
+	}
+	BYTE_ARRAY_NEW(g_y, G_Y_SIZE, g_y_size);
 	uint32_t ciphertext_len = rc->msg.len - g_y.len - c_r->len;
 	ciphertext_len -= BSTR_ENCODING_OVERHEAD(ciphertext_len);
+	PRINT_ARRAY("message_2 (CBOR Sequence)", rc->msg.ptr, rc->msg.len);
 	BYTE_ARRAY_NEW(ciphertext, CIPHERTEXT2_SIZE, ciphertext_len);
 	BYTE_ARRAY_NEW(plaintext, PLAINTEXT2_SIZE, ciphertext.len);
 	PRINT_ARRAY("message_2 (CBOR Sequence)", rc->msg.ptr, rc->msg.len);
@@ -158,12 +168,24 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	/*parse the message*/
 	TRY(msg2_parse(&rc->msg, &g_y, c_r, &ciphertext));
 
+	printf("CIPHER SUIT selected: %d\n",c->suites_i.ptr[c->suites_i.len - 1]);
 	/*calculate the DH shared secret*/
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 
-	TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->x, &g_y, g_xy.ptr));
-	PRINT_ARRAY("G_XY (ECDH shared secret) ", g_xy.ptr, g_xy.len);
-
+	if(c->suites_i.ptr[c->suites_i.len -1] == SUITE__22){
+		/* 	PQ Proposal 1 - key generation with KEMs
+		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
+		*/
+		PRINT_MSG("KEM decapsulation\n");
+		PRINT_ARRAY("G_Y (PQ CC) ", g_y.ptr, g_y.len);
+		TRY(kem_decapsulate(rc->suite.edhoc_ecdh, &g_y, &c->x, &g_xy));
+		PRINT_ARRAY("G_XY (PQ SS) ", g_xy.ptr, g_xy.len);
+	}
+	else{
+		TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->x, &g_y, g_xy.ptr));
+		PRINT_ARRAY("G_XY (ECDH shared secret) ", g_xy.ptr, g_xy.len);
+	} 
+	
 	/*calculate th2*/
 	BYTE_ARRAY_NEW(th2, HASH_SIZE, get_hash_len(rc->suite.edhoc_hash));
 
@@ -298,7 +320,7 @@ enum err edhoc_initiator_run_extended(
 {
 	struct runtime_context rc = { 0 };
 	runtime_context_init(&rc);
-
+	
 	/*create and send message 1*/
 	TRY(msg1_gen(c, &rc));
 	TRY(tx(c->sock, &rc.msg));
@@ -333,7 +355,6 @@ enum err edhoc_initiator_run(
 	enum err (*ead_process)(void *params, struct byte_array *ead24))
 {
 	BYTE_ARRAY_NEW(c_r, C_R_SIZE, C_R_SIZE);
-
 	return edhoc_initiator_run_extended(c, cred_r_array, err_msg, &c_r,
 					    prk_out, tx, rx, ead_process);
 }
