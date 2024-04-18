@@ -148,7 +148,7 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	uint8_t TEST_VEC_NUM = 4;
+	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -173,10 +173,10 @@ int main()
 	c_i.g_i.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;
 	c_i.i.len = test_vectors[vec_num_i].i_raw_len;
 	c_i.i.ptr = (uint8_t *)test_vectors[vec_num_i].i_raw;*/
-	c_i.sk_i.len = test_vectors[vec_num_i].sk_i_raw_len;
-	c_i.sk_i.ptr = (uint8_t *)test_vectors[vec_num_i].sk_i_raw;
-	c_i.pk_i.len = test_vectors[vec_num_i].pk_i_raw_len;
-	c_i.pk_i.ptr = (uint8_t *)test_vectors[vec_num_i].pk_i_raw;
+	c_i.sk_i.len = test_vectors[vec_num_i].sk_r_raw_len;
+	c_i.sk_i.ptr = (uint8_t *)test_vectors[vec_num_i].sk_r_raw;
+	c_i.pk_i.len = test_vectors[vec_num_i].pk_r_raw_len;
+	c_i.pk_i.ptr = (uint8_t *)test_vectors[vec_num_i].pk_r_raw;
 
 	cred_r.id_cred.len = test_vectors[vec_num_i].id_cred_r_len;
 	cred_r.id_cred.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_r;
@@ -222,7 +222,7 @@ int main()
 	
 	BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
 	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
-	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1,seed, &PQ_secret_random, 
+	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random, 
 								&PQ_public_random));
 	c_i_2.g_x.ptr = PQ_public_random.ptr;
 	c_i_2.g_x.len = PQ_public_random.len;
@@ -275,13 +275,19 @@ int main()
 	mmsg.len = MSG.len;
 	msig.ptr = SIG.ptr;
 	msig.len = SIG.len;
-	int ret = sign_signature(FALCON_LEVEL1, &PQ_secret_static_random,
+	/*int ret = sign_signature(FALCON_LEVEL1, &PQ_secret_static_random,
+							 &mmsg,&msig);
+						
+	*/
+    PRINT_ARRAY("public static key - cert", c_i.pk_i.ptr, c_i.pk_i.len);
+	PRINT_ARRAY("secret static key - cert", c_i.sk_i.ptr, c_i.sk_i.len);
+	int ret = sign_signature(FALCON_LEVEL1, &c_i.sk_i,
 							 &mmsg,&msig);
 	printf("Signature %d \n",ret);
 
 	PRINT_ARRAY("message", mmsg.ptr, mmsg.len);
 	PRINT_ARRAY("signature", msig.ptr, msig.len);
-	int val = sign_verify(FALCON_LEVEL1, &PQ_public_static_random,
+	int val = sign_verify(FALCON_LEVEL1, &c_i.pk_i,
 						 &mmsg,&msig);
 	printf("Verification %d \n",val);
 

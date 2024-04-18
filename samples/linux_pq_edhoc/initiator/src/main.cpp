@@ -121,8 +121,6 @@ enum err rx(void *sock, struct byte_array *data)
 	}
 
 	uint32_t payload_len = recvPDU->getPayloadLength();
-	//printf("data_len: %d\n", data->len);
-	//printf("payload_len: %d\n", payload_len);
 
 	if (data->len >= payload_len) {
 		memcpy(data->ptr, recvPDU->getPayloadPointer(), payload_len);
@@ -149,7 +147,7 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	uint8_t TEST_VEC_NUM = 7;
+	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -235,20 +233,6 @@ int main()
 	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
 
-    /*Static Key generation for Signature, we generate every time here only for test*/
-	/*BYTE_ARRAY_NEW(PQ_public_static_random, 897, 897);
-	BYTE_ARRAY_NEW(PQ_secret_static_random, 1281, 1281);
-
-	struct byte_array spk;
-	struct byte_array ssk;
-
-	static_signature_key_gen(FALCON_LEVEL1,&PQ_secret_static_random,&PQ_public_static_random);
-	spk.ptr = PQ_public_static_random.ptr;
-	spk.len = PQ_public_static_random.len;
-	ssk.ptr = PQ_secret_static_random.ptr;
-	ssk.len = PQ_secret_static_random.len;
-	PRINT_ARRAY("public static key", spk.ptr, spk.len);
-	PRINT_ARRAY("secret static key", ssk.ptr, ssk.len);*/
 #endif
 
 	TRY_EXPECT(start_coap_client(&sockfd), 0);

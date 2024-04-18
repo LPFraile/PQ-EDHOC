@@ -66,7 +66,6 @@ static enum err ciphertext_encrypt_decrypt(
 	if (ctxt == CIPHERTEXT2) {
 		xor_arrays(in, key, out);
 	} else {
-		PRINT_ARRAY("in", in->ptr, in->len);
 		TRY(aead(op, in, key, nonce, aad, out, tag));
 	}
 	return ok;
@@ -165,8 +164,6 @@ enum err ciphertext_decrypt_split(enum ciphertext ctxt, struct suite *suite,
 		PRINT_MSG("No EAD_4\n");
 	} else {
 		TRY(plaintext_split(plaintext, id_cred, sig_or_mac, ead));
-		PRINT_ARRAY("ID_CRED", id_cred->ptr, id_cred->len);
-		PRINT_ARRAY("sign_or_mac", sig_or_mac->ptr, sig_or_mac->len);
 		if (ead->len) {
 			PRINT_ARRAY("ead", ead->ptr, ead->len);
 		}
@@ -183,11 +180,9 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 			struct byte_array *plaintext)
 {
 	uint32_t ptxt_buf_len = plaintext->len;
-	BYTE_ARRAY_NEW(signature_or_mac_enc, SIG_OR_MAC_SIZE + 2,
-		       signature_or_mac->len + 2);
-
+	BYTE_ARRAY_NEW(signature_or_mac_enc, SIG_OR_MAC_SIZE + SIG_OR_MAC_SIZE_ENCODING_OVERHEAD,
+		       signature_or_mac->len + SIG_OR_MAC_SIZE_ENCODING_OVERHEAD);
 	TRY(encode_bstr(signature_or_mac, &signature_or_mac_enc));
-
 	if (ctxt != CIPHERTEXT4) {
 		BYTE_ARRAY_NEW(kid, KID_SIZE, KID_SIZE);
 		TRY(id_cred2kid(id_cred, &kid));
@@ -228,8 +223,6 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 
 		plaintext->len += ead->len;
 	}
-
-	PRINT_ARRAY("plaintext", plaintext->ptr, plaintext->len);
 
 	/*generate key and iv (no iv in for ciphertext 2)*/
 	uint32_t key_len;

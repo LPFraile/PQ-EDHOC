@@ -217,7 +217,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 	
-	if(suites_i.ptr[suites_i.len -1] == SUITE__22){
+	if((suites_i.ptr[suites_i.len -1] == SUITE__22)||(suites_i.ptr[suites_i.len -1] == SUITE__23)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Encapsulate the ephemeral key (in g_x) enc(ephpk)->(ss,c) ( enc(g_x)->(g_xy,g_y))
 		*   Set the g_y with the ciphertex message c   
@@ -261,7 +261,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 			       SIG_OR_MAC_SIZE_ENCODING_OVERHEAD +
 			       c->ead_2.len);
 	BYTE_ARRAY_NEW(ciphertext_2, CIPHERTEXT2_SIZE, plaintext_2.len);
-
+    
 	TRY(ciphertext_gen(CIPHERTEXT2, &rc->suite, &c->id_cred_r,
 			   &sign_or_mac_2, &c->ead_2, &PRK_2e, &th2,
 			   &ciphertext_2, &plaintext_2));
@@ -271,7 +271,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	rc->msg.len = sizeof(rc->msg_buf);
 	/*message 2 create*/
 	TRY(msg2_encode(&c->g_y, &c->c_r, &ciphertext_2, &rc->msg));
-
+ 
 	TRY(th34_calculate(rc->suite.edhoc_hash, &th2, &plaintext_2, &c->cred_r,
 			   &rc->th3));
 

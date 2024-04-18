@@ -78,14 +78,18 @@ FEATURES += -DID_CRED_R_SIZE=296
 FEATURES += -DID_CRED_I_SIZE=296
 
 # Size of CRED_R
-FEATURES += -DCRED_R_SIZE=293 
+#FEATURES += -DCRED_R_SIZE=293 
+FEATURES += -DCRED_R_SIZE=2000
 
 # Size of CRED_I
-FEATURES += -DCRED_I_SIZE=293 
+#FEATURES += -DCRED_I_SIZE=293 
+FEATURES += -DCRED_I_SIZE=2000
 
 # Number of supported suites by the initiator
 FEATURES += -DSUITES_I_SIZE=1 
 
+
+FEATURES += -DPK_SIZE=1000
 ################################################################################
 # Add PQ sizes for Gx Gy Gr and Gi in order to reserve enough memory buffers
 
@@ -101,6 +105,9 @@ FEATURES += -DG_I_SIZE=2000
 
 #Responder ephemeral private key for ECDH. Nothing for KEMs
 FEATURES += -DG_R_SIZE=2000
+
+#Define signature size
+FEATURES += -DSIGNATURE_SIZE=1000 
 
 
 ################################################################################

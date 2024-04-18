@@ -67,6 +67,16 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
+		case SUITE__23:
+		suite->suite_label = SUITE__23;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = FALCON_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
 	default:
 		return unsupported_cipher_suite;
 		break;

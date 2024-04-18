@@ -149,7 +149,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			     struct byte_array *PRK_3e2m)
 {
 	uint32_t g_y_size = 0;
-	if(c->suites_i.ptr[c->suites_i.len -1] == SUITE__22){
+	if((c->suites_i.ptr[c->suites_i.len -1] == SUITE__22)||(c->suites_i.ptr[c->suites_i.len -1] == SUITE__23)){
 		/*Set Gy size to the ciphertext size for KEMs*/
 		g_y_size = get_kem_cc_len(rc->suite.edhoc_ecdh);
 	}
@@ -163,16 +163,14 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	PRINT_ARRAY("message_2 (CBOR Sequence)", rc->msg.ptr, rc->msg.len);
 	BYTE_ARRAY_NEW(ciphertext, CIPHERTEXT2_SIZE, ciphertext_len);
 	BYTE_ARRAY_NEW(plaintext, PLAINTEXT2_SIZE, ciphertext.len);
-	PRINT_ARRAY("message_2 (CBOR Sequence)", rc->msg.ptr, rc->msg.len);
-
+	
 	/*parse the message*/
 	TRY(msg2_parse(&rc->msg, &g_y, c_r, &ciphertext));
 
-	printf("CIPHER SUIT selected: %d\n",c->suites_i.ptr[c->suites_i.len - 1]);
 	/*calculate the DH shared secret*/
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 
-	if(c->suites_i.ptr[c->suites_i.len -1] == SUITE__22){
+	if((c->suites_i.ptr[c->suites_i.len -1] == SUITE__22)||(c->suites_i.ptr[c->suites_i.len -1] == SUITE__23)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
@@ -212,11 +210,9 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	BYTE_ARRAY_NEW(cred_r, CRED_R_SIZE, CRED_R_SIZE);
 	BYTE_ARRAY_NEW(pk, PK_SIZE, PK_SIZE);
 	BYTE_ARRAY_NEW(g_r, G_R_SIZE, G_R_SIZE);
+
 	TRY(retrieve_cred(static_dh_r, cred_r_array, &id_cred_r, &cred_r, &pk,
 			  &g_r));
-	PRINT_ARRAY("CRED_R", cred_r.ptr, cred_r.len);
-	PRINT_ARRAY("pk", pk.ptr, pk.len);
-	PRINT_ARRAY("g_r", g_r.ptr, g_r.len);
 
 	/*derive prk_3e2m*/
 	TRY(prk_derive(static_dh_r, rc->suite, SALT_3e2m, &th2, &PRK_2e, &g_r,

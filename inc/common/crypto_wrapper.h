@@ -98,7 +98,7 @@ enum err hash(enum hash_alg alg, const struct byte_array *in,
  */
 enum err sign(enum sign_alg alg, const struct byte_array *sk,
 	      const struct byte_array *pk, const struct byte_array *msg,
-	      uint8_t *out);
+	      uint8_t *out, uint32_t* out_len);
 
 /**
  * @brief			Verifies an asymmetric signature.
@@ -131,76 +131,6 @@ enum err hkdf_sha_256(struct byte_array *master_secret,
 
 
 #ifdef LIBOQS
-/**
- * @brief   			Generates ephemeral PQ Signature keys 
- *			
- * @param alg			The Signature type to be used.  
- * @param[out] sk 		The newly generated private key.
- * @param[out] pk 		The newly generated public key.
- * @return 			Ok or error code.
- */
-enum err static_signature_key_gen(enum sign_alg alg,
-				   struct byte_array *sk,
-				   struct byte_array *pk);
-
-/**
- * @brief   			Executes EDHOC on the initiator side.
- * 
- * @param[in] c 		Initialization parameters.
- * @param[in] cred_r_array 	Trust anchors for authenticating the responder.
- * @param[out] err_msg 		A buffer for an error message.
- * @param[out] prk_out 		The derived shared secret.
- * @param tx			A callback function for sending messages.
- * @param rx			A callback function for receiving messages.
- * @param ead_process		A callback function for processing EAD.
- * @return 			Ok or error code.
- */
-
-/**
- * Encapsulation algorithm.
- *
- *
- * @param[in] alg The OQS_KEM object representing the KEM.  KYBER_LEVEL1, KYBER_LEVEL3 or KYBER_LEVEL5
- * @param[in] pk Public key
- * @param[out] ct The ciphertext (encapsulation) 
- * @param[out] shared_secret The shared secret represented as a byte string.
- * @return OQS_SUCCESS or OQS_ERROR
- */
-enum err  kem_encapsulate(enum ecdh_alg alg,
-			    const struct byte_array *pk,
-				  struct byte_array *ct,
-				  struct byte_array *shared_secret);
-
-/**
- * Decapsulation algorithm.
- *
- * * @param[in] alg The OQS_KEM object representing the KEM.  KYBER_LEVEL1, KYBER_LEVEL3 or KYBER_LEVEL5
- * @param[in] ct The ciphertext (encapsulation) represented as a byte string.
- * @param[in] sk The secret key represented as a byte string.
- * @param[out] shared_secret The shared secret represented as a byte string.
- * @return OQS_SUCCESS or OQS_ERROR
- */
-enum err kem_decapsulate(enum ecdh_alg alg,
-			      const struct byte_array *ct,
-				  const struct byte_array *sk,
-			      const struct byte_array *shared_secret);
-
-	/**
-	 * Signature generation algorithm.
-	 *
-	 * Caller is responsible for allocating sufficient memory for `signature`,
-	 * based on the `length_*` members in this object or the per-scheme
-	 * compile-time macros `OQS_SIG_*_length_*`.
-	 *
-	 * @param[in] sk The secret key represented as a byte string.
-	 * @param[in] msg The message to sign represented as a byte string.
-	 * @param[out] signature The signature on the message represented as a byte string.
-	 * @return OQS_SUCCESS or OQS_ERROR
-	 */
-enum err sign_signature(const enum sign_alg alg, 
-		   const struct byte_array *sk,
-	       struct byte_array *msg,
-	       struct byte_array *signature);
 
 
 #endif

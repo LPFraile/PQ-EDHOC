@@ -46,7 +46,6 @@ int cbor_decode_m2(
 	zcbor_new_state(states, sizeof(states) / sizeof(zcbor_state_t), payload, payload_len, 2);
 
 	bool ret = decode_m2(states, result);
-
 	if (ret && (payload_len_out != NULL)) {
 		*payload_len_out = MIN(payload_len,
 				(size_t)states[0].payload - (size_t)payload);

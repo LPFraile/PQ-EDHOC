@@ -50,7 +50,10 @@
 #define P_256_PUB_KEY_COMPRESSED_SIZE 33
 #define P_256_PUB_KEY_UNCOMPRESSED_SIZE 65
 #define P_256_PUB_KEY_X_CORD_SIZE 32
+
+#ifndef PK_SIZE
 #define PK_SIZE P_256_PUB_KEY_UNCOMPRESSED_SIZE
+#endif
 
 #ifndef G_Y_SIZE
 #define G_Y_SIZE P_256_PUB_KEY_X_CORD_SIZE
@@ -84,11 +87,13 @@
 #define MAC23_SIZE 32
 #define AAD_SIZE 45
 #define KID_SIZE 8
-#define SIG_OR_MAC_SIZE 64
+#define SIG_OR_MAC_SIZE SIGNATURE_SIZE
 #define ENCODING_OVERHEAD 10
 #define COSE_SIGN1_STR_LEN 10 /*the length of the string "COSE_Sign1"*/
-#define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD 2
-#define PLAINTEXT3_SIZE_ENCODING_OVERHEAD 3
+#define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD 3 /*we need 3 bbytes to encode PQ signatures*/
+#define PLAINTEXT3_SIZE_ENCODING_OVERHEAD 4
+//#define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD 2
+//#define PLAINTEXT3_SIZE_ENCODING_OVERHEAD 3
 
 #define PLAINTEXT2_SIZE                                                        \
 	(ID_CRED_R_SIZE + SIG_OR_MAC_SIZE +                                    \

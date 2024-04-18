@@ -106,11 +106,11 @@ static enum err get_local_cred(bool static_dh_auth,
 		    (0 == memcmp(cred_array->ptr[i].id_cred.ptr, ID_cred->ptr,
 				 ID_cred->len))) {
 			/*retrieve CRED_x*/
+
 			TRY(_memcpy_s(cred->ptr, cred->len,
 				      cred_array->ptr[i].cred.ptr,
 				      cred_array->ptr[i].cred.len));
 			cred->len = cred_array->ptr[i].cred.len;
-
 			/*retrieve PK*/
 			if (static_dh_auth) {
 				pk->len = 0;
@@ -132,10 +132,10 @@ static enum err get_local_cred(bool static_dh_auth,
 
 			} else {
 				g->len = 0;
+				pk->len = cred_array->ptr[i].pk.len;
 				TRY(_memcpy_s(pk->ptr, pk->len,
 					      cred_array->ptr[i].pk.ptr,
 					      cred_array->ptr[i].pk.len));
-				pk->len = cred_array->ptr[i].pk.len;
 			}
 			return ok;
 		}
@@ -159,6 +159,7 @@ enum err retrieve_cred(bool static_dh_auth, struct cred_array *cred_array,
 	if (map._id_cred_x_map_kid_present || map._id_cred_x_map_x5u_present ||
 	    map._id_cred_x_map_x5t_present || map._id_cred_x_map_c5u_present ||
 	    map._id_cred_x_map_c5t_present) {
+		PRINT_MSG("cred_id for pre-shared signature key\n");
 		TRY(get_local_cred(static_dh_auth, cred_array, id_cred, cred,
 				   pk, g));
 		return ok;

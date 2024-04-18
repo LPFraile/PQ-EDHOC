@@ -152,7 +152,6 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 			/*signature_or_mac is mac when the caller of this function authenticates with static DH keys*/
 			return ok;
 		} else {
-			PRINTF("SIG_STRUCT_SIZE: %d\n", SIG_STRUCT_SIZE);
 			BYTE_ARRAY_NEW(sign_struct, SIG_STRUCT_SIZE,
 				       th->len + 2 + COSE_SIGN1_STR_LEN +
 					       id_cred->len + cred->len +
@@ -166,9 +165,8 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 
 			signature_or_mac->len =
 				get_signature_len(suite->edhoc_sign);
-
 			TRY(sign(suite->edhoc_sign, sk, pk, &sign_struct,
-				 signature_or_mac->ptr));
+				 signature_or_mac->ptr, &signature_or_mac->len));
 			PRINT_ARRAY("signature_or_mac (is signature)",
 				    signature_or_mac->ptr,
 				    signature_or_mac->len);
@@ -199,11 +197,6 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 						 &signature_struct));
 
 			bool result;
-			PRINT_ARRAY("pk", pk->ptr, pk->len);
-			PRINT_ARRAY("signature_struct", signature_struct.ptr,
-				    signature_struct.len);
-			PRINT_ARRAY("signature_or_mac", signature_or_mac->ptr,
-				    signature_or_mac->len);
 
 			TRY(verify(suite->edhoc_sign, pk,
 				   (struct const_byte_array *)&signature_struct,

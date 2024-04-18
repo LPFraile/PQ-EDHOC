@@ -180,7 +180,7 @@ int main()
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 7;
+	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	TRY_EXPECT(start_coap_server(&sockfd), 0);
@@ -225,7 +225,7 @@ int main()
 	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;*/
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
-
+    PRINT_ARRAY("responder sk:", c_r.sk_r.ptr,c_r.sk_r.len);
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
 	BYTE_ARRAY_NEW(Y_random, 32, 32);
