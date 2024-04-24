@@ -7,6 +7,49 @@
 #ifndef BUFFER_SIZES_H
 #define BUFFER_SIZES_H
 
+
+#ifdef HQC_LEVEL_1
+	#define PQ_KEM HQC_LEVEL1
+	#define PQ_KEM_PK_SIZE 2249
+	#define PQ_KEM_SK_SIZE 2305
+	#define G_Y_SIZE 4500
+	#define G_X_SIZE 2500
+	#define G_I_SIZE 2500
+	#define ECDH_SECRET_SIZE 64
+#endif
+
+#ifdef KYBER_LEVEL_3 
+#ifndef HQC_LEVEL_1
+	#define PQ_KEM KYBER_LEVEL3
+	#define PQ_KEM_PK_SIZE 1184
+	#define PQ_KEM_SK_SIZE 2400
+	#define G_Y_SIZE 1200
+	#define G_X_SIZE 1200
+	#define G_I_SIZE 2500
+#endif
+#endif
+
+#ifdef KYBER_LEVEL_1
+#ifndef HQC_LEVEL_1
+#ifndef KYBER_LEVEL_1
+	#define PQ_KEM KYBER_LEVEL1
+	#define PQ_KEM_PK_SIZE 800
+	#define PQ_KEM_SK_SIZE 1632
+	#define G_Y_SIZE 1000
+	#define G_X_SIZE 1000
+	#define G_I_SIZE 1000
+	#define G_R_SIZE 2000
+#endif
+#endif
+#endif
+
+#ifdef FALCON_LEVEL_1
+	#define SIGNATURE_SIZE 1000  
+	#define CRED_I_SIZE 2000
+	#define CRED_R_SIZE 2000
+	#define PK_SIZE 1000
+#endif
+
 #ifndef EAD_SIZE
 #define EAD_SIZE 0
 #endif
@@ -76,9 +119,9 @@
 #define SIGNATURE_SIZE 64
 #endif
 
-  
+#ifndef ECDH_SECRET_SIZE
 #define ECDH_SECRET_SIZE 32 /*PQ shared secret has the same size than ecdh secret */
-
+#endif
 
 #define PRK_SIZE 32
 #define HASH_SIZE 32

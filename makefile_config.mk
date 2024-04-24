@@ -77,37 +77,21 @@ FEATURES += -DID_CRED_R_SIZE=296
 # Size of ID_CRED_I
 FEATURES += -DID_CRED_I_SIZE=296
 
-# Size of CRED_R
-#FEATURES += -DCRED_R_SIZE=293 
-FEATURES += -DCRED_R_SIZE=2000
-
-# Size of CRED_I
-#FEATURES += -DCRED_I_SIZE=293 
-FEATURES += -DCRED_I_SIZE=2000
 
 # Number of supported suites by the initiator
 FEATURES += -DSUITES_I_SIZE=1 
 
 
-FEATURES += -DPK_SIZE=1000
+
 ################################################################################
-# Add PQ sizes for Gx Gy Gr and Gi in order to reserve enough memory buffers
+# Select the PQ KEM algorithm to be used, just one for the initiator, all that you want to support the server
+FEATURES += -DHQC_LEVEL_1
 
-#Responder ephemeral public key for ECDH. Ciphertext for KEMs
-FEATURES += -DG_Y_SIZE=1000
+################################################################################
+# Select the PQ Signature algorithm to be used, just one for the initiator, all that you want to support the server
 
-#Initiator ephemeral public key for ECDH. PQ ephemeral public key for KEMs
-FEATURES += -DG_X_SIZE=1000
+FEATURES += -DFALCON_LEVEL_1
 
-
-#Initiator ephemeral private key for ECDH. PQ ephemeral private key for KEMs
-FEATURES += -DG_I_SIZE=2000
-
-#Responder ephemeral private key for ECDH. Nothing for KEMs
-FEATURES += -DG_R_SIZE=2000
-
-#Define signature size
-FEATURES += -DSIGNATURE_SIZE=1000 
 
 
 ################################################################################

@@ -75,6 +75,7 @@ static const char* OQS_ID2name(int id) {
         case KYBER_LEVEL1: return OQS_KEM_alg_kyber_512;
         case KYBER_LEVEL3: return OQS_KEM_alg_kyber_768;
         case KYBER_LEVEL5: return OQS_KEM_alg_kyber_1024;
+		case HQC_LEVEL1: return OQS_KEM_alg_hqc_128;
 		case FALCON_LEVEL1: return OQS_SIG_alg_falcon_512;
 		case FALCON_LEVEL5: return OQS_SIG_alg_falcon_1024;
 		case FALCON_PADDED_LEVEL1: return OQS_SIG_alg_falcon_padded_512;
@@ -122,6 +123,10 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
         case KYBER_LEVEL5:
 			pk->len = OQS_KEM_kyber_1024_length_public_key;
 			sk->len = OQS_KEM_kyber_1024_length_secret_key;
+            break;
+		case HQC_LEVEL1:
+			pk->len = OQS_KEM_hqc_128_length_public_key ;
+			sk->len = OQS_KEM_hqc_128_length_secret_key ;
             break;
         default:
             /* No other values supported. */
@@ -184,6 +189,10 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 			ct->len = OQS_KEM_kyber_1024_length_ciphertext;
             shared_secret->len = OQS_KEM_kyber_1024_length_shared_secret;
             break;
+		case HQC_LEVEL1:
+			ct->len = OQS_KEM_hqc_128_length_ciphertext ;
+			shared_secret->len = OQS_KEM_hqc_128_length_shared_secret;
+		break;
         default:
             /* No other values supported. */
             ret = -1; // Na to allaxw

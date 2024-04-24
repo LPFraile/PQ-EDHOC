@@ -29,6 +29,9 @@ extern "C" {
 //#define USE_IPV6
 /*comment this out to use DH keys from the test vectors*/
 #define PQ_PROPOSAL_1
+#define PQ_KEM HQC_LEVEL1
+
+
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
 
 /**
@@ -223,9 +226,12 @@ int main()
 #ifdef PQ_PROPOSAL_1
     /*Ephemeral Key generation for KEMs*/
 	
-	BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
+	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(PQ_KEM), get_kem_pk_len(PQ_KEM));
+	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(PQ_KEM), get_kem_sk_len(PQ_KEM));
+	TRY(ephemeral_kem_key_gen(PQ_KEM, &PQ_secret_random,&PQ_public_random));
+	/*BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
 	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
-	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));
+	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));*/
 	c_i.g_x.ptr = PQ_public_random.ptr;
 	c_i.g_x.len = PQ_public_random.len;
 	c_i.x.ptr = PQ_secret_random.ptr;
