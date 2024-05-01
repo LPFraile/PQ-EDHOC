@@ -205,13 +205,13 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 		return 32;
 		break;
 	case KYBER_LEVEL1:
-		return OQS_KEM_kyber_512_length_public_key;
+		return OQS_KEM_ml_kem_512_length_public_key;
 		break;
 	case KYBER_LEVEL3:
-		return OQS_KEM_kyber_768_length_public_key;
+		return OQS_KEM_ml_kem_768_length_public_key;
 		break;
 	case KYBER_LEVEL5:
-		return OQS_KEM_kyber_1024_length_public_key;
+		return OQS_KEM_ml_kem_1024_length_public_key;
 		break;
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
@@ -226,13 +226,13 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 {
 	switch (alg) {
 	case KYBER_LEVEL1:
-		return OQS_KEM_kyber_512_length_public_key;
+		return OQS_KEM_ml_kem_512_length_public_key;
 		break;
 	case KYBER_LEVEL3:
-		return OQS_KEM_kyber_768_length_public_key;
+		return OQS_KEM_ml_kem_768_length_public_key;
 		break;
 	case KYBER_LEVEL5:
-		return OQS_KEM_kyber_1024_length_public_key;
+		return OQS_KEM_ml_kem_1024_length_public_key;
 		break;
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
@@ -247,13 +247,13 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 {
 	switch (alg) {
 	case KYBER_LEVEL1:
-		return OQS_KEM_kyber_512_length_secret_key;
+		return OQS_KEM_ml_kem_512_length_secret_key;
 		break;
 	case KYBER_LEVEL3:
-		return OQS_KEM_kyber_768_length_secret_key;
+		return OQS_KEM_ml_kem_768_length_secret_key;
 		break;
 	case KYBER_LEVEL5:
-		return OQS_KEM_kyber_1024_length_secret_key;
+		return OQS_KEM_ml_kem_1024_length_secret_key;
 		break;
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_secret_key;
@@ -268,13 +268,13 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 {
 	switch (alg) {
 	case KYBER_LEVEL1:
-		return OQS_KEM_kyber_512_length_ciphertext;
+		return OQS_KEM_ml_kem_512_length_ciphertext;
 		break;
 	case KYBER_LEVEL3:
-		return OQS_KEM_kyber_768_length_ciphertext;
+		return OQS_KEM_ml_kem_768_length_ciphertext;
 		break;
 	case KYBER_LEVEL5:
-		return OQS_KEM_kyber_1024_length_ciphertext;
+		return OQS_KEM_ml_kem_1024_length_ciphertext;
 		break;
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_ciphertext;
