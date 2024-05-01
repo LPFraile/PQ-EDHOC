@@ -9,12 +9,11 @@ PQ EDHOC Initiator example running on Linux. Runs edhoc method 0 and every of th
 CXXFLAGS += -DMAXLINE=6000 
 CFLAGS += -DMAXLINE=6000
 ```
-- Select on the iniatore/main.cpp file the PQ proposal 1 and the PQ KEM to be used by define as follows
+- Select on the iniatore/main.cpp file the PQ proposal 1
 ```
 #define PQ_PROPOSAL_1
-#define PQ_KEM HQC_LEVEL1
 ```
-- Select on the iniator/main.cpp file the *TEST_VEC_NUM* to be used from the tested list
+- Select on the iniator/main.cpp file the *TEST_VEC_NUM* to be used from the tested list and in the test vector the corresponding cipher suit
  ```
  uint8_t TEST_VEC_NUM = 8;
  ```

@@ -29,8 +29,6 @@ extern "C" {
 //#define USE_IPV6
 /*comment this out to use DH keys from the test vectors*/
 #define PQ_PROPOSAL_1
-#define PQ_KEM HQC_LEVEL1
-
 
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
 
@@ -225,10 +223,14 @@ int main()
 
 #ifdef PQ_PROPOSAL_1
     /*Ephemeral Key generation for KEMs*/
-	
-	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(PQ_KEM), get_kem_pk_len(PQ_KEM));
-	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(PQ_KEM), get_kem_sk_len(PQ_KEM));
-	TRY(ephemeral_kem_key_gen(PQ_KEM, &PQ_secret_random,&PQ_public_random));
+
+	struct suite suit_in;
+	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
+		      &suit_in);
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
+	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,&PQ_public_random));
 	/*BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
 	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
 	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));*/
