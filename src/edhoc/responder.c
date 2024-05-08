@@ -217,7 +217,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 	
-	if((suites_i.ptr[suites_i.len -1] >= SUITE_7)&&(suites_i.ptr[suites_i.len -1] <= SUITE_11)){
+	if((suites_i.ptr[suites_i.len -1] >= SUITE_7)&&(suites_i.ptr[suites_i.len -1] <= SUITE_12)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Encapsulate the ephemeral key (in g_x) enc(ephpk)->(ss,c) ( enc(g_x)->(g_xy,g_y))
 		*   Set the g_y with the ciphertex message c   

@@ -155,8 +155,8 @@ CFLAGS += -DLINUX_SOCKETS
 CXXFLAGS += -DLINUX_SOCKETS
 
 # need to increase the socket maxline as increse the PQ Key sizes and signature sizes
-CXXFLAGS += -DMAXLINE=6000
-CFLAGS += -DMAXLINE=6000
+CXXFLAGS += -DMAXLINE=10000
+CFLAGS += -DMAXLINE=10000
 
 # use AddressSanitizer to find memory bugs
 # comment this out for better speed

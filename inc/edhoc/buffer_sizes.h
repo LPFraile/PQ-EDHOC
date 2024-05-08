@@ -6,22 +6,22 @@
 
 #ifndef BUFFER_SIZES_H
 #define BUFFER_SIZES_H
-
+#include <oqs/kem.h>
 
 #ifdef HQC_LEVEL_1
 	#define PQ_KEM HQC_LEVEL1
-	#define G_Y_SIZE 4500
-	#define G_X_SIZE 2500
-	#define G_I_SIZE 2500
+	#define G_Y_SIZE OQS_KEM_hqc_128_length_ciphertext
+	#define G_X_SIZE OQS_KEM_hqc_128_length_public_key
+	#define G_I_SIZE OQS_KEM_hqc_128_length_secret_key
 	#define ECDH_SECRET_SIZE 64
 #endif
 
 #ifdef KYBER_LEVEL_3 
 #ifndef HQC_LEVEL_1
 	#define PQ_KEM KYBER_LEVEL3
-	#define G_Y_SIZE 1200
-	#define G_X_SIZE 1200
-	#define G_I_SIZE 2500
+	#define G_Y_SIZE OQS_KEM_kyber_768_length_ciphertext
+	#define G_X_SIZE OQS_KEM_kyber_768_length_public_key
+	#define G_I_SIZE OQS_KEM_kyber_768_length_secret_key
 #endif
 #endif
 
@@ -29,20 +29,35 @@
 #ifndef HQC_LEVEL_1
 #ifndef KYBER_LEVEL_3
 	#define PQ_KEM KYBER_LEVEL1
-	#define G_Y_SIZE 1000
-	#define G_X_SIZE 800
-	#define G_I_SIZE 1000
+	#define G_Y_SIZE OQS_KEM_kyber_512_length_ciphertext
+	#define G_X_SIZE OQS_KEM_kyber_512_length_public_key
+	#define G_I_SIZE OQS_KEM_kyber_512_length_secret_key
 
 #endif
 #endif
 #endif
 
+#ifdef FALCON_LEVEL_5
+	#define SIGNATURE_SIZE OQS_SIG_falcon_1024_length_signature  
+	#define PK_SIZE OQS_SIG_falcon_1024_length_public_key
+#endif
+
+#ifdef DILITHIUM_LEVEL_2
+	#define SIGNATURE_SIZE OQS_SIG_dilithium_2_length_signature  
+	#define PK_SIZE OQS_SIG_dilithium_2_length_public_key
+#endif
+
+#ifndef FALCON_LEVEL_5
 #ifdef FALCON_LEVEL_1
-	#define SIGNATURE_SIZE 1000  
-	#define CRED_I_SIZE 2000
-	#define CRED_R_SIZE 2000
-	#define PK_SIZE 1000
+	#define SIGNATURE_SIZE OQS_SIG_falcon_512_length_signature  
+	//#define CRED_I_SIZE 2000
+	//#define CRED_R_SIZE 2000
+	#define PK_SIZE OQS_SIG_falcon_512_length_public_key
 #endif
+#endif
+
+#define CRED_I_SIZE PK_SIZE*3
+#define CRED_R_SIZE PK_SIZE*3
 
 #ifndef EAD_SIZE
 #define EAD_SIZE 0

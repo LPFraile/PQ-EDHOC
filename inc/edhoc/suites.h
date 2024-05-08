@@ -28,6 +28,7 @@ enum suite_label {
 	SUITE_9 = 9,
 	SUITE_10 = 10,
 	SUITE_11 = 11,
+	SUITE_12 = 12,
 };
 
 enum aead_alg {

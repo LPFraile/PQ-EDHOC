@@ -117,6 +117,16 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
+		case SUITE_12:
+		suite->suite_label = SUITE_12;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = DILITHIUM_LEVEL2;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
 	default:
 		return unsupported_cipher_suite;
 		break;
@@ -187,6 +197,9 @@ uint32_t get_signature_len(enum sign_alg alg)
 		break;
 	case FALCON_PADDED_LEVEL5:
 		return OQS_SIG_falcon_padded_1024_length_signature;	
+		break;
+	case DILITHIUM_LEVEL2:
+		return OQS_SIG_dilithium_2_length_signature;	
 		break;
 	default: 
 		return 0;

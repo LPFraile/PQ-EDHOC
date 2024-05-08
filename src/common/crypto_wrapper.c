@@ -80,6 +80,7 @@ static const char* OQS_ID2name(int id) {
 		case FALCON_LEVEL5: return OQS_SIG_alg_falcon_1024;
 		case FALCON_PADDED_LEVEL1: return OQS_SIG_alg_falcon_padded_512;
 		case FALCON_PADDED_LEVEL5: return OQS_SIG_alg_falcon_padded_1024;
+		case DILITHIUM_LEVEL2: return OQS_SIG_alg_dilithium_2;
         default:           break;
     }
     return NULL;
@@ -280,6 +281,10 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
         case FALCON_PADDED_LEVEL5:
 			 pk->len = OQS_SIG_falcon_padded_1024_length_public_key;
 			sk->len = OQS_SIG_falcon_padded_1024_length_secret_key;
+            break;
+		case DILITHIUM_LEVEL2:
+			pk->len = OQS_SIG_dilithium_2_length_public_key;
+			sk->len = OQS_SIG_dilithium_2_length_secret_key;
             break;
         default:
             /* No other values supported. */
@@ -694,7 +699,8 @@ enum err WEAK sign(enum sign_alg alg, const struct byte_array *sk,
 		return ok;
 #endif
 	}
-	else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
+	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
+	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
 	#if defined(LIBOQS)	
 		int ret = sign_signature(alg, sk, msg,out,out_len);
 		if (ret == 0){
@@ -778,7 +784,8 @@ enum err WEAK verify(enum sign_alg alg, const struct byte_array *pk,
 		return ok;
 #endif
 	}
-	else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
+	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
+	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
 	#if defined(LIBOQS)	
 		int ret = sign_verify(alg, pk, (const struct byte_array *) msg, (const struct byte_array *) sgn);
 		PRINTF("Signature verify return %d \n",ret);

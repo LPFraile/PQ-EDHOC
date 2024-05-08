@@ -149,7 +149,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			     struct byte_array *PRK_3e2m)
 {
 	uint32_t g_y_size = 0;
-	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_11)){
+	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_12)){
 		/*Set Gy size to the ciphertext size for KEMs*/
 		g_y_size = get_kem_cc_len(rc->suite.edhoc_ecdh);
 	}
@@ -170,7 +170,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	/*calculate the DH shared secret*/
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 
-	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_11)){
+	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_12)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
