@@ -225,7 +225,10 @@ int main()
 	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
-    PRINT_ARRAY("responder sk:", c_r.sk_r.ptr,c_r.sk_r.len);
+    PRINTF("responder test vector number %d:", vec_num_i);
+	PRINT_ARRAY("responder cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
+	PRINT_ARRAY("responder sk:", c_r.sk_r.ptr,c_r.sk_r.len);
+	
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
 	BYTE_ARRAY_NEW(Y_random, 32, 32);

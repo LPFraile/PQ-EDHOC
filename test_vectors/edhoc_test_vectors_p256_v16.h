@@ -12392,6 +12392,304 @@ struct test_vector test_vectors[] = {
         .c_r_raw_len = 0,
         .c_r_raw_int =  &test_vector_7_c_r_raw,
 	},
+
+/*--------------- test_vector_8 ------------*/
+ 
+	{
+        .method = test_vector_8_method,
+        .method_len = sizeof(test_vector_8_method),
+        
+        .SUITES_I = test_vector_8_SUITES_I,
+        .SUITES_I_len = sizeof(test_vector_8_SUITES_I),
+        
+        .SUITES_R = test_vector_8_SUITES_R,
+        .SUITES_R_len = sizeof(test_vector_8_SUITES_R),
+        
+        .x_raw = test_vector_8_x_raw,
+        .x_raw_len = sizeof(test_vector_8_x_raw),
+        
+        .g_x_raw = test_vector_8_g_x_raw,
+        .g_x_raw_len = sizeof(test_vector_8_g_x_raw),
+        
+        .g_x = test_vector_8_g_x,
+        .g_x_len = sizeof(test_vector_8_g_x),
+        
+        .c_i = test_vector_8_c_i,
+        .c_i_len = sizeof(test_vector_8_c_i),
+        
+        .ead_1 = test_vector_8_ead_1,
+        .ead_1_len = sizeof(test_vector_8_ead_1),
+        
+        .message_1 = test_vector_8_message_1,
+        .message_1_len = sizeof(test_vector_8_message_1),
+        
+        .y_raw = test_vector_8_y_raw,
+        .y_raw_len = sizeof(test_vector_8_y_raw),
+        
+        .g_y_raw = test_vector_8_g_y_raw,
+        .g_y_raw_len = sizeof(test_vector_8_g_y_raw),
+        
+        .g_y = test_vector_8_g_y,
+        .g_y_len = sizeof(test_vector_8_g_y),
+        
+        .g_xy_raw = test_vector_8_g_xy_raw,
+        .g_xy_raw_len = sizeof(test_vector_8_g_xy_raw),
+        
+        .salt_raw = test_vector_8_salt_raw,
+        .salt_raw_len = sizeof(test_vector_8_salt_raw),
+        
+        .prk_2e_raw = test_vector_8_prk_2e_raw,
+        .prk_2e_raw_len = sizeof(test_vector_8_prk_2e_raw),
+        
+        .sk_r_raw = test_vector_8_sk_r_raw,
+        .sk_r_raw_len = sizeof(test_vector_8_sk_r_raw),
+        
+        .pk_r_raw = test_vector_8_pk_r_raw,
+        .pk_r_raw_len = sizeof(test_vector_8_pk_r_raw),
+        
+        .prk_3e2m_raw = test_vector_8_prk_3e2m_raw,
+        .prk_3e2m_raw_len = sizeof(test_vector_8_prk_3e2m_raw),
+        
+        .c_r = test_vector_8_c_r,
+        .c_r_len = sizeof(test_vector_8_c_r),
+        
+        .h_message_1_raw = test_vector_8_h_message_1_raw,
+        .h_message_1_raw_len = sizeof(test_vector_8_h_message_1_raw),
+        
+        .h_message_1 = test_vector_8_h_message_1,
+        .h_message_1_len = sizeof(test_vector_8_h_message_1),
+        
+        .input_th_2 = test_vector_8_input_th_2,
+        .input_th_2_len = sizeof(test_vector_8_input_th_2),
+        
+        .th_2_raw = test_vector_8_th_2_raw,
+        .th_2_raw_len = sizeof(test_vector_8_th_2_raw),
+        
+        .th_2 = test_vector_8_th_2,
+        .th_2_len = sizeof(test_vector_8_th_2),
+        
+        .id_cred_r = test_vector_8_id_cred_r,
+        .id_cred_r_len = sizeof(test_vector_8_id_cred_r),
+        
+        .cred_r = test_vector_8_cred_r,
+        .cred_r_len = sizeof(test_vector_8_cred_r),
+        
+        .ead_2 = test_vector_8_ead_2,
+        .ead_2_len = sizeof(test_vector_8_ead_2),
+        
+        .info_mac_2 = test_vector_8_info_mac_2,
+        .info_mac_2_len = sizeof(test_vector_8_info_mac_2),
+        
+        .mac_2_raw = test_vector_8_mac_2_raw,
+        .mac_2_raw_len = sizeof(test_vector_8_mac_2_raw),
+        
+        .mac_2 = test_vector_8_mac_2,
+        .mac_2_len = sizeof(test_vector_8_mac_2),
+        
+        .m_2 = test_vector_8_m_2,
+        .m_2_len = sizeof(test_vector_8_m_2),
+        
+        .sig_or_mac_2_raw = test_vector_8_sig_or_mac_2_raw,
+        .sig_or_mac_2_raw_len = sizeof(test_vector_8_sig_or_mac_2_raw),
+        
+        .sig_or_mac_2 = test_vector_8_sig_or_mac_2,
+        .sig_or_mac_2_len = sizeof(test_vector_8_sig_or_mac_2),
+        
+        .plaintext_2 = test_vector_8_plaintext_2,
+        .plaintext_2_len = sizeof(test_vector_8_plaintext_2),
+        
+        .info_keystream_2 = test_vector_8_info_keystream_2,
+        .info_keystream_2_len = sizeof(test_vector_8_info_keystream_2),
+        
+        .keystream_2_raw = test_vector_8_keystream_2_raw,
+        .keystream_2_raw_len = sizeof(test_vector_8_keystream_2_raw),
+        
+        .ciphertext_2_raw = test_vector_8_ciphertext_2_raw,
+        .ciphertext_2_raw_len = sizeof(test_vector_8_ciphertext_2_raw),
+        
+        .ciphertext_2 = test_vector_8_ciphertext_2,
+        .ciphertext_2_len = sizeof(test_vector_8_ciphertext_2),
+        
+        .message_2 = test_vector_8_message_2,
+        .message_2_len = sizeof(test_vector_8_message_2),
+        
+        .sk_i_raw = test_vector_8_sk_i_raw,
+        .sk_i_raw_len = sizeof(test_vector_8_sk_i_raw),
+        
+        .pk_i_raw = test_vector_8_pk_i_raw,
+        .pk_i_raw_len = sizeof(test_vector_8_pk_i_raw),
+        
+        .prk_4x3m_raw = NULL,
+        .prk_4x3m_raw_len = 0,
+        
+        .input_TH_3 = test_vector_8_input_TH_3,
+        .input_TH_3_len = sizeof(test_vector_8_input_TH_3),
+        
+        .th_3_raw = test_vector_8_th_3_raw,
+        .th_3_raw_len = sizeof(test_vector_8_th_3_raw),
+        
+        .th_3 = test_vector_8_th_3,
+        .th_3_len = sizeof(test_vector_8_th_3),
+        
+        .id_cred_i = test_vector_8_id_cred_i,
+        .id_cred_i_len = sizeof(test_vector_8_id_cred_i),
+        
+        .cred_i = test_vector_8_cred_i,
+        .cred_i_len = sizeof(test_vector_8_cred_i),
+        
+        .ead_3 = test_vector_8_ead_3,
+        .ead_3_len = sizeof(test_vector_8_ead_3),
+        
+        .info_mac_3 = test_vector_8_info_mac_3,
+        .info_mac_3_len = sizeof(test_vector_8_info_mac_3),
+        
+        .mac_3_raw = test_vector_8_mac_3_raw,
+        .mac_3_raw_len = sizeof(test_vector_8_mac_3_raw),
+        
+        .mac_3 = test_vector_8_mac_3,
+        .mac_3_len = sizeof(test_vector_8_mac_3),
+        
+        .m_3 = test_vector_8_m_3,
+        .m_3_len = sizeof(test_vector_8_m_3),
+        
+        .sig_or_mac_3_raw = test_vector_8_sig_or_mac_3_raw,
+        .sig_or_mac_3_raw_len = sizeof(test_vector_8_sig_or_mac_3_raw),
+        
+        .sig_or_mac_3 = test_vector_8_sig_or_mac_3,
+        .sig_or_mac_3_len = sizeof(test_vector_8_sig_or_mac_3),
+        
+        .p_3 = test_vector_8_p_3,
+        .p_3_len = sizeof(test_vector_8_p_3),
+        
+        .a_3 = test_vector_8_a_3,
+        .a_3_len = sizeof(test_vector_8_a_3),
+        
+        .info_k_3 = test_vector_8_info_k_3,
+        .info_k_3_len = sizeof(test_vector_8_info_k_3),
+        
+        .k_3_raw = test_vector_8_k_3_raw,
+        .k_3_raw_len = sizeof(test_vector_8_k_3_raw),
+        
+        .info_iv_3 = test_vector_8_info_iv_3,
+        .info_iv_3_len = sizeof(test_vector_8_info_iv_3),
+        
+        .iv_3_raw = test_vector_8_iv_3_raw,
+        .iv_3_raw_len = sizeof(test_vector_8_iv_3_raw),
+        
+        .ciphertext_3_raw = test_vector_8_ciphertext_3_raw,
+        .ciphertext_3_raw_len = sizeof(test_vector_8_ciphertext_3_raw),
+        
+        .ciphertext_3 = test_vector_8_ciphertext_3,
+        .ciphertext_3_len = sizeof(test_vector_8_ciphertext_3),
+        
+        .message_3 = test_vector_8_message_3,
+        .message_3_len = sizeof(test_vector_8_message_3),
+        
+        .input_th_4 = test_vector_8_input_th_4,
+        .input_th_4_len = sizeof(test_vector_8_input_th_4),
+        
+        .th_4_raw = test_vector_8_th_4_raw,
+        .th_4_raw_len = sizeof(test_vector_8_th_4_raw),
+        
+        .th_4 = test_vector_8_th_4,
+        .th_4_len = sizeof(test_vector_8_th_4),
+        
+        .ead_4 = test_vector_8_ead_4,
+        .ead_4_len = sizeof(test_vector_8_ead_4),
+        
+        .p_4 = test_vector_8_p_4,
+        .p_4_len = sizeof(test_vector_8_p_4),
+        
+        .a_4 = test_vector_8_a_4,
+        .a_4_len = sizeof(test_vector_8_a_4),
+        
+        .info_k_4 = test_vector_8_info_k_4,
+        .info_k_4_len = sizeof(test_vector_8_info_k_4),
+        
+        .k_4_raw = test_vector_8_k_4_raw,
+        .k_4_raw_len = sizeof(test_vector_8_k_4_raw),
+        
+        .info_iv_4 = test_vector_8_info_iv_4,
+        .info_iv_4_len = sizeof(test_vector_8_info_iv_4),
+        
+        .iv_4_raw = test_vector_8_iv_4_raw,
+        .iv_4_raw_len = sizeof(test_vector_8_iv_4_raw),
+        
+        .ciphertext_4_raw = test_vector_8_ciphertext_4_raw,
+        .ciphertext_4_raw_len = sizeof(test_vector_8_ciphertext_4_raw),
+        
+        .ciphertext_4 = test_vector_8_ciphertext_4,
+        .ciphertext_4_len = sizeof(test_vector_8_ciphertext_4),
+        
+        .message_4 = test_vector_8_message_4,
+        .message_4_len = sizeof(test_vector_8_message_4),
+        
+        .oscore_aead_alg = &test_vector_8_oscore_aead_alg,
+        
+        .oscore_hash_alg = &test_vector_8_oscore_hash_alg,
+        
+        .client_sender_id_raw = test_vector_8_client_sender_id_raw,
+        .client_sender_id_raw_len = sizeof(test_vector_8_client_sender_id_raw),
+        
+        .server_sender_id_raw = test_vector_8_server_sender_id_raw,
+        .server_sender_id_raw_len = sizeof(test_vector_8_server_sender_id_raw),
+        
+        .info_oscore_secret = test_vector_8_info_oscore_secret,
+        .info_oscore_secret_len = sizeof(test_vector_8_info_oscore_secret),
+        
+        .oscore_secret_raw = test_vector_8_oscore_secret_raw,
+        .oscore_secret_raw_len = sizeof(test_vector_8_oscore_secret_raw),
+        
+        .info_oscore_salt = test_vector_8_info_oscore_salt,
+        .info_oscore_salt_len = sizeof(test_vector_8_info_oscore_salt),
+        
+        .oscore_salt_raw = test_vector_8_oscore_salt_raw,
+        .oscore_salt_raw_len = sizeof(test_vector_8_oscore_salt_raw),
+        
+        .key_update_nonce_raw = NULL,
+        .key_update_nonce_raw_len = 0,
+        
+        .prk_4x3m_key_update_raw = NULL,
+        .prk_4x3m_key_update_raw_len = 0,
+        
+        .oscore_secret_key_update_raw = test_vector_8_oscore_secret_key_update_raw,
+        .oscore_secret_key_update_raw_len = sizeof(test_vector_8_oscore_secret_key_update_raw),
+        
+        .oscore_salt_key_update_raw = test_vector_8_oscore_salt_key_update_raw,
+        .oscore_salt_key_update_raw_len = sizeof(test_vector_8_oscore_salt_key_update_raw),
+        
+        .ca_r = test_vector_8_ca_r,
+        .ca_r_len = sizeof(test_vector_8_ca_r),
+        
+        .ca_i = test_vector_8_ca_i,
+        .ca_i_len = sizeof(test_vector_8_ca_i),
+        
+        .ca_r_pk = test_vector_8_ca_r_pk,
+        .ca_r_pk_len = sizeof(test_vector_8_ca_r_pk),
+        
+        .ca_i_pk = test_vector_8_ca_i_pk,
+        .ca_i_pk_len = sizeof(test_vector_8_ca_i_pk),
+        
+        .i_raw = NULL,
+        .i_raw_len = 0,
+        
+        .g_i_raw = NULL,
+        .g_i_raw_len = 0,
+        
+        .r_raw = NULL,
+        .r_raw_len = 0,
+        
+        .g_r_raw = NULL,
+        .g_r_raw_len = 0,
+        
+        .c_i_raw = NULL,
+        .c_i_raw_len = 0,
+        .c_i_raw_int =  &test_vector_8_c_i_raw,
+        
+        .c_r_raw = NULL,
+        .c_r_raw_len = 0,
+        .c_r_raw_int =  &test_vector_8_c_r_raw,
+	},
 /*--------------- test_vector_9 ------------*/
  
 	{
@@ -12691,303 +12989,8 @@ struct test_vector test_vectors[] = {
 	},
 
 
-/*--------------- test_vector_8 ------------*/
- 
-	{
-        .method = test_vector_8_method,
-        .method_len = sizeof(test_vector_8_method),
-        
-        .SUITES_I = test_vector_8_SUITES_I,
-        .SUITES_I_len = sizeof(test_vector_8_SUITES_I),
-        
-        .SUITES_R = test_vector_8_SUITES_R,
-        .SUITES_R_len = sizeof(test_vector_8_SUITES_R),
-        
-        .x_raw = test_vector_8_x_raw,
-        .x_raw_len = sizeof(test_vector_8_x_raw),
-        
-        .g_x_raw = test_vector_8_g_x_raw,
-        .g_x_raw_len = sizeof(test_vector_8_g_x_raw),
-        
-        .g_x = test_vector_8_g_x,
-        .g_x_len = sizeof(test_vector_8_g_x),
-        
-        .c_i = test_vector_8_c_i,
-        .c_i_len = sizeof(test_vector_8_c_i),
-        
-        .ead_1 = test_vector_8_ead_1,
-        .ead_1_len = sizeof(test_vector_8_ead_1),
-        
-        .message_1 = test_vector_8_message_1,
-        .message_1_len = sizeof(test_vector_8_message_1),
-        
-        .y_raw = test_vector_8_y_raw,
-        .y_raw_len = sizeof(test_vector_8_y_raw),
-        
-        .g_y_raw = test_vector_8_g_y_raw,
-        .g_y_raw_len = sizeof(test_vector_8_g_y_raw),
-        
-        .g_y = test_vector_8_g_y,
-        .g_y_len = sizeof(test_vector_8_g_y),
-        
-        .g_xy_raw = test_vector_8_g_xy_raw,
-        .g_xy_raw_len = sizeof(test_vector_8_g_xy_raw),
-        
-        .salt_raw = test_vector_8_salt_raw,
-        .salt_raw_len = sizeof(test_vector_8_salt_raw),
-        
-        .prk_2e_raw = test_vector_8_prk_2e_raw,
-        .prk_2e_raw_len = sizeof(test_vector_8_prk_2e_raw),
-        
-        .sk_r_raw = test_vector_8_sk_r_raw,
-        .sk_r_raw_len = sizeof(test_vector_8_sk_r_raw),
-        
-        .pk_r_raw = test_vector_8_pk_r_raw,
-        .pk_r_raw_len = sizeof(test_vector_8_pk_r_raw),
-        
-        .prk_3e2m_raw = test_vector_8_prk_3e2m_raw,
-        .prk_3e2m_raw_len = sizeof(test_vector_8_prk_3e2m_raw),
-        
-        .c_r = test_vector_8_c_r,
-        .c_r_len = sizeof(test_vector_8_c_r),
-        
-        .h_message_1_raw = test_vector_8_h_message_1_raw,
-        .h_message_1_raw_len = sizeof(test_vector_8_h_message_1_raw),
-        
-        .h_message_1 = test_vector_8_h_message_1,
-        .h_message_1_len = sizeof(test_vector_8_h_message_1),
-        
-        .input_th_2 = test_vector_8_input_th_2,
-        .input_th_2_len = sizeof(test_vector_8_input_th_2),
-        
-        .th_2_raw = test_vector_8_th_2_raw,
-        .th_2_raw_len = sizeof(test_vector_8_th_2_raw),
-        
-        .th_2 = test_vector_8_th_2,
-        .th_2_len = sizeof(test_vector_8_th_2),
-        
-        .id_cred_r = test_vector_8_id_cred_r,
-        .id_cred_r_len = sizeof(test_vector_8_id_cred_r),
-        
-        .cred_r = test_vector_8_cred_r,
-        .cred_r_len = sizeof(test_vector_8_cred_r),
-        
-        .ead_2 = test_vector_8_ead_2,
-        .ead_2_len = sizeof(test_vector_8_ead_2),
-        
-        .info_mac_2 = test_vector_8_info_mac_2,
-        .info_mac_2_len = sizeof(test_vector_8_info_mac_2),
-        
-        .mac_2_raw = test_vector_8_mac_2_raw,
-        .mac_2_raw_len = sizeof(test_vector_8_mac_2_raw),
-        
-        .mac_2 = test_vector_8_mac_2,
-        .mac_2_len = sizeof(test_vector_8_mac_2),
-        
-        .m_2 = test_vector_8_m_2,
-        .m_2_len = sizeof(test_vector_8_m_2),
-        
-        .sig_or_mac_2_raw = test_vector_8_sig_or_mac_2_raw,
-        .sig_or_mac_2_raw_len = sizeof(test_vector_8_sig_or_mac_2_raw),
-        
-        .sig_or_mac_2 = test_vector_8_sig_or_mac_2,
-        .sig_or_mac_2_len = sizeof(test_vector_8_sig_or_mac_2),
-        
-        .plaintext_2 = test_vector_8_plaintext_2,
-        .plaintext_2_len = sizeof(test_vector_8_plaintext_2),
-        
-        .info_keystream_2 = test_vector_8_info_keystream_2,
-        .info_keystream_2_len = sizeof(test_vector_8_info_keystream_2),
-        
-        .keystream_2_raw = test_vector_8_keystream_2_raw,
-        .keystream_2_raw_len = sizeof(test_vector_8_keystream_2_raw),
-        
-        .ciphertext_2_raw = test_vector_8_ciphertext_2_raw,
-        .ciphertext_2_raw_len = sizeof(test_vector_8_ciphertext_2_raw),
-        
-        .ciphertext_2 = test_vector_8_ciphertext_2,
-        .ciphertext_2_len = sizeof(test_vector_8_ciphertext_2),
-        
-        .message_2 = test_vector_8_message_2,
-        .message_2_len = sizeof(test_vector_8_message_2),
-        
-        .sk_i_raw = test_vector_8_sk_i_raw,
-        .sk_i_raw_len = sizeof(test_vector_8_sk_i_raw),
-        
-        .pk_i_raw = test_vector_8_pk_i_raw,
-        .pk_i_raw_len = sizeof(test_vector_8_pk_i_raw),
-        
-        .prk_4x3m_raw = NULL,
-        .prk_4x3m_raw_len = 0,
-        
-        .input_TH_3 = test_vector_8_input_TH_3,
-        .input_TH_3_len = sizeof(test_vector_8_input_TH_3),
-        
-        .th_3_raw = test_vector_8_th_3_raw,
-        .th_3_raw_len = sizeof(test_vector_8_th_3_raw),
-        
-        .th_3 = test_vector_8_th_3,
-        .th_3_len = sizeof(test_vector_8_th_3),
-        
-        .id_cred_i = test_vector_8_id_cred_i,
-        .id_cred_i_len = sizeof(test_vector_8_id_cred_i),
-        
-        .cred_i = test_vector_8_cred_i,
-        .cred_i_len = sizeof(test_vector_8_cred_i),
-        
-        .ead_3 = test_vector_8_ead_3,
-        .ead_3_len = sizeof(test_vector_8_ead_3),
-        
-        .info_mac_3 = test_vector_8_info_mac_3,
-        .info_mac_3_len = sizeof(test_vector_8_info_mac_3),
-        
-        .mac_3_raw = test_vector_8_mac_3_raw,
-        .mac_3_raw_len = sizeof(test_vector_8_mac_3_raw),
-        
-        .mac_3 = test_vector_8_mac_3,
-        .mac_3_len = sizeof(test_vector_8_mac_3),
-        
-        .m_3 = test_vector_8_m_3,
-        .m_3_len = sizeof(test_vector_8_m_3),
-        
-        .sig_or_mac_3_raw = test_vector_8_sig_or_mac_3_raw,
-        .sig_or_mac_3_raw_len = sizeof(test_vector_8_sig_or_mac_3_raw),
-        
-        .sig_or_mac_3 = test_vector_8_sig_or_mac_3,
-        .sig_or_mac_3_len = sizeof(test_vector_8_sig_or_mac_3),
-        
-        .p_3 = test_vector_8_p_3,
-        .p_3_len = sizeof(test_vector_8_p_3),
-        
-        .a_3 = test_vector_8_a_3,
-        .a_3_len = sizeof(test_vector_8_a_3),
-        
-        .info_k_3 = test_vector_8_info_k_3,
-        .info_k_3_len = sizeof(test_vector_8_info_k_3),
-        
-        .k_3_raw = test_vector_8_k_3_raw,
-        .k_3_raw_len = sizeof(test_vector_8_k_3_raw),
-        
-        .info_iv_3 = test_vector_8_info_iv_3,
-        .info_iv_3_len = sizeof(test_vector_8_info_iv_3),
-        
-        .iv_3_raw = test_vector_8_iv_3_raw,
-        .iv_3_raw_len = sizeof(test_vector_8_iv_3_raw),
-        
-        .ciphertext_3_raw = test_vector_8_ciphertext_3_raw,
-        .ciphertext_3_raw_len = sizeof(test_vector_8_ciphertext_3_raw),
-        
-        .ciphertext_3 = test_vector_8_ciphertext_3,
-        .ciphertext_3_len = sizeof(test_vector_8_ciphertext_3),
-        
-        .message_3 = test_vector_8_message_3,
-        .message_3_len = sizeof(test_vector_8_message_3),
-        
-        .input_th_4 = test_vector_8_input_th_4,
-        .input_th_4_len = sizeof(test_vector_8_input_th_4),
-        
-        .th_4_raw = test_vector_8_th_4_raw,
-        .th_4_raw_len = sizeof(test_vector_8_th_4_raw),
-        
-        .th_4 = test_vector_8_th_4,
-        .th_4_len = sizeof(test_vector_8_th_4),
-        
-        .ead_4 = test_vector_8_ead_4,
-        .ead_4_len = sizeof(test_vector_8_ead_4),
-        
-        .p_4 = test_vector_8_p_4,
-        .p_4_len = sizeof(test_vector_8_p_4),
-        
-        .a_4 = test_vector_8_a_4,
-        .a_4_len = sizeof(test_vector_8_a_4),
-        
-        .info_k_4 = test_vector_8_info_k_4,
-        .info_k_4_len = sizeof(test_vector_8_info_k_4),
-        
-        .k_4_raw = test_vector_8_k_4_raw,
-        .k_4_raw_len = sizeof(test_vector_8_k_4_raw),
-        
-        .info_iv_4 = test_vector_8_info_iv_4,
-        .info_iv_4_len = sizeof(test_vector_8_info_iv_4),
-        
-        .iv_4_raw = test_vector_8_iv_4_raw,
-        .iv_4_raw_len = sizeof(test_vector_8_iv_4_raw),
-        
-        .ciphertext_4_raw = test_vector_8_ciphertext_4_raw,
-        .ciphertext_4_raw_len = sizeof(test_vector_8_ciphertext_4_raw),
-        
-        .ciphertext_4 = test_vector_8_ciphertext_4,
-        .ciphertext_4_len = sizeof(test_vector_8_ciphertext_4),
-        
-        .message_4 = test_vector_8_message_4,
-        .message_4_len = sizeof(test_vector_8_message_4),
-        
-        .oscore_aead_alg = &test_vector_8_oscore_aead_alg,
-        
-        .oscore_hash_alg = &test_vector_8_oscore_hash_alg,
-        
-        .client_sender_id_raw = test_vector_8_client_sender_id_raw,
-        .client_sender_id_raw_len = sizeof(test_vector_8_client_sender_id_raw),
-        
-        .server_sender_id_raw = test_vector_8_server_sender_id_raw,
-        .server_sender_id_raw_len = sizeof(test_vector_8_server_sender_id_raw),
-        
-        .info_oscore_secret = test_vector_8_info_oscore_secret,
-        .info_oscore_secret_len = sizeof(test_vector_8_info_oscore_secret),
-        
-        .oscore_secret_raw = test_vector_8_oscore_secret_raw,
-        .oscore_secret_raw_len = sizeof(test_vector_8_oscore_secret_raw),
-        
-        .info_oscore_salt = test_vector_8_info_oscore_salt,
-        .info_oscore_salt_len = sizeof(test_vector_8_info_oscore_salt),
-        
-        .oscore_salt_raw = test_vector_8_oscore_salt_raw,
-        .oscore_salt_raw_len = sizeof(test_vector_8_oscore_salt_raw),
-        
-        .key_update_nonce_raw = NULL,
-        .key_update_nonce_raw_len = 0,
-        
-        .prk_4x3m_key_update_raw = NULL,
-        .prk_4x3m_key_update_raw_len = 0,
-        
-        .oscore_secret_key_update_raw = test_vector_8_oscore_secret_key_update_raw,
-        .oscore_secret_key_update_raw_len = sizeof(test_vector_8_oscore_secret_key_update_raw),
-        
-        .oscore_salt_key_update_raw = test_vector_8_oscore_salt_key_update_raw,
-        .oscore_salt_key_update_raw_len = sizeof(test_vector_8_oscore_salt_key_update_raw),
-        
-        .ca_r = test_vector_8_ca_r,
-        .ca_r_len = sizeof(test_vector_8_ca_r),
-        
-        .ca_i = test_vector_8_ca_i,
-        .ca_i_len = sizeof(test_vector_8_ca_i),
-        
-        .ca_r_pk = test_vector_8_ca_r_pk,
-        .ca_r_pk_len = sizeof(test_vector_8_ca_r_pk),
-        
-        .ca_i_pk = test_vector_8_ca_i_pk,
-        .ca_i_pk_len = sizeof(test_vector_8_ca_i_pk),
-        
-        .i_raw = NULL,
-        .i_raw_len = 0,
-        
-        .g_i_raw = NULL,
-        .g_i_raw_len = 0,
-        
-        .r_raw = NULL,
-        .r_raw_len = 0,
-        
-        .g_r_raw = NULL,
-        .g_r_raw_len = 0,
-        
-        .c_i_raw = NULL,
-        .c_i_raw_len = 0,
-        .c_i_raw_int =  &test_vector_8_c_i_raw,
-        
-        .c_r_raw = NULL,
-        .c_r_raw_len = 0,
-        .c_r_raw_int =  &test_vector_8_c_r_raw,
-	},
+
+
 /*--------------- test_vector_10 ------------*/
  
 	{

@@ -90,6 +90,7 @@ FEATURES += -DKYBER_LEVEL_1
 ################################################################################
 # Select the PQ Signature algorithm to be used, just one for the initiator, all that you want to support the server
 
+#FEATURES += -DFALCON_LEVEL_1
 FEATURES += -DDILITHIUM_LEVEL_2
 
 

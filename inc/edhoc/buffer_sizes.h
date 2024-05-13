@@ -42,17 +42,21 @@
 	#define PK_SIZE OQS_SIG_falcon_1024_length_public_key
 #endif
 
+#ifndef FALCON_LEVEL_5
 #ifdef DILITHIUM_LEVEL_2
 	#define SIGNATURE_SIZE OQS_SIG_dilithium_2_length_signature  
 	#define PK_SIZE OQS_SIG_dilithium_2_length_public_key
 #endif
+#endif
 
 #ifndef FALCON_LEVEL_5
+#ifndef DILITHIUM_LEVEL_2
 #ifdef FALCON_LEVEL_1
 	#define SIGNATURE_SIZE OQS_SIG_falcon_512_length_signature  
 	//#define CRED_I_SIZE 2000
 	//#define CRED_R_SIZE 2000
 	#define PK_SIZE OQS_SIG_falcon_512_length_public_key
+#endif
 #endif
 #endif
 
