@@ -104,7 +104,8 @@ static int find_pk_cb(void *void_ppk, int tag, unsigned char *start,
 enum tag_map_enum {
 	ASN1_INTEGER = 0x02,
 	ASN1_BIT_STRING = 0x03,
-	ASN1_SEQUENCE = 0x30
+	ASN1_SEQUENCE = 0x30,
+	ASN1_OID = 0x06
 };
 
 /* Extracted from mbedtls library; asn1_parse.c */
@@ -406,10 +407,12 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 
 	const uint8_t *tbs_start = cert->ptr;
 	const uint8_t *tbs_end = &cert->ptr[cert->len];
-	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(ES256));
+	// We select SDA algorithm by hand here...
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(FALCON_PADDED_LEVEL1));
 
 	enum err rv = certificate_authentication_failed;
 
+#ifndef LIBOQS
 	/* Crude way to get TBSCertificate address, public key and signature */
 	do {
 		const uint8_t *cursor = cert->ptr;
@@ -484,6 +487,83 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 
 	} while (0);
 
+
+	#else
+// This is the PQ version
+do {
+		const uint8_t *cursor = cert->ptr;
+		const uint8_t *end = &cert->ptr[cert->len];
+		uint32_t len;
+
+		/* Get first tag, which should be first sequence */
+		EXPECTO_TAG(ASN1_SEQUENCE, cursor, len);
+
+		/* Get second, inner tag, which should be TBSCertificate */
+		tbs_start = cursor;
+		EXPECTO_TAG(ASN1_SEQUENCE, cursor, len);
+		tbs_end = cursor + len;
+
+		/* Iterate over 6 elements to get to public key according to X.509 schema */
+		for (uint32_t iter = 0; iter < 5; iter++) {
+			/* TAG shall not be parsed as it is not used */
+			cursor++;
+			/* Get section length */
+			mbedtls_asn1_get_len(&cursor, end, &len);
+			cursor += len;
+		}
+
+		/* Here should be 7th element with information about key */
+		EXPECTO_TAG(ASN1_SEQUENCE, cursor, len);
+
+		/* We need one more ASN1_SEQUENCY more*/
+		EXPECTO_TAG(ASN1_SEQUENCE, cursor, len);
+
+		/* In the case of PQ signatures this field is a field with the
+		algorithm Object Identifier (e.g for Falcon512: 1.3.9999.3.6)*/
+		EXPECTO_TAG(ASN1_OID, cursor, len);
+		/* This section is being skippped */
+		cursor += len;
+
+		/* Expected BIT STRING containing public key */
+		EXPECTO_TAG(ASN1_BIT_STRING, cursor, len);
+
+		/* Now cursor points to public key */
+		_memcpy_s(pk->ptr, pk->len, cursor, (uint32_t)len);
+		pk->len = (uint32_t)len;
+		PRINT_ARRAY("pk from cert", pk->ptr, pk->len);
+
+		/* We can skip whole TBSCertificate */
+		cursor = tbs_end;
+
+		/* Here should be information about signature algorithm */
+		EXPECTO_TAG(ASN1_SEQUENCE, cursor, len);
+		/* We can skip algorithm info length */
+		// cursor += len;
+
+		// Giorgos: Add here a ASN1_OID parse 
+		/* In the case of PQ signatures this field is a field with the
+		algorithm Object Identifier (e.g for Falcon512: 1.3.9999.3.6)*/
+		EXPECTO_TAG(ASN1_OID, cursor, len);
+		/* This section is being skippped */
+		cursor += len;
+
+		/* Expected BIT STRING containing signature */
+		EXPECTO_TAG(ASN1_BIT_STRING, cursor, len);
+		// cursor++;
+
+		// This whole should be changed in the PQ version
+		TRY_EXPECT((cursor + len) <= end, 1);
+		_memcpy_s(sig.ptr, SIGNATURE_SIZE, cursor, (uint32_t)len);
+		sig.len = len;
+		cursor += len;
+		rv = ok;
+		PRINT_ARRAY("Certificate signature", sig.ptr,
+			    (uint32_t)sig.len);
+
+	} while (0);
+
+	#endif
+
 	struct byte_array root_pk;
 	struct const_byte_array m =
 		BYTE_ARRAY_INIT(tbs_start, (uint32_t)(tbs_end - tbs_start));
@@ -496,7 +576,7 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 				    root_pk.len);
 			struct const_byte_array s = { .ptr = sig.ptr,
 						      .len = sig.len };
-			rv = verify(ES256, &root_pk, &m, &s, verified);
+			rv = verify(FALCON_PADDED_LEVEL1, &root_pk, &m, &s, verified);
 		}
 	}
 	return rv;
