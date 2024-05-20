@@ -407,7 +407,7 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 
 	const uint8_t *tbs_start = cert->ptr;
 	const uint8_t *tbs_end = &cert->ptr[cert->len];
-	// We select SDA algorithm by hand here...
+	// We select PQ DSA algorithm by hand here...
 	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(FALCON_PADDED_LEVEL1));
 
 	enum err rv = certificate_authentication_failed;
