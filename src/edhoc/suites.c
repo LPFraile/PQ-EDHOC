@@ -12,8 +12,9 @@
 #include "edhoc/suites.h"
 
 #include "common/oscore_edhoc_error.h"
+#ifdef LIBOQS
 #include <oqs/kem.h>
-
+#endif
 enum err get_suite(enum suite_label label, struct suite *suite)
 {
 	switch (label) {
@@ -57,6 +58,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 		break;
+	#ifdef LIBOQS
 	case SUITE__22:
 		suite->suite_label = SUITE__22;
 		suite->edhoc_aead = AES_CCM_16_64_128;
@@ -127,6 +129,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
+	#endif
 	default:
 		return unsupported_cipher_suite;
 		break;
@@ -186,6 +189,7 @@ uint32_t get_signature_len(enum sign_alg alg)
 	case EdDSA:
 		return 64;
 		break;
+	#ifdef LIBOQS
 	case FALCON_LEVEL1:
 		return OQS_SIG_falcon_512_length_signature;
 		break;
@@ -201,6 +205,7 @@ uint32_t get_signature_len(enum sign_alg alg)
 	case DILITHIUM_LEVEL2:
 		return OQS_SIG_dilithium_2_length_signature;	
 		break;
+	#endif
 	default: 
 		return 0;
 	}
@@ -217,6 +222,7 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	case X25519:
 		return 32;
 		break;
+	#ifdef LIBOQS
 	case KYBER_LEVEL1:
 		return OQS_KEM_ml_kem_512_length_public_key;
 		break;
@@ -229,6 +235,7 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
 		break;
+	#endif
 	default: 
 		return 0;
 	}
@@ -238,6 +245,7 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 uint32_t get_kem_pk_len(enum ecdh_alg alg)
 {
 	switch (alg) {
+	#ifdef LIBOQS
 	case KYBER_LEVEL1:
 		return OQS_KEM_ml_kem_512_length_public_key;
 		break;
@@ -250,6 +258,7 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
 		break;
+	#endif
 	default: 
 		return 0;
 	}
@@ -259,6 +268,7 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 uint32_t get_kem_sk_len(enum ecdh_alg alg)
 {
 	switch (alg) {
+	#ifdef LIBOQS
 	case KYBER_LEVEL1:
 		return OQS_KEM_ml_kem_512_length_secret_key;
 		break;
@@ -271,6 +281,7 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_secret_key;
 		break;
+	#endif
 	default: 
 		return 0;
 	}
@@ -280,6 +291,7 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 uint32_t get_kem_cc_len(enum ecdh_alg alg)
 {
 	switch (alg) {
+	#ifdef LIBOQS
 	case KYBER_LEVEL1:
 		return OQS_KEM_ml_kem_512_length_ciphertext;
 		break;
@@ -292,6 +304,7 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_ciphertext;
 		break;
+	#endif
 	default: 
 		return 0;
 	}

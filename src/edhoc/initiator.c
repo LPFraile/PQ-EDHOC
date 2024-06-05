@@ -175,9 +175,14 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
 		PRINT_MSG("KEM decapsulation\n");
+		#ifdef LIBOQS
 		PRINT_ARRAY("G_Y (PQ CC) ", g_y.ptr, g_y.len);
 		TRY(kem_decapsulate(rc->suite.edhoc_ecdh, &g_y, &c->x, &g_xy));
 		PRINT_ARRAY("G_XY (PQ SS) ", g_xy.ptr, g_xy.len);
+		#else
+		PRINT_MSG("Need to select PQ crypo");
+		return -1;
+		#endif
 	}
 	else{
 		TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->x, &g_y, g_xy.ptr));

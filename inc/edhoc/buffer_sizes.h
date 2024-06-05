@@ -6,6 +6,7 @@
 
 #ifndef BUFFER_SIZES_H
 #define BUFFER_SIZES_H
+#ifdef LIBOQS
 #include <oqs/kem.h>
 
 #ifdef HQC_LEVEL_1
@@ -59,9 +60,10 @@
 #endif
 #endif
 #endif
-
 #define CRED_I_SIZE PK_SIZE*3
 #define CRED_R_SIZE PK_SIZE*3
+
+#endif
 
 #ifndef EAD_SIZE
 #define EAD_SIZE 0
