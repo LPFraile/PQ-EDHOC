@@ -15,6 +15,7 @@
 #include "edhoc/retrieve_cred.h"
 #include "edhoc/plaintext.h"
 #include "edhoc/signature_or_mac_msg.h"
+#include "edhoc/int_encode_decode.h"
 
 #include "common/oscore_edhoc_error.h"
 #include "common/memcpy_s.h"
@@ -44,24 +45,24 @@ static enum err id_cred_x_encode(enum id_cred_x_label label, int algo,
 	switch (label) {
 	case kid:
 		//todo update that to v15
-		map._id_cred_x_map_kid_present = true;
-		map._id_cred_x_map_kid._id_cred_x_map_kid_choice =
-			_id_cred_x_map_kid_int;
-		map._id_cred_x_map_kid._id_cred_x_map_kid_int =
+		map.id_cred_x_map_kid_present = true;
+		map.id_cred_x_map_kid.id_cred_x_map_kid_choice =
+			id_cred_x_map_kid_int_c;
+		map.id_cred_x_map_kid.id_cred_x_map_kid_int =
 			*((const int32_t *)id);
 		break;
 	case x5chain:
-		map._id_cred_x_map_x5chain_present = true;
-		map._id_cred_x_map_x5chain._id_cred_x_map_x5chain.value = id;
-		map._id_cred_x_map_x5chain._id_cred_x_map_x5chain.len = id_len;
+		map.id_cred_x_map_x5chain_present = true;
+		map.id_cred_x_map_x5chain.id_cred_x_map_x5chain.value = id;
+		map.id_cred_x_map_x5chain.id_cred_x_map_x5chain.len = id_len;
 		break;
 	case x5t:
-		map._id_cred_x_map_x5t_present = true;
-		map._id_cred_x_map_x5t._id_cred_x_map_x5t_alg_choice =
-			_id_cred_x_map_x5t_alg_int;
-		map._id_cred_x_map_x5t._id_cred_x_map_x5t_alg_int = algo;
-		map._id_cred_x_map_x5t._id_cred_x_map_x5t_hash.value = id;
-		map._id_cred_x_map_x5t._id_cred_x_map_x5t_hash.len = id_len;
+		map.id_cred_x_map_x5t_present = true;
+		map.id_cred_x_map_x5t.id_cred_x_map_x5t_alg_choice =
+			id_cred_x_map_x5t_alg_int_c;
+		map.id_cred_x_map_x5t.id_cred_x_map_x5t_alg_int = algo;
+		map.id_cred_x_map_x5t.id_cred_x_map_x5t_hash.value = id;
+		map.id_cred_x_map_x5t.id_cred_x_map_x5t_hash.len = id_len;
 		break;
 	default:
 		break;
@@ -76,7 +77,8 @@ static enum err id_cred_x_encode(enum id_cred_x_label label, int algo,
 	return ok;
 }
 
-enum err plaintext_split(struct byte_array *ptxt, struct byte_array *id_cred_x,
+enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
+			 struct byte_array *id_cred_x,
 			 struct byte_array *sign_or_mac, struct byte_array *ad)
 {
 	size_t decode_len = 0;
@@ -85,56 +87,74 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *id_cred_x,
 	TRY_EXPECT(cbor_decode_plaintext(ptxt->ptr, ptxt->len, &p, &decode_len),
 		   0);
 
+	/*C_R is present only in plaintext 2*/
+	if (c_r != NULL && p.plaintext_C_R_present == true) {
+		if (p.plaintext_C_R.plaintext_C_R_choice ==
+		    plaintext_C_R_bstr_c) {
+			TRY(_memcpy_s(c_r->ptr, c_r->len,
+				      p.plaintext_C_R.plaintext_C_R_bstr.value,
+				      (uint32_t)p.plaintext_C_R
+					      .plaintext_C_R_bstr.len));
+			c_r->len =
+				(uint32_t)p.plaintext_C_R.plaintext_C_R_bstr.len;
+		} else {
+			/*provide C_R in encoded form if it was an int*/
+			/*this is how it C_R was chosen by the responder*/
+			TRY(encode_int(&p.plaintext_C_R.plaintext_C_R_int, 1,
+				       c_r));
+		}
+	}
+
 	/*ID_CRED_x*/
-	if (p._plaintext_ID_CRED_x_choice == _plaintext_ID_CRED_x__map) {
-		if (p._plaintext_ID_CRED_x__map._map_x5chain_present) {
+	if (p.plaintext_ID_CRED_x_choice == plaintext_ID_CRED_x_map_m_c) {
+		if (p.plaintext_ID_CRED_x_map_m.map_x5chain_present) {
 			PRINT_MSG(
 				"ID_CRED of the other party has label x5chain\n");
 			TRY(id_cred_x_encode(
 				x5chain, 0,
-				p._plaintext_ID_CRED_x__map._map_x5chain
-					._map_x5chain.value,
-				(uint32_t)p._plaintext_ID_CRED_x__map
-					._map_x5chain._map_x5chain.len,
+				p.plaintext_ID_CRED_x_map_m.map_x5chain
+					.map_x5chain.value,
+				(uint32_t)p.plaintext_ID_CRED_x_map_m
+					.map_x5chain.map_x5chain.len,
 				id_cred_x));
 		}
-		if (p._plaintext_ID_CRED_x__map._map_x5t_present) {
+		if (p.plaintext_ID_CRED_x_map_m.map_x5t_present) {
 			PRINT_MSG("ID_CRED of the other party has label x5t\n");
 			TRY(id_cred_x_encode(
 				x5t,
-				p._plaintext_ID_CRED_x__map._map_x5t
-					._map_x5t_alg_int,
-				p._plaintext_ID_CRED_x__map._map_x5t
-					._map_x5t_hash.value,
-				(uint32_t)p._plaintext_ID_CRED_x__map._map_x5t
-					._map_x5t_hash.len,
+				p.plaintext_ID_CRED_x_map_m.map_x5t
+					.map_x5t_alg_int,
+				p.plaintext_ID_CRED_x_map_m.map_x5t.map_x5t_hash
+					.value,
+				(uint32_t)p.plaintext_ID_CRED_x_map_m.map_x5t
+					.map_x5t_hash.len,
 				id_cred_x));
 		}
 	} else {
 		/*Note that if ID_CRED_x contains a single 'kid' parameter,
             i.e., ID_CRED_R = { 4 : kid_x }, only the byte string kid_x
             is conveyed in the plaintext encoded as a bstr or int*/
-		if (p._plaintext_ID_CRED_x_choice ==
-		    _plaintext_ID_CRED_x__map) {
+		if (p.plaintext_ID_CRED_x_choice ==
+		    plaintext_ID_CRED_x_map_m_c) {
 			TRY(id_cred_x_encode(
-				kid, 0, p._plaintext_ID_CRED_x_bstr.value,
-				(uint32_t)p._plaintext_ID_CRED_x_bstr.len,
+				kid, 0, p.plaintext_ID_CRED_x_bstr.value,
+				(uint32_t)p.plaintext_ID_CRED_x_bstr.len,
 				id_cred_x));
 
 		} else {
-			int _kid = p._plaintext_ID_CRED_x_int;
+			int _kid = p.plaintext_ID_CRED_x_int;
 			TRY(id_cred_x_encode(kid, 0, &_kid, 1, id_cred_x));
 		}
 	}
 	TRY(_memcpy_s(sign_or_mac->ptr, sign_or_mac->len,
-		      p._plaintext_SGN_or_MAC_x.value,
-		      (uint32_t)p._plaintext_SGN_or_MAC_x.len));
-	sign_or_mac->len = (uint32_t)p._plaintext_SGN_or_MAC_x.len;
+		      p.plaintext_SGN_or_MAC_x.value,
+		      (uint32_t)p.plaintext_SGN_or_MAC_x.len));
+	sign_or_mac->len = (uint32_t)p.plaintext_SGN_or_MAC_x.len;
 
-	if (p._plaintext_AD_x_present == true) {
-		TRY(_memcpy_s(ad->ptr, ad->len, p._plaintext_AD_x.value,
-			      (uint32_t)p._plaintext_AD_x.len));
-		ad->len = (uint32_t)p._plaintext_AD_x.len;
+	if (p.plaintext_AD_x_present == true) {
+		TRY(_memcpy_s(ad->ptr, ad->len, p.plaintext_AD_x.value,
+			      (uint32_t)p.plaintext_AD_x.len));
+		ad->len = (uint32_t)p.plaintext_AD_x.len;
 	} else {
 		if (ad->len) {
 			ad->len = 0;

@@ -1,5 +1,5 @@
 /*
- * Generated using zcbor version 0.7.0
+ * Generated using zcbor version 0.8.99
  * https://github.com/NordicSemiconductor/zcbor
  * Generated with a --default-max-qty of 3
  */
@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <zcbor_common.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,17 +25,7 @@ extern "C" {
  */
 #define DEFAULT_MAX_QTY 3
 
-struct m2 {
-	struct zcbor_string _m2_G_Y_CIPHERTEXT_2;
-	union {
-		int32_t _m2_C_R_int;
-		struct zcbor_string _m2_C_R_bstr;
-	};
-	enum {
-		_m2_C_R_int,
-		_m2_C_R_bstr,
-	} _m2_C_R_choice;
-};
+
 
 #ifdef __cplusplus
 }
