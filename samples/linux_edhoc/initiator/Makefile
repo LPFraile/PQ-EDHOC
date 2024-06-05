@@ -28,11 +28,6 @@ BUILD_DIR = build
 USOCORE_UEDHOC_PATH = $(ROOT_DIR)
 USOCORE_UEDHOC_BUILD_PATH = $(USOCORE_UEDHOC_PATH)/build
 
-# liboqs path
-LIBOQS_PATH = $(ROOT_DIR)/externals/liboqs
-LIBOQS_BUILD_PATH = $(LIBOQS_PATH)/build
-LIBOQS_LIB_PATH =$(LIBOQS_BUILD_PATH)/lib
-
 ifeq ($(ARCH_32_ONLY), 1)
 # build for 32 bit x68 
 # export the varible so that it is availbale in the uoscore-uedhoc Makefile 
@@ -55,16 +50,12 @@ C_DEFS += -DLINUX_SOCKETS
 C_DEFS += $(ENV_DEFS)
 
 # Linked libraries
-LD_LIBRARY_PATH += -L$(LIBOQS_LIB_PATH)
 LD_LIBRARY_PATH += -L$(USOCORE_UEDHOC_BUILD_PATH)
-
 
 LDFLAGS += $(LD_LIBRARY_PATH)
 LDFLAGS += -luoscore-uedhoc
-LDFLAGS += -loqs
 LDFLAGS += -lstdc++
 LDFLAGS += $(ARCH) 
-
 ##########################################
 # CFLAGS
 ##########################################
@@ -125,9 +116,6 @@ CANTCOAP_DIR :=  ${ROOT_DIR}/externals/cantcoap
 CANTCOAP_SOURCES := ${CANTCOAP_DIR}/cantcoap.cpp
 CANTCOAP_INCLUDES := -I${CANTCOAP_DIR}
 
-LIBOQS_INCLUDES := -I${LIBOQS_BUILD_PATH}/include 
-
-
 SOURCES := ${INITIATOR_SOURCES}
 SOURCES += ${TINYCRYPT_SOURCES}
 SOURCES += ${COMPACT25519_C_SOURCES}
@@ -140,26 +128,22 @@ INCLUDES := ${TINYCRYPT_INCLUDES}
 INCLUDES += ${COMPACT25519_INCLUDES}
 INCLUDES += ${MBEDTLS_INCLUDES}
 INCLUDES += ${ZCBOR_INCLUDES}
-INCLUDES += ${LIBOQS_INCLUDES}
 INCLUDES += ${COMMON_INCLUDES}
 INCLUDES += ${INITIATOR_INCLUDES}
 INCLUDES += ${CANTCOAP_INCLUDES}
-
 ###########################################
 # default action: build all
 ###########################################
 
 $(BUILD_DIR)/%.o: ${ROOT_DIR}/%.c | build_dirs
-	$(CC) ${CFLAGS} ${INCLUDES} -L$(LIBOQS_LIB_PATH) -loqs -Wa,-a,-ad,-alms=$(<:$(ROOT_DIR)/%.c=$(BUILD_DIR)/%.lst) -c $< -o $@ 
+	$(CC) ${CFLAGS} ${INCLUDES} -Wa,-a,-ad,-alms=$(<:$(ROOT_DIR)/%.c=$(BUILD_DIR)/%.lst) -c $< -o $@
 
 $(BUILD_DIR)/%.o: ${ROOT_DIR}/%.cpp | build_dirs
-	$(CXX) ${CXXFLAGS} ${INCLUDES} -c $< -o $@  
-
-
+	$(CXX) ${CXXFLAGS} ${INCLUDES} -c $< -o $@
 	
 ${BUILD_DIR}/${TARGET}:${OBJECTS} Makefile $(USOCORE_UEDHOC_PATH)/Makefile ${USOCORE_UEDHOC_OBJ}
 	$(MAKE) -C $(USOCORE_UEDHOC_PATH)
-	$(CXX)  ${OBJECTS} ${LDFLAGS}   -o $@
+	$(CXX) ${OBJECTS} ${LDFLAGS} -o $@
 	$(SZ) $@
 
 oscore_edhoc:

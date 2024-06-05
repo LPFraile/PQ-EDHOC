@@ -148,7 +148,7 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	uint8_t TEST_VEC_NUM = 8;
+	uint8_t TEST_VEC_NUM = 1;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -157,39 +157,39 @@ int main()
 	c_i.method = (enum method_type) * test_vectors[vec_num_i].method;
 	c_i.suites_i.len = test_vectors[vec_num_i].SUITES_I_len;
 	c_i.suites_i.ptr = (uint8_t *)test_vectors[vec_num_i].SUITES_I;
-	/*c_i.ead_1.len = test_vectors[vec_num_i].ead_1_len;
+	c_i.ead_1.len = test_vectors[vec_num_i].ead_1_len;
 	c_i.ead_1.ptr = (uint8_t *)test_vectors[vec_num_i].ead_1;
 	c_i.ead_3.len = test_vectors[vec_num_i].ead_3_len;
-	c_i.ead_3.ptr = (uint8_t *)test_vectors[vec_num_i].ead_3;*/
+	c_i.ead_3.ptr = (uint8_t *)test_vectors[vec_num_i].ead_3;
 	c_i.id_cred_i.len = test_vectors[vec_num_i].id_cred_i_len;
 	c_i.id_cred_i.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_i;
 	c_i.cred_i.len = test_vectors[vec_num_i].cred_i_len;
 	c_i.cred_i.ptr = (uint8_t *)test_vectors[vec_num_i].cred_i;
-	/*c_i.g_x.len = test_vectors[vec_num_i].g_x_raw_len;
+	c_i.g_x.len = test_vectors[vec_num_i].g_x_raw_len;
 	c_i.g_x.ptr = (uint8_t *)test_vectors[vec_num_i].g_x_raw;
 	c_i.x.len = test_vectors[vec_num_i].x_raw_len;
 	c_i.x.ptr = (uint8_t *)test_vectors[vec_num_i].x_raw;
 	c_i.g_i.len = test_vectors[vec_num_i].g_i_raw_len;
 	c_i.g_i.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;
 	c_i.i.len = test_vectors[vec_num_i].i_raw_len;
-	c_i.i.ptr = (uint8_t *)test_vectors[vec_num_i].i_raw;*/
-	c_i.sk_i.len = test_vectors[vec_num_i].sk_r_raw_len;
-	c_i.sk_i.ptr = (uint8_t *)test_vectors[vec_num_i].sk_r_raw;
-	c_i.pk_i.len = test_vectors[vec_num_i].pk_r_raw_len;
-	c_i.pk_i.ptr = (uint8_t *)test_vectors[vec_num_i].pk_r_raw;
+	c_i.i.ptr = (uint8_t *)test_vectors[vec_num_i].i_raw;
+	c_i.sk_i.len = test_vectors[vec_num_i].sk_i_raw_len;
+	c_i.sk_i.ptr = (uint8_t *)test_vectors[vec_num_i].sk_i_raw;
+	c_i.pk_i.len = test_vectors[vec_num_i].pk_i_raw_len;
+	c_i.pk_i.ptr = (uint8_t *)test_vectors[vec_num_i].pk_i_raw;
 
 	cred_r.id_cred.len = test_vectors[vec_num_i].id_cred_r_len;
 	cred_r.id_cred.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_r;
 	cred_r.cred.len = test_vectors[vec_num_i].cred_r_len;
 	cred_r.cred.ptr = (uint8_t *)test_vectors[vec_num_i].cred_r;
-	/*cred_r.g.len = test_vectors[vec_num_i].g_r_raw_len;
-	cred_r.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;*/
+	cred_r.g.len = test_vectors[vec_num_i].g_r_raw_len;
+	cred_r.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;
 	cred_r.pk.len = test_vectors[vec_num_i].pk_r_raw_len;
 	cred_r.pk.ptr = (uint8_t *)test_vectors[vec_num_i].pk_r_raw;
-	/*cred_r.ca.len = test_vectors[vec_num_i].ca_r_len;
+	cred_r.ca.len = test_vectors[vec_num_i].ca_r_len;
 	cred_r.ca.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r;
 	cred_r.ca_pk.len = test_vectors[vec_num_i].ca_r_pk_len;
-	cred_r.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r_pk;*/
+	cred_r.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r_pk;
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
 
@@ -213,83 +213,6 @@ int main()
 	c_i.x.len = X_random.len;
 	PRINT_ARRAY("secret ephemeral DH key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("public ephemeral DH key", c_i.x.ptr, c_i.x.len);
-     
-    /*Key generation for KEMs*/
-	struct edhoc_initiator_context c_i_2;
-	struct byte_array ss;
-	struct byte_array ss_r;
-	struct byte_array ct;
-	
-	BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
-	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
-	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random, 
-								&PQ_public_random));
-	c_i_2.g_x.ptr = PQ_public_random.ptr;
-	c_i_2.g_x.len = PQ_public_random.len;
-	c_i_2.x.ptr = PQ_secret_random.ptr;
-	c_i_2.x.len = PQ_secret_random.len;
-	BYTE_ARRAY_NEW(PQ_CT, 768, 768);
-	BYTE_ARRAY_NEW(PQ_SS, 32, 32);
-	ss.ptr = PQ_SS.ptr;
-	ss.len = PQ_SS.len;
-	ct.ptr = PQ_CT.ptr;
-	ct.len = PQ_CT.len;
-	PRINT_ARRAY("secret ephemeral PQ Key", c_i_2.g_x.ptr, c_i_2.g_x.len);
-	PRINT_ARRAY("public ephemeral PQ Key", c_i_2.x.ptr, c_i_2.x.len);
-    TRY(kem_encapsulate(KYBER_LEVEL1,&PQ_public_random,&PQ_CT,&PQ_SS));
-	PRINT_ARRAY("ciphertext",ct.ptr, ct.len);
-	BYTE_ARRAY_NEW(PQ_SS_R, 32, 32);
-	ss_r.ptr = PQ_SS_R.ptr;
-	ss_r.len = PQ_SS_R.len;
-	PRINT_ARRAY("public SS initiator", ss.ptr, ss.len);
-	kem_decapsulate(KYBER_LEVEL1, &PQ_CT, &PQ_secret_random,&PQ_SS_R );
-	PRINT_ARRAY("public SS responder", ss_r.ptr, ss_r.len);
- 
-	BYTE_ARRAY_NEW(PQ_public_static_random, 897, 897);
-	BYTE_ARRAY_NEW(PQ_secret_static_random, 1281, 1281);
-
-	struct byte_array spk;
-	struct byte_array ssk;
-
-	static_signature_key_gen(FALCON_LEVEL1,
-	&PQ_secret_static_random,&PQ_public_static_random);
-	spk.ptr = PQ_public_static_random.ptr;
-	spk.len = PQ_public_static_random.len;
-	ssk.ptr = PQ_secret_static_random.ptr;
-	ssk.len = PQ_secret_static_random.len;
-	PRINT_ARRAY("public static key", spk.ptr, spk.len);
-	PRINT_ARRAY("secret static key", ssk.ptr, ssk.len);
-
-	BYTE_ARRAY_NEW(MSG, 100, 100);
-	BYTE_ARRAY_NEW(SIG, 752, 752);
-
-	struct byte_array mmsg;
-	struct byte_array msig;
-
-	for (size_t i = 0; i < 100; i++)
-	{
-		MSG.ptr[i] = i;
-	}
-	
-	mmsg.ptr = MSG.ptr;
-	mmsg.len = MSG.len;
-	msig.ptr = SIG.ptr;
-	msig.len = SIG.len;
-	/*int ret = sign_signature(FALCON_LEVEL1, &PQ_secret_static_random,
-							 &mmsg,&msig);
-						
-	*/
-    PRINT_ARRAY("public static key - cert", c_i.pk_i.ptr, c_i.pk_i.len);
-	PRINT_ARRAY("secret static key - cert", c_i.sk_i.ptr, c_i.sk_i.len);
-	int ret = sign_signature(FALCON_LEVEL1, &c_i.sk_i,
-							 &mmsg,&msig);
-	printf("Signature %d \n",ret);
-
-	PRINT_ARRAY("message", mmsg.ptr, mmsg.len);
-	PRINT_ARRAY("signature", msig.ptr, msig.len);
-	int val = sign_verify(FALCON_LEVEL1, &c_i.pk_i,
-						 &mmsg,&msig);
-	printf("Verification %d \n",val);
 
 #endif
 

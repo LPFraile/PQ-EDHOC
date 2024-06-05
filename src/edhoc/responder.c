@@ -202,10 +202,15 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 		*   Set the g_y with the ciphertex message c   
 		*/
 	    PRINT_MSG("PQ KEM encapsulation\n");
+		#ifdef LIBOQS
 	    PRINT_ARRAY("PQ DEV - g_x ", g_x.ptr, g_x.len);
 		TRY(kem_encapsulate(rc->suite.edhoc_ecdh,&g_x,&c->g_y,&g_xy));
 		PRINT_ARRAY("G_XY (PQ SS)", g_xy.ptr, g_xy.len);
 		PRINT_ARRAY("G_Y (PQ C)", c->g_y.ptr, c->g_y.len);
+		#else
+		PRINT_MSG("Need to select PQ crypo");
+		return -1;
+		#endif
 	} 
 	else{
 		/*calculate the DH shared secret*/
@@ -227,6 +232,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	PRINT_ARRAY("prk_3e2m", rc->prk_3e2m.ptr, rc->prk_3e2m.len);
 
 	/*compute signature_or_MAC_2*/
+	PRINTF("Signature len %d - %d\n", SIGNATURE_SIZE, get_signature_len(rc->suite.edhoc_sign));
 	BYTE_ARRAY_NEW(sign_or_mac_2, SIGNATURE_SIZE,
 		       get_signature_len(rc->suite.edhoc_sign));
 	TRY(signature_or_mac(GENERATE, static_dh_r, &rc->suite, &c->sk_r,

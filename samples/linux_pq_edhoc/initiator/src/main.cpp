@@ -192,7 +192,10 @@ int main()
 	cred_r.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r_pk;
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
-
+    PRINTF("initiator test vector number %d:", vec_num_i);
+	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,c_i.suites_i.len);
+	PRINT_ARRAY("initiator sk:", c_i.sk_i.ptr,c_i.sk_i.len);
+	
 
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
     uint32_t seed;
