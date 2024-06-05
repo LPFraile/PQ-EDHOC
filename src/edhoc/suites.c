@@ -12,6 +12,7 @@
 #include "edhoc/suites.h"
 
 #include "common/oscore_edhoc_error.h"
+#include <oqs/kem.h>
 
 enum err get_suite(enum suite_label label, struct suite *suite)
 {
@@ -56,6 +57,76 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 		break;
+	case SUITE__22:
+		suite->suite_label = SUITE__22;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = ES256;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_7:
+		suite->suite_label = SUITE_7;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = FALCON_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_8:
+		suite->suite_label = SUITE_8;
+		suite->edhoc_aead = AES_CCM_16_128_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC16;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = FALCON_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+	case SUITE_9:
+		suite->suite_label = SUITE_9;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL3;
+		suite->edhoc_sign = FALCON_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_10:
+		suite->suite_label = SUITE_10;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1	;
+		suite->edhoc_sign = FALCON_PADDED_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_11:
+		suite->suite_label = SUITE_11;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = HQC_LEVEL1;
+		suite->edhoc_sign = FALCON_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_12:
+		suite->suite_label = SUITE_12;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = DILITHIUM_LEVEL2;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
 	default:
 		return unsupported_cipher_suite;
 		break;
@@ -115,6 +186,23 @@ uint32_t get_signature_len(enum sign_alg alg)
 	case EdDSA:
 		return 64;
 		break;
+	case FALCON_LEVEL1:
+		return OQS_SIG_falcon_512_length_signature;
+		break;
+	case FALCON_LEVEL5:
+		return OQS_SIG_falcon_1024_length_signature;
+		break;
+	case FALCON_PADDED_LEVEL1:
+		return OQS_SIG_falcon_padded_512_length_signature;
+		break;
+	case FALCON_PADDED_LEVEL5:
+		return OQS_SIG_falcon_padded_1024_length_signature;	
+		break;
+	case DILITHIUM_LEVEL2:
+		return OQS_SIG_dilithium_2_length_signature;	
+		break;
+	default: 
+		return 0;
 	}
 	return 0;
 }
@@ -129,6 +217,84 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	case X25519:
 		return 32;
 		break;
+	case KYBER_LEVEL1:
+		return OQS_KEM_ml_kem_512_length_public_key;
+		break;
+	case KYBER_LEVEL3:
+		return OQS_KEM_ml_kem_768_length_public_key;
+		break;
+	case KYBER_LEVEL5:
+		return OQS_KEM_ml_kem_1024_length_public_key;
+		break;
+	case HQC_LEVEL1:
+		return OQS_KEM_hqc_128_length_public_key;
+		break;
+	default: 
+		return 0;
 	}
+	return 0;
+}
+
+uint32_t get_kem_pk_len(enum ecdh_alg alg)
+{
+	switch (alg) {
+	case KYBER_LEVEL1:
+		return OQS_KEM_ml_kem_512_length_public_key;
+		break;
+	case KYBER_LEVEL3:
+		return OQS_KEM_ml_kem_768_length_public_key;
+		break;
+	case KYBER_LEVEL5:
+		return OQS_KEM_ml_kem_1024_length_public_key;
+		break;
+	case HQC_LEVEL1:
+		return OQS_KEM_hqc_128_length_public_key;
+		break;
+	default: 
+		return 0;
+	}
+	return 0;
+}
+
+uint32_t get_kem_sk_len(enum ecdh_alg alg)
+{
+	switch (alg) {
+	case KYBER_LEVEL1:
+		return OQS_KEM_ml_kem_512_length_secret_key;
+		break;
+	case KYBER_LEVEL3:
+		return OQS_KEM_ml_kem_768_length_secret_key;
+		break;
+	case KYBER_LEVEL5:
+		return OQS_KEM_ml_kem_1024_length_secret_key;
+		break;
+	case HQC_LEVEL1:
+		return OQS_KEM_hqc_128_length_secret_key;
+		break;
+	default: 
+		return 0;
+	}
+	return 0;
+}
+
+uint32_t get_kem_cc_len(enum ecdh_alg alg)
+{
+	switch (alg) {
+	case KYBER_LEVEL1:
+		return OQS_KEM_ml_kem_512_length_ciphertext;
+		break;
+	case KYBER_LEVEL3:
+		return OQS_KEM_ml_kem_768_length_ciphertext;
+		break;
+	case KYBER_LEVEL5:
+		return OQS_KEM_ml_kem_1024_length_ciphertext;
+		break;
+	case HQC_LEVEL1:
+		return OQS_KEM_hqc_128_length_ciphertext;
+		break;
+	default: 
+		return 0;
+	}
+
 	return 0;
 }

@@ -22,6 +22,13 @@ enum suite_label {
 	SUITE_1 = 1,
 	SUITE_2 = 2,
 	SUITE_3 = 3,
+	SUITE__22 = 22,
+	SUITE_7 = 7,
+	SUITE_8 = 8,
+	SUITE_9 = 9,
+	SUITE_10 = 10,
+	SUITE_11 = 11,
+	SUITE_12 = 12,
 };
 
 enum aead_alg {
@@ -34,11 +41,25 @@ enum hash_alg { SHA_256 = -16 };
 enum ecdh_alg {
 	P256 = 1,
 	X25519 = 4,
+	KYBER_LEVEL1 = -48, 
+	KYBER_LEVEL3 = -49,
+	KYBER_LEVEL5 = -50,
+	HQC_LEVEL1 = -51,
 };
 
 enum sign_alg {
 	ES256 = -7,
 	EdDSA = -8,
+	FALCON_LEVEL1 = -57,
+	FALCON_LEVEL5 = -58,
+	FALCON_PADDED_LEVEL1 = -59,
+	FALCON_PADDED_LEVEL5 = -60,
+	DILITHIUM_LEVEL2 = -61,
+	DILITHIUM_LEVEL3 = -62,
+	DILITHIUM_LEVEL5 = -63,
+	/*ML_DSA_LEVEL2 = -,
+	ML_DSA_LEVEL3 = -,
+	ML_DSA_LEVEL5 = -*/
 };
 
 enum mac_len {
@@ -115,4 +136,29 @@ uint32_t get_signature_len(enum sign_alg alg);
  */
 uint32_t get_ecdh_pk_len(enum ecdh_alg alg);
 
+
+/**
+ * @brief 			Gets the length of the CC size on KEMs.
+ * 
+ * @param alg 			The used KEM algorithm. 
+ * @retval 			The length.
+ */
+uint32_t get_kem_cc_len(enum ecdh_alg alg);
+
+
+/**
+ * @brief 			Gets the length of the publick key size on KEMs.
+ * 
+ * @param alg 			The used KEM algorithm. 
+ * @retval 			The length.
+ */
+uint32_t get_kem_pk_len(enum ecdh_alg alg);
+
+/**
+ * @brief 			Gets the length of the secret key size size on KEMs.
+ * 
+ * @param alg 			The used KEM algorithm. 
+ * @retval 			The length.
+ */
+uint32_t get_kem_sk_len(enum ecdh_alg alg);
 #endif

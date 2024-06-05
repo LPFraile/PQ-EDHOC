@@ -44,7 +44,7 @@ int cbor_decode_m2_G_Y_CIPHERTEXT_2(
 		size_t *payload_len_out)
 {
 	zcbor_state_t states[2];
-
 	return zcbor_entry_function(payload, payload_len, (void *)result, payload_len_out, states,
 		(zcbor_decoder_t *)decode_m2_G_Y_CIPHERTEXT_2, sizeof(states) / sizeof(zcbor_state_t), 1);
+
 }

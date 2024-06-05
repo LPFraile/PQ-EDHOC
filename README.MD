@@ -130,6 +130,16 @@ Note that uEDHOC does not provide correlation of messages. Correlation may be ha
 | 3    | AES-CCM-16-128-128, SHA-256, 16, P-256, ES256, AES-CCM-16-64-128, SHA-256  |
 
 
+## Extra PQ Cipher Suites add it (isi-embedded group)
+| 7    | AES-CCM-16-64-128, SHA-256,8, KYBER_LEVEL_1, FALCON_LEVEL_1, AES-CCM-16-64-128, SHA-256 |
+| 8    | AES-CCM-16-128-128, SHA-256, 16,
+KYBER_LEVEL_1, FALCON_LEVEL_1,  AES-CCM-16-64-128, SHA-256 |
+| 9    | AES-CCM-16-128-128, SHA-256, 16,
+KYBER_LEVEL_3, FALCON_LEVEL_1,  AES-CCM-16-64-128, SHA-256 |
+| 10    | AES-CCM-16-128-128, SHA-256, 16,
+KYBER_LEVEL_1, FALCON_PADDED_LEVEL_1,  AES-CCM-16-64-128, SHA-256 |
+| 11    | AES-CCM-16-128-128, SHA-256, 16, HQS_LEVEL1, FALCONLEVEL_1, AES-CCM-16-64-128, SHA-256 |
+
 
 
 ## Using Different Cryptographic Libraries or Hardware Accelerators

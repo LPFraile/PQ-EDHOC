@@ -83,10 +83,15 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 CXXFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" 
 # required for gddl-gen library
 CFLAGS += -DZCBOR_CANONICAL 
+CFLAGS += -DZCBOR_ASSERTS
 
 # use linux sockets 
 CFLAGS += -DLINUX_SOCKETS
 CXXFLAGS += -DLINUX_SOCKETS
+
+# need to increase the socket maxline as increse the PQ Key sizes and signature sizes
+CXXFLAGS += -DMAXLINE=10000
+CFLAGS += -DMAXLINE=10000
 
 # use AddressSanitizer to find memory bugs
 # comment this out for better speed
@@ -96,7 +101,7 @@ CXXFLAGS += -DLINUX_SOCKETS
 
 USOCORE_UEDHOC_OBJ = $(wildcard $(USOCORE_UEDHOC_PATH)/*.o) 
 
-INITIATOR_DIR := ${ROOT_DIR}/samples/linux_edhoc/initiator
+INITIATOR_DIR := ${ROOT_DIR}/samples/linux_pq_edhoc/initiator
 INITIATOR_SOURCES := $(wildcard ${INITIATOR_DIR}/src/*.c) $(wildcard ${INITIATOR_DIR}/src/*.cpp)
 INITIATOR_INCLUDES := -I${ROOT_DIR}/inc -I${ROOT_DIR}/test_vectors
 

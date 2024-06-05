@@ -40,7 +40,6 @@ static bool encode_message_1(
 	} else {
 		zcbor_log("%s success\r\n", __func__);
 	}
-
 	return tmp_result;
 }
 

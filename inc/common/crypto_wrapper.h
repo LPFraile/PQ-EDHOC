@@ -98,7 +98,7 @@ enum err hash(enum hash_alg alg, const struct byte_array *in,
  */
 enum err sign(enum sign_alg alg, const struct byte_array *sk,
 	      const struct byte_array *pk, const struct byte_array *msg,
-	      uint8_t *out);
+	      uint8_t *out, uint32_t* out_len);
 
 /**
  * @brief			Verifies an asymmetric signature.
@@ -128,6 +128,12 @@ enum err verify(enum sign_alg alg, const struct byte_array *pk,
 enum err hkdf_sha_256(struct byte_array *master_secret,
 		      struct byte_array *master_salt, struct byte_array *info,
 		      struct byte_array *out);
+
+
+#ifdef LIBOQS
+
+
+#endif
 
 #ifdef EDHOC_MOCK_CRYPTO_WRAPPER
 /*

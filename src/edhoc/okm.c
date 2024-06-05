@@ -28,8 +28,8 @@ enum err edhoc_kdf(enum hash_alg hash_alg, const struct byte_array *prk,
 	BYTE_ARRAY_NEW(info, INFO_MAX_SIZE,
 		       AS_BSTR_SIZE(context->len) + (2 * CBOR_ENCODED_UINT));
 
+
 	TRY(create_hkdf_info(label, context, okm->len, &info));
 
-	PRINT_ARRAY("info", info.ptr, info.len);
 	return hkdf_expand(hash_alg, prk, &info, okm);
 }

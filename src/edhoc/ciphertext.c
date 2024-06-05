@@ -67,7 +67,6 @@ static enum err ciphertext_encrypt_decrypt(
 	if (ctxt == CIPHERTEXT2) {
 		xor_arrays(in, key, out);
 	} else {
-		PRINT_ARRAY("in", in->ptr, in->len);
 		TRY(aead(op, in, key, nonce, aad, out, tag));
 	}
 	return ok;
@@ -208,7 +207,6 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 					      ptxt_buf_capacity));
 		}
 	}
-
 	if (ctxt != CIPHERTEXT4) {
 		BYTE_ARRAY_NEW(kid, KID_SIZE, KID_SIZE);
 		TRY(id_cred2kid(id_cred, &kid));
@@ -232,8 +230,6 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 	if (ead->len > 0) {
 		TRY(byte_array_append(plaintext, ead, ptxt_buf_capacity));
 	}
-
-	PRINT_ARRAY("plaintext", plaintext->ptr, plaintext->len);
 
 	/*generate key and iv (no iv in for ciphertext 2)*/
 	uint32_t key_len;

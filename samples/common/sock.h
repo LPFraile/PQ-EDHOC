@@ -30,7 +30,12 @@
 #define PORT 5683
 #endif
 
+//#define MAXLINE 1024
+//#define MAXLINE 2048
+
+#ifndef MAXLINE 
 #define MAXLINE 1024
+#endif
 
 enum sock_type {
 	SOCK_CLIENT,
