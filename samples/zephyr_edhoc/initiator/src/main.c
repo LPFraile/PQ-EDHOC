@@ -124,7 +124,7 @@ enum err rx(void *sock, struct byte_array *data)
 
 int internal_main(void)
 {
-	int32_t s = 5000;
+	int32_t s = 10000;
 	printf("sleep for %d msecond after connection in order to have time to start wireshark on bt0\n",
 	       s);
 	k_msleep(s);

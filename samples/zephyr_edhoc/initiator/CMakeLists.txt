@@ -16,6 +16,7 @@ target_sources(app PRIVATE ${app_sources})
 
 target_include_directories(app PRIVATE 
 	$ENV{ZEPHYR_BASE}/subsys/net/ip
+	.
 	../../common
 	../../../inc
 	../../../test_vectors
@@ -28,6 +29,7 @@ target_include_directories(app PRIVATE
 
 
 add_definitions(
+	-DMBEDTLS_CONFIG_FILE="mbedtls_config_uoscore_uedhoc.h"
 	-DDEBUG_PRINT
 	-DZCBOR_CANONICAL
 )

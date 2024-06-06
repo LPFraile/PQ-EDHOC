@@ -191,12 +191,13 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	BYTE_ARRAY_NEW(id_cred_r, ID_CRED_R_SIZE, ID_CRED_R_SIZE);
 
 	plaintext.len = ciphertext.len;
+	PRINT_MSG("Arrive here1");
 	TRY(check_buffer_size(PLAINTEXT2_SIZE, plaintext.len));
-
+    PRINT_MSG("Arrive here2"); 
 	TRY(ciphertext_decrypt_split(CIPHERTEXT2, &rc->suite, c_r, &id_cred_r,
 				     &sign_or_mac, &rc->ead, &PRK_2e, &th2,
 				     &ciphertext, &plaintext));
-
+    PRINT_MSG("Arrive here3");
 	/*check the authenticity of the responder*/
 	BYTE_ARRAY_NEW(cred_r, CRED_R_SIZE, CRED_R_SIZE);
 	BYTE_ARRAY_NEW(pk, PK_SIZE, PK_SIZE);
