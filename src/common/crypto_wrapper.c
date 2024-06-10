@@ -416,10 +416,15 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 
 }
 
+
+
 enum err WEAK sign_signature(const enum sign_alg alg, 
 		   const struct byte_array *sk,
 	       const struct byte_array *msg,
 	       uint8_t *sign,uint32_t* sign_len){
+
+
+#ifdef LIBOQS
 
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
@@ -448,12 +453,31 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 
 	return ret;
 
+#else //LIBOQS
+	// This is PQM4
+
+	int ret = 0;
+
+	if ((ret == 0) &&
+        (crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len, sk->ptr)
+		!= 0)) {
+		ret = SIG_BAD_FUNC_ARG;
+    }
+
+	return ret;
+
+
+#endif
+
 }
 
 enum err WEAK sign_verify(enum sign_alg alg, 
 		   const struct byte_array *pk,
 	       const struct byte_array *msg,
 	       const struct byte_array *signature){
+
+
+#ifdef LIBOQS
 
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
@@ -473,14 +497,36 @@ enum err WEAK sign_verify(enum sign_alg alg,
     }
 
 	 if ((ret == 0) &&
-        (OQS_SIG_verify(sig,(const uint8_t *) msg->ptr, (size_t) msg->len,(const uint8_t *) signature->ptr, (size_t) signature->len , (const uint8_t *) pk->ptr)
-         == OQS_ERROR)) {
+        (OQS_SIG_verify(sig,(const uint8_t *) msg->ptr, (size_t) msg->len,
+		(const uint8_t *) signature->ptr, (size_t) signature->len , 
+		(const uint8_t *) pk->ptr)
+         = OQS_ERROR)) {
         ret = SIG_BAD_FUNC_ARG;
     }
 
 	OQS_SIG_free(sig);
 	
 	return ret;
+
+#else //LIBOQS
+	// This is PQM4
+
+	int ret = 0;
+
+	 if ((ret == 0) &&
+        (crypto_sign_verify(sig,(const uint8_t *) msg->ptr, (size_t) msg->len,
+		(const uint8_t *) signature->ptr, (size_t) signature->len , 
+		(const uint8_t *) pk->ptr)
+         != 0)) {
+        ret = SIG_BAD_FUNC_ARG;
+    }
+
+	
+	return ret;
+
+#endif
+
+
 }
 
 #endif
