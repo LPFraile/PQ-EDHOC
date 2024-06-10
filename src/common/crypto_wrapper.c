@@ -95,6 +95,8 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
 				   struct byte_array *pk)
 {
 
+#ifdef LIBOQS
+
 	const char* algName = NULL;
     OQS_KEM *kem = NULL;
 	int ret = 0;
@@ -149,12 +151,56 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
 	OQS_KEM_free(kem);
 	return ret;
 
+#else // LIBOQS
+	//This is PQM4
+	int ret = 0;
+
+
+		/* Key lengths */
+
+	if (ret == 0) {
+        switch (alg) {
+        case KYBER_LEVEL1:
+            pk->len = CRYPTO_PUBLICKEYBYTES;
+			sk->len = CRYPTO_SECRETKEYBYTES;
+            break;
+        case KYBER_LEVEL3:
+			pk->len = CRYPTO_PUBLICKEYBYTES;
+			sk->len = CRYPTO_SECRETKEYBYTES;
+            break;
+        case KYBER_LEVEL5:
+			pk->len = CRYPTO_PUBLICKEYBYTES;
+			sk->len = CRYPTO_SECRETKEYBYTES;
+            break;
+		case HQC_LEVEL1:
+			pk->len = CRYPTO_PUBLICKEYBYTES;
+			sk->len = CRYPTO_SECRETKEYBYTES;
+            break;
+        default:
+            /* No other values supported. */
+            ret = -1; // Na to allaxw
+            break;
+        }
+    }
+
+	if (crypto_kem_keypair(pk->ptr, sk->ptr) != 0) {
+		ret = -1; // Na to allaxw
+	}
+
+	return ret;
+
+
+#endif
+
+
 }
 
 enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 			    const struct byte_array *pk,
 				struct byte_array *ct,
 				struct byte_array *shared_secret){
+
+#ifdef LIBOQS
 
 	const char* algName = NULL;
     OQS_KEM *kem = NULL;
@@ -207,6 +253,47 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 	OQS_KEM_free(kem);
 
 	return ret;
+
+#else // LIBOQS
+	// This is PQM4
+
+	int ret = 0;
+
+
+	if (ret == 0) {
+        if (crypto_kem_enc(ct->ptr, shared_secret->ptr, pk->ptr) != 0) {
+            ret = KEM_BAD_FUNC_ARG;
+        }
+    }
+
+	if (ret == 0) {
+        switch (alg) {
+        case KYBER_LEVEL1:
+			ct->len = CRYPTO_CIPHERTEXTBYTES;
+            shared_secret->len = CRYPTO_BYTES;
+            break;
+        case KYBER_LEVEL3:
+			ct->len = CRYPTO_CIPHERTEXTBYTES;
+            shared_secret->len = CRYPTO_BYTES;
+            break;
+        case KYBER_LEVEL5:
+			ct->len = CRYPTO_CIPHERTEXTBYTES;
+            shared_secret->len = CRYPTO_BYTES;
+            break;
+		case HQC_LEVEL1:
+			ct->len =  CRYPTO_CIPHERTEXTBYTES;
+			shared_secret->len = CRYPTO_BYTES;
+		break;
+        default:
+            /* No other values supported. */
+            ret = -1; // Na to allaxw
+            break;
+        }
+    }
+
+	return ret;
+
+#endif //LIBOQS
 }
 
 enum err WEAK kem_decapsulate(enum ecdh_alg alg,
@@ -214,7 +301,11 @@ enum err WEAK kem_decapsulate(enum ecdh_alg alg,
 				  const struct byte_array *sk,
 			      const struct byte_array * shared_secret){
 
-const char* algName = NULL;
+
+
+#ifdef LIBOQS
+
+	const char* algName = NULL;
     OQS_KEM *kem = NULL;
 	int ret = 0;
 
@@ -241,6 +332,22 @@ const char* algName = NULL;
 	OQS_KEM_free(kem);
 
 	return ret;
+
+#else // LIBOQS
+	// This is PQM4
+
+	int ret = 0;
+
+
+	if (ret == 0) {
+        if (crypto_kem_dec(shared_secret->ptr, ct->ptr, sk->ptr) != 0) {
+            ret = KEM_BAD_FUNC_ARG;
+        }
+    }
+
+	return ret;
+
+#endif //LIBOQS
 }
 
 enum err WEAK static_signature_key_gen(enum sign_alg alg,
