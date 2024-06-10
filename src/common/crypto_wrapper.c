@@ -21,6 +21,8 @@
 #include "edhoc/suites.h"
 #include "edhoc/buffer_sizes.h"
 
+
+
 #ifdef EDHOC_MOCK_CRYPTO_WRAPPER
 struct edhoc_mock_cb edhoc_crypto_mock_cb;
 #endif // EDHOC_MOCK_CRYPTO_WRAPPER
@@ -67,9 +69,11 @@ modify setting in include/psa/crypto_config.h
 #include <oqs/kem.h>
 #endif
 
+#ifdef PQM4
+#include <api.h>
+#endif
 
-#ifdef LIBOQS
-
+#if defined(PQM4) || defined(LIBOQS) 
 static const char* OQS_ID2name(int id) {
     switch (id) {
         case KYBER_LEVEL1: return OQS_KEM_alg_ml_kem_512;

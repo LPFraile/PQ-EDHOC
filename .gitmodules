@@ -25,3 +25,6 @@
 [submodule "externals/liboqs"]
 	path = externals/liboqs
 	url = git@github.com:open-quantum-safe/liboqs.git
+[submodule "externals/pqm4"]
+	path = externals/pqm4
+	url = https://github.com/mupq/pqm4.git
