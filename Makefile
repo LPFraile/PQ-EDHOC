@@ -164,6 +164,11 @@ EXTERNAL_LIB_PATH = externals/liboqs/build/lib
 EXTERNAL_STATIC_LIB = liboqs.a
 endif
 
+ifeq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
+C_INCLUDES += -Iexternals/pqm4/common
+C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber512/m4fstack
+endif
+
 #add include paths
 EXTENDED_CFLAGS += $(C_INCLUDES)
 

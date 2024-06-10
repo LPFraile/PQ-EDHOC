@@ -74,6 +74,7 @@ modify setting in include/psa/crypto_config.h
 #endif
 
 #if defined(PQM4) || defined(LIBOQS) 
+#ifdef LIBOQS
 static const char* OQS_ID2name(int id) {
     switch (id) {
         case KYBER_LEVEL1: return OQS_KEM_alg_ml_kem_512;
@@ -89,7 +90,7 @@ static const char* OQS_ID2name(int id) {
     }
     return NULL;
 }
-
+#endif
 enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
 				   struct byte_array *sk,
 				   struct byte_array *pk)
