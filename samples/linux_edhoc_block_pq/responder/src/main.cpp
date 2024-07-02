@@ -40,11 +40,12 @@ extern "C" {
 
 //#define COAP_Q_BLOCK_SUPPORT 1
 #define MAX_PAYLOAD_SIZE 1024
-#define MAX_BLOCK_SIZE 128
+#define MAX_BLOCK_SIZE 512
+#define COAP_SESSION_MTU 600
 
-static uint8_t my_buffer[1024];
+static uint8_t my_buffer[5000];
 static int my_buffer_len = 0;
-static uint8_t my_buffer2[1024];
+static uint8_t my_buffer2[5000];
 static int my_buffer_len2 = 0;
 coap_context_t *ctx = NULL;
 coap_endpoint_t *endpoint;
@@ -121,9 +122,9 @@ int setup_server(void)
     }
     
 	coap_context_set_block_mode(ctx,  COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
-	size_t max_block_size = 64;
-	if(coap_context_set_max_block_size(ctx,max_block_size)==1){
-		printf("Block size setting to %zu\n",max_block_size);
+	//size_t max_block_size = 64;
+	if(coap_context_set_max_block_size(ctx,MAX_BLOCK_SIZE)==1){
+		printf("Block size setting to %zu\n",MAX_BLOCK_SIZE);
 	}
 	else{
 		printf("Erros ins et max block size\n");
@@ -197,7 +198,7 @@ void * edhoc_responder_init(void *arg)
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 1;
+	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_r.sock = &sockfd;

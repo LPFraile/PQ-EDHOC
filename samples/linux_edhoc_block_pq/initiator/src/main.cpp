@@ -26,7 +26,7 @@ extern "C" {
 //#include "cantcoap.h"
 
 #include "coap3/coap.h"
-
+#define PQ_PROPOSAL_1
 #define USE_IPV4
 //#define USE_IPV6 
 //#define SERVER_ADDR "2001:db8::1"
@@ -34,10 +34,11 @@ extern "C" {
 #define SERVER_PORT "5683"
 #define RESOURCE_PATH ".well-known/edhoc"
 /*comment this out to use DH keys from the test vectors*/
-#define USE_RANDOM_EPHEMERAL_DH_KEY
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
 
 #define DEFAULT_WAIT_TIME 90
-#define MAX_BLOCK_SIZE 128
+#define MAX_BLOCK_SIZE 512
+#define COAP_SESSION_MTU 600
 /**
  * @brief	Initializes sockets for CoAP client.
  * @param
@@ -47,7 +48,7 @@ coap_context_t *ctx = NULL;
 coap_session_t *session = NULL;
 coap_address_t server_addr;
 
-static uint8_t my_buffer[1024];
+static uint8_t my_buffer[5000];
 static int my_buffer_len = 0;
 
 static coap_response_t
@@ -121,9 +122,9 @@ int setup(void) {
 
 	coap_context_set_block_mode(ctx,
                               COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
-	size_t max_block_size = 64;
-	if(coap_context_set_max_block_size(ctx,max_block_size)==1){
-		printf("Block size setting to %zu\n",max_block_size);
+	
+	if(coap_context_set_max_block_size(ctx,MAX_BLOCK_SIZE)==1){
+		printf("Block size setting to %zu\n",MAX_BLOCK_SIZE);
 	}
 	else{
 		printf("Erros ins et max block size\n");
@@ -137,7 +138,7 @@ int setup(void) {
     server_addr.addr.sin.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IPv4 address
 
     session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
-	coap_session_set_mtu(session,512);
+	coap_session_set_mtu(session,COAP_SESSION_MTU);
     if (!session) {
         fprintf(stderr, "Failed to create CoAP session\n");
         coap_free_context(ctx);
@@ -172,8 +173,8 @@ enum err tx(void* sock,struct byte_array *data)
 {
 	coap_pdu_t *request_pdu = NULL;
     coap_uri_t uri;
-	uint8_t data_test[1000];
-	size_t data_len= 1000;
+	//uint8_t data_test[1000];
+	//size_t data_len= 1000;
 	 // Parse server URI
     if (!coap_split_uri((const uint8_t *)"coap://[" SERVER_ADDR "]:" SERVER_PORT RESOURCE_PATH, strlen(SERVER_ADDR) + strlen(SERVER_PORT) + strlen(RESOURCE_PATH) + 8, &uri)) {
         fprintf(stderr, "Failed to parse URI\n");
@@ -192,9 +193,9 @@ enum err tx(void* sock,struct byte_array *data)
     coap_add_option(request_pdu, COAP_OPTION_URI_PATH, uri.path.length, uri.path.s);
     //coap_add_data(request_pdu,data->len,data->ptr);
 	PRINT_ARRAY("DATA",data->ptr, data->len);
-	//coap_add_data_large_request(session,request_pdu,data->len,data->ptr,NULL,NULL);	
+	coap_add_data_large_request(session,request_pdu,data->len,data->ptr,NULL,NULL);	
 	
-	coap_add_data_large_request(session,request_pdu,data_len,data_test,NULL,NULL);
+	//coap_add_data_large_request(session,request_pdu,data_len,data_test,NULL,NULL);
 
 
     int result = coap_send(session, request_pdu);
@@ -218,11 +219,12 @@ enum err rx(void* sock, struct byte_array *data) {
 	uint32_t timeout_ms;
 	result = coap_io_process(ctx, timeout_ms);
 	printf("RESULT %d\n",result);
-	if(result>0){
+	//if(result>0){
 		printf("result is biigger than 0\n");
 		memcpy(data->ptr,my_buffer,my_buffer_len);
 		data->len = my_buffer_len;
-	}
+		PRINT_ARRAY("data:",data->ptr,data->len);
+	//}
   }
 /*
   coap_session_release(session);
@@ -245,7 +247,7 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	uint8_t TEST_VEC_NUM = 1;
+	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -314,6 +316,29 @@ int main()
 	PRINT_ARRAY("public ephemeral DH key", c_i.x.ptr, c_i.x.len);
 
 #endif
+
+#ifdef PQ_PROPOSAL_1
+    /*Ephemeral Key generation for KEMs*/
+
+	struct suite suit_in;
+	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
+		      &suit_in);
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
+	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,&PQ_public_random));
+	/*BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
+	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
+	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));*/
+	c_i.g_x.ptr = PQ_public_random.ptr;
+	c_i.g_x.len = PQ_public_random.len;
+	c_i.x.ptr = PQ_secret_random.ptr;
+	c_i.x.len = PQ_secret_random.len;
+	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
+	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
+
+#endif
+
 
 #ifdef TINYCRYPT
 	/* Register RNG function */
