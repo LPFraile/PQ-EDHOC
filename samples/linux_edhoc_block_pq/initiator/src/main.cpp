@@ -33,6 +33,8 @@ extern "C" {
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT "5683"
 #define RESOURCE_PATH ".well-known/edhoc"
+//#define COAP_CLIENT_URI "coap://coap.me/hello"
+#define COAP_CLIENT_URI "coap://127.0.0.1:5683/edhoc"
 /*comment this out to use DH keys from the test vectors*/
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
 
@@ -50,6 +52,8 @@ coap_address_t server_addr;
 
 static uint8_t my_buffer[5000];
 static int my_buffer_len = 0;
+static uint8_t my_buffer_2[5000];
+static int my_buffer_len_2 = 0;
 
 static coap_response_t
 message_handler(coap_session_t *session  COAP_UNUSED,
@@ -176,24 +180,54 @@ enum err tx(void* sock,struct byte_array *data)
 	//uint8_t data_test[1000];
 	//size_t data_len= 1000;
 	 // Parse server URI
-    if (!coap_split_uri((const uint8_t *)"coap://[" SERVER_ADDR "]:" SERVER_PORT RESOURCE_PATH, strlen(SERVER_ADDR) + strlen(SERVER_PORT) + strlen(RESOURCE_PATH) + 8, &uri)) {
+   /* if (!coap_split_uri((const uint8_t *)"coap://[" SERVER_ADDR "]:"  RESOURCE_PATH, strlen(SERVER_ADDR) + strlen(SERVER_PORT) + strlen(RESOURCE_PATH) + 8, &uri)) {
         fprintf(stderr, "Failed to parse URI\n");
         cleanup();
 		return unexpected_result_from_ext_lib;
-    }
+    }*/
+	memcpy(my_buffer_2,data->ptr,data->len);
+	my_buffer_len_2 = data->len;
+   const char *coap_uri = COAP_CLIENT_URI;
+	 /* Parse the URI */
+	int len = coap_split_uri((const unsigned char *)coap_uri, strlen(coap_uri), &uri);
+	if (len != 0) {
+		PRINTF("Failed to parse uri %s\n", coap_uri);
+	}
+  
 	// Create POST request PDU (confirmable)
-    request_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_CODE_POST, 0 /* message id */, coap_session_max_pdu_size(session));
+    /*request_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_CODE_POST, 0 , coap_session_max_pdu_size(session));
     if (!request_pdu) {
         fprintf(stderr, "Failed to create request PDU\n");
         cleanup();
 		return unexpected_result_from_ext_lib;
     }
+	*/
+    PRINT_ARRAY("uri path:",uri.path.s,uri.path.length);
+	PRINT_ARRAY("uri host:",uri.host.s,uri.host.length);
 
-    // Set URI path and payload
+	PRINTF("uri port:%d",uri.port);
+    const char *path2 = "edhoc";
+    // Create CoAP session
+    /*session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
+    if (!session) {
+        fprintf(stderr, "Failed to create CoAP session\n");
+        coap_free_context(ctx);
+        //return -1;
+    }*/
+
+  // Prepare request PDU
+    request_pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_POST,session);
+    if (!request_pdu) {
+        fprintf(stderr, "Failed to create CoAP request PDU\n");
+        coap_free_context(ctx);
+       // return -1;
+    }
+	// Set URI path and payload
     coap_add_option(request_pdu, COAP_OPTION_URI_PATH, uri.path.length, uri.path.s);
     //coap_add_data(request_pdu,data->len,data->ptr);
 	PRINT_ARRAY("DATA",data->ptr, data->len);
-	coap_add_data_large_request(session,request_pdu,data->len,data->ptr,NULL,NULL);	
+	//coap_add_data_large_request(session,request_pdu,data->len,data->ptr,NULL,NULL);	
+	coap_add_data_large_request(session,request_pdu,my_buffer_len_2,my_buffer_2,NULL,NULL);	
 	
 	//coap_add_data_large_request(session,request_pdu,data_len,data_test,NULL,NULL);
 
@@ -204,7 +238,7 @@ enum err tx(void* sock,struct byte_array *data)
         cleanup();
 		return unexpected_result_from_ext_lib;
     }
-
+	PRINT_MSG("Finished to send long message\n");
 	return ok;
 }
 
@@ -367,6 +401,18 @@ int main()
 			   &oscore_master_salt));
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
+	int result = -1;
+	while (coap_io_pending(ctx)) {
+		uint32_t timeout_ms;
+		result = coap_io_process(ctx, timeout_ms);
+		printf("RESULT %d\n",result);
+		//if(result>0){
+			printf("waiting for something \n");
+		//memcpy(data->ptr,my_buffer,my_buffer_len);
+		//data->len = my_buffer_len;
+		//PRINT_ARRAY("data:",data->ptr,data->len);
+		//}
+  	}
 
 	close(sockfd);
 	return 0;

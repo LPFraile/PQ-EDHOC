@@ -37,9 +37,9 @@ extern "C" {
 
 /*comment this out to use DH keys from the test vectors*/
 #define USE_RANDOM_EPHEMERAL_DH_KEY
-
+#define OAP_DEBUG_BUF_SIZE 5000
 //#define COAP_Q_BLOCK_SUPPORT 1
-#define MAX_PAYLOAD_SIZE 1024
+#define MAX_PAYLOAD_SIZE 5000
 #define MAX_BLOCK_SIZE 512
 #define COAP_SESSION_MTU 600
 
@@ -67,7 +67,9 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 	printf("Handle post\n");
 
 	coap_get_data_large(request, &size, &data, &offset, &total);
+	PRINT_MSG("large data get it!\n");
 	if (size > MAX_PAYLOAD_SIZE) {
+		PRINT_MSG("Size biger than max payload\n");
 		size = MAX_PAYLOAD_SIZE;
 	}
 	memcpy(my_buffer, data, size);
@@ -78,7 +80,6 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
     sem_wait(&semaphore);
    
     coap_pdu_set_code(response,COAP_RESPONSE_CODE_CHANGED);
-;
     PRINT_ARRAY("MSG:",my_buffer2,my_buffer_len2);
   
     /* Echo back the data received in the request payload */
@@ -143,21 +144,56 @@ int setup_server(void)
         coap_free_context(ctx);
         return -1;
     }
+	    // Create the CoAP resource
+   // coap_str_const_t *path = coap_make_str_const(".well-known/edhoc");
+     //   resource = coap_resource_init(path, 0);
+	 resource =  coap_resource_init(coap_make_str_const("edhoc"), 0);
+        if (!resource) {
+            fprintf(stderr, "Cannot create resource\n");
+            coap_free_context(ctx);
+            return -1;
+        }
+
+        // Register the handler for POST requests
+        coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
+
+        // Add the resource to the context
+        coap_add_resource(ctx, resource);
+   
+
+		  /* Create the CoAP resource */
+	/*resource =  coap_resource_init(coap_make_str_const(".well-known/edhoc"), 0);
+	//resource =  coap_resource_unknown_init2(hnd_post, 0);
+	if (!resource) {
+		PRINT_MSG("Cannot create resource\n");
+		coap_free_context(ctx);
+		return -1;
+	}*/
 	  /* Create the CoAP resource */
-	resource =  coap_resource_unknown_init2(hnd_post, 0);
+	/*resource =  coap_resource_unknown_init2(hnd_post, 0);
 	if (!resource) {
 		fprintf(stderr, "Cannot create resource\n");
 		coap_free_context(ctx);
 		return -1;
-	}
+	}*/
 	 
-	coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
-    coap_add_resource(ctx, resource);
+	//coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
+    //coap_add_resource(ctx, resource);
     printf("FINISHED to  setup server\n");
 	// Run CoAP server main loop (pseudo-code)
-    while (1) {
+    /*while (1) {
         coap_run_once(ctx, 0); // Non-blocking operation
-    } 
+    } */
+
+	// Main loop to handle incoming requests
+    while (1) {
+        coap_io_process(ctx, COAP_IO_WAIT);
+    }
+
+	   // Clean up
+	PRINT_MSG("GO TO FREE CONTEXTS\n");
+    coap_free_context(ctx);
+    coap_cleanup();
     return 0;
 }
 
