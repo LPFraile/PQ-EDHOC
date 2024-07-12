@@ -65,6 +65,64 @@
 
 #endif
 
+
+#ifdef PQM4
+#include <api.h>
+
+#ifdef HQC_LEVEL_1
+	#define PQ_KEM HQC_LEVEL1
+	#define G_Y_SIZE CRYPTO_BYTES 
+	#define G_X_SIZE CRYPTO_PUBLICKEYBYTES
+	#define G_I_SIZE CRYPTO_SECRETKEYBYTES 
+	#define ECDH_SECRET_SIZE 64
+#endif
+
+#ifdef KYBER_LEVEL_3 
+#ifndef HQC_LEVEL_1
+	#define PQ_KEM KYBER_LEVEL3
+	#define G_Y_SIZE CRYPTO_BYTES 
+	#define G_X_SIZE CRYPTO_PUBLICKEYBYTES
+	#define G_I_SIZE CRYPTO_SECRETKEYBYTES 
+#endif
+#endif
+
+#ifdef KYBER_LEVEL_1
+#ifndef HQC_LEVEL_1
+#ifndef KYBER_LEVEL_3
+	#define PQ_KEM KYBER_LEVEL1
+	#define G_Y_SIZE 768 
+	#define G_X_SIZE 800
+	#define G_I_SIZE 1632 
+
+#endif
+#endif
+#endif
+
+#ifdef FALCON_LEVEL_5
+	#define SIGNATURE_SIZE CRYPTO_BYTES  
+	#define PK_SIZE CRYPTO_PUBLICKEYBYTES
+#endif
+
+#ifndef FALCON_LEVEL_5
+#ifdef DILITHIUM_LEVEL_2
+	#define SIGNATURE_SIZE CRYPTO_BYTES  
+	#define PK_SIZE CRYPTO_PUBLICKEYBYTES
+#endif
+#endif
+
+#ifndef FALCON_LEVEL_5
+#ifndef DILITHIUM_LEVEL_2
+#ifdef FALCON_LEVEL_1
+	#define SIGNATURE_SIZE 690
+	#define PK_SIZE 897
+#endif
+#endif
+#endif
+#define CRED_I_SIZE PK_SIZE*3
+#define CRED_R_SIZE PK_SIZE*3
+
+#endif
+
 #ifndef EAD_SIZE
 #define EAD_SIZE 0
 #endif

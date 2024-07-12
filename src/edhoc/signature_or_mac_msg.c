@@ -135,7 +135,7 @@ static enum err signature_struct_gen(const struct byte_array *th,
 		context_str, (uint32_t)strlen((char *)context_str));
 
 	TRY(cose_sig_structure_encode(&str, id_cred, &tmp, mac, out));
-	PRINT_ARRAY("COSE_Sign1 object to be signed", out->ptr, out->len);
+	//PRINT_ARRAY("COSE_Sign1 object to be signed", out->ptr, out->len);
 	return ok;
 }
 
@@ -173,7 +173,7 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 
 			signature_or_mac->len =
 				get_signature_len(suite->edhoc_sign);
-			TRY(sign(suite->edhoc_sign, sk, pk, &sign_struct,
+			TRY(sign_edhoc(suite->edhoc_sign, sk, pk, &sign_struct,
 				 signature_or_mac->ptr, &signature_or_mac->len));
 			PRINT_ARRAY("signature_or_mac (is signature)",
 				    signature_or_mac->ptr,
@@ -214,8 +214,8 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 			PRINT_ARRAY("signature_or_mac", signature_or_mac->ptr,
 				    signature_or_mac->len);
 
-
-			TRY(verify(suite->edhoc_sign, pk,
+            PRINTF("Before verify %d\n",suite->edhoc_sign);
+			TRY(verify_edhoc(suite->edhoc_sign, pk,
 				   (struct const_byte_array *)&sign_struct,
 				   (struct const_byte_array *)signature_or_mac,
 				   &result));

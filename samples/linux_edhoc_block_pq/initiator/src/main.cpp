@@ -34,7 +34,13 @@ extern "C" {
 #define SERVER_PORT "5683"
 #define RESOURCE_PATH ".well-known/edhoc"
 //#define COAP_CLIENT_URI "coap://coap.me/hello"
+#ifdef USE_IPV4
 #define COAP_CLIENT_URI "coap://127.0.0.1:5683/edhoc"
+#endif
+
+#ifdef USE_IPV6
+#define COAP_CLIENT_URI "coap://2001:db8::1/edhoc"
+#endif
 /*comment this out to use DH keys from the test vectors*/
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
 
@@ -137,10 +143,16 @@ int setup(void) {
 	coap_register_response_handler(ctx, message_handler);
     // Create CoAP session
     coap_address_init(&server_addr);
+	#ifdef USE_IPV4
     server_addr.addr.sin.sin_family = AF_INET;
     server_addr.addr.sin.sin_port = htons(5683); // Standard CoAP port
     server_addr.addr.sin.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IPv4 address
-
+    #endif
+	#ifdef USE_IPV6
+	server_addr.addr.sin6.sin6_family = AF_INET6;
+    inet_pton(AF_INET6, SERVER_ADDR, &server_addr.addr.sin6.sin6_addr);
+    server_addr.addr.sin6.sin6_port = htons(atoi(SERVER_PORT));
+	#endif
     session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
 	coap_session_set_mtu(session,COAP_SESSION_MTU);
     if (!session) {

@@ -167,6 +167,9 @@ endif
 ifeq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
 C_INCLUDES += -Iexternals/pqm4/common
 C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber512/m4fstack
+#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+C_INCLUDES += -Iexternals/pqm4/crypto_sign/falcon-512/m4-ct
+C_INCLUDES += -Iexternals/pqm4/libopencm3/include
 endif
 
 #add include paths

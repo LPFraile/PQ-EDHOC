@@ -60,7 +60,7 @@ msg1_parse(struct byte_array *msg1, enum method_type *method,
 	uint32_t i;
 	struct message_1 m;
 	size_t decode_len = 0;
-
+    PRINT_ARRAY("msg1 ", msg1->ptr, msg1->len);
 	TRY_EXPECT(cbor_decode_message_1(msg1->ptr, msg1->len, &m, &decode_len),
 		   0);
 
@@ -202,7 +202,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 		*   Set the g_y with the ciphertex message c   
 		*/
 	    PRINT_MSG("PQ KEM encapsulation\n");
-		#ifdef LIBOQS
+		#if defined(PQM4) || defined(LIBOQS)
 	    PRINT_ARRAY("PQ DEV - g_x ", g_x.ptr, g_x.len);
 		TRY(kem_encapsulate(rc->suite.edhoc_ecdh,&g_x,&c->g_y,&g_xy));
 		PRINT_ARRAY("G_XY (PQ SS)", g_xy.ptr, g_xy.len);
@@ -214,6 +214,8 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	} 
 	else{
 		/*calculate the DH shared secret*/
+		PRINT_ARRAY("y ", c->y.ptr, c->y.len);
+		PRINT_ARRAY("gx ", g_x.ptr, g_x.len);
 		TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->y, &g_x, g_xy.ptr));
 		PRINT_ARRAY("G_XY (ECDH shared secret) ", g_xy.ptr, g_xy.len);
 	}	

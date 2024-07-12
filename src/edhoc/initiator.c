@@ -90,7 +90,8 @@ enum err msg1_gen(const struct edhoc_initiator_context *c,
 	/* G_X ephemeral public key */
 	m1.message_1_G_X.value = c->g_x.ptr;
 	m1.message_1_G_X.len = c->g_x.len;
-
+	PRINT_ARRAY("MSG1 gx",m1.message_1_G_X.value, m1.message_1_G_X.len);	
+	PRINT_ARRAY("X (eph -rpivate I)",c->x.ptr, c->x.len);
 	/* C_I connection ID  of the initiator*/
 
 	PRINT_ARRAY("C_I", c->c_i.ptr, c->c_i.len);
@@ -111,7 +112,7 @@ enum err msg1_gen(const struct edhoc_initiator_context *c,
 	} else {
 		m1.message_1_ead_1_present = false;
 	}
-	
+
 	size_t payload_len_out;
 	TRY_EXPECT(cbor_encode_message_1(rc->msg.ptr, rc->msg.len, &m1,
 					 &payload_len_out),
@@ -138,11 +139,14 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_12)){
 		/*Set Gy size to the ciphertext size for KEMs*/
 		g_y_size = get_kem_cc_len(rc->suite.edhoc_ecdh);
+		PRINTF("Set gy to the ciphertext size for KEMS: %d\n",g_y_size);
 	}
 	else{
 		/*Set Gy size to the dh key size for DH*/
+		PRINT_MSG("Set gy to the dh key size for DH");
 		g_y_size =  get_ecdh_pk_len(rc->suite.edhoc_ecdh);
 	}
+	PRINTF("G_Y_SIZE: %d",G_Y_SIZE);
 	BYTE_ARRAY_NEW(g_y, G_Y_SIZE, g_y_size);
   uint32_t ciphertext_len = rc->msg.len - g_y.len;
 
@@ -162,7 +166,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
 		PRINT_MSG("KEM decapsulation\n");
-		#ifdef LIBOQS
+		#if defined(PQM4) || defined(LIBOQS)
 		PRINT_ARRAY("G_Y (PQ CC) ", g_y.ptr, g_y.len);
 		TRY(kem_decapsulate(rc->suite.edhoc_ecdh, &g_y, &c->x, &g_xy));
 		PRINT_ARRAY("G_XY (PQ SS) ", g_xy.ptr, g_xy.len);
@@ -172,6 +176,8 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 		#endif
 	}
 	else{
+		PRINT_ARRAY("x ", c->x.ptr, c->x.len);
+		PRINT_ARRAY("gy ", g_y.ptr, g_y.len);
 		TRY(shared_secret_derive(rc->suite.edhoc_ecdh, &c->x, &g_y, g_xy.ptr));
 		PRINT_ARRAY("G_XY (ECDH shared secret) ", g_xy.ptr, g_xy.len);
 	} 
@@ -314,6 +320,7 @@ enum err edhoc_initiator_run_extended(
 	
 	/*create and send message 1*/
 	TRY(msg1_gen(c, &rc));
+	PRINT_ARRAY("MSG:",rc.msg.ptr,rc.msg.len);
 	TRY(tx(c->sock, &rc.msg));
 
 	/*receive message 2*/

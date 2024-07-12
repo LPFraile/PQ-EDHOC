@@ -28,19 +28,20 @@ extern "C" {
 }
 
 #include "coap3/coap.h"
-#define USE_IPV4
-//#define USE_IPV6 
+//#define USE_IPV4
+#define USE_IPV6 
 //#define SERVER_ADDR "2001:db8::1"
+#ifdef USE_IPV4
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT "5683"
 #define RESOURCE_PATH "edhoc"
-
+#endif
 /*comment this out to use DH keys from the test vectors*/
-#define USE_RANDOM_EPHEMERAL_DH_KEY
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
 
 //#define COAP_Q_BLOCK_SUPPORT 1
 #define MAX_PAYLOAD_SIZE 1024
-#define MAX_BLOCK_SIZE 128
+#define MAX_BLOCK_SIZE 256
 
 static uint8_t my_buffer[1024];
 static int my_buffer_len = 0;
@@ -106,6 +107,8 @@ enum err rx(void* sock, struct byte_array *data) {
 	return ok;
   
 } 
+#ifdef USE_IPV4
+
 /* Function to set up the CoAP server*/
 int setup_server(void)
 {
@@ -121,9 +124,9 @@ int setup_server(void)
     }
     
 	coap_context_set_block_mode(ctx,  COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
-	size_t max_block_size = 64;
-	if(coap_context_set_max_block_size(ctx,max_block_size)==1){
-		printf("Block size setting to %zu\n",max_block_size);
+	//size_t max_block_size = 64;
+	if(coap_context_set_max_block_size(ctx,MAX_BLOCK_SIZE)==1){
+		printf("Block size setting to %zu\n",MAX_BLOCK_SIZE);
 	}
 	else{
 		printf("Erros ins et max block size\n");
@@ -159,7 +162,69 @@ int setup_server(void)
     } 
     return 0;
 }
+#endif
+#ifdef USE_IPV6
+#define SERVER_ADDR "2001:db8::2"
+#define SERVER_PORT "5683"
+#define RESOURCE_PATH ".well-known/edhoc"
+/* Function to set up the CoAP server*/
+int setup_server(void)
+{
 
+    // Initialize CoAP library
+	printf("SETUP SERVER\n");
+    coap_startup();
+    // Create CoAP context
+    ctx = coap_new_context(NULL);
+    if (!ctx) {
+        fprintf(stderr, "Failed to create CoAP context\n");
+        return -1;
+    }
+    
+	coap_context_set_block_mode(ctx,  COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
+	//size_t max_block_size = 64;
+	if(coap_context_set_max_block_size(ctx,MAX_BLOCK_SIZE)==1){
+		printf("Block size setting to %zu\n",MAX_BLOCK_SIZE);
+	}
+	else{
+		printf("Erros ins et max block size\n");
+	}
+
+    // Set up server address
+    coap_address_init(&server_addr);
+	server_addr.addr.sin6.sin6_family = AF_INET6;
+    server_addr.addr.sin6.sin6_port = htons(5683); // Standard CoAP port
+   // server_addr.addr.sin6.sin6_addr = inet_addr("2001:db8::2"); // Server IPv4 address
+    /*server_addr.addr.sin6.sin6_family = AF_INET6;*/
+    inet_pton(AF_INET6, SERVER_ADDR, &server_addr.addr.sin6.sin6_addr);
+   /* server_addr.addr.sin6.sin6_port = htons(atoi(SERVER_PORT));
+*/
+    // Create CoAP endpoint
+    endpoint = coap_new_endpoint(ctx, &server_addr, COAP_PROTO_UDP);
+    if (!endpoint) {
+        fprintf(stderr, "Failed to create CoAP endpoint\n");
+        coap_free_context(ctx);
+        return -1;
+    }
+	  /* Create the CoAP resource */
+	resource =  coap_resource_unknown_init2(hnd_post, 0);
+	if (!resource) {
+		fprintf(stderr, "Cannot create resource\n");
+		coap_free_context(ctx);
+		return -1;
+	}
+	 
+	coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
+    coap_add_resource(ctx, resource);
+    printf("FINISHED to  setup server\n");
+	// Run CoAP server main loop (pseudo-code)
+    while (1) {
+        coap_run_once(ctx, 0); // Non-blocking operation
+    } 
+    return 0;
+}
+
+#endif
 
 enum err ead_process(void *params, struct byte_array *ead13)
 {
@@ -197,7 +262,7 @@ void * edhoc_responder_init(void *arg)
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 1;
+	uint8_t TEST_VEC_NUM = 2;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_r.sock = &sockfd;

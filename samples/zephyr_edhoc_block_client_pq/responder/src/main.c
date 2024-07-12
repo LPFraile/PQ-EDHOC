@@ -9,40 +9,15 @@
    except according to those terms.
 */
 
-#include <arpa/inet.h>
-#include <errno.h>
-#include <netinet/in.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
 
-extern "C" {
+#include <zephyr/net/coap.h>
+
 #include "edhoc.h"
 #include "sock.h"
 #include "edhoc_test_vectors_p256_v16.h"
-}
-#include "cantcoap.h"
 
-#define USE_IPV4
-//#define USE_IPV6
-
-CoapPDU *txPDU = new CoapPDU();
-
-char buffer[MAXLINE];
-CoapPDU *rxPDU;
-
-/*comment this out to use DH keys from the test vectors*/
-//#define USE_RANDOM_EPHEMERAL_DH_KEY
-
-#ifdef USE_IPV6
-struct sockaddr_in6 client_addr;
-#endif
-#ifdef USE_IPV4
-struct sockaddr_in client_addr;
-#endif
+struct sockaddr_storage client_addr;
 socklen_t client_addr_len;
 
 /**
@@ -53,58 +28,24 @@ socklen_t client_addr_len;
 static int start_coap_server(int *sockfd)
 {
 	int err;
-#ifdef USE_IPV4
-	struct sockaddr_in servaddr;
-	//struct sockaddr_in client_addr;
-	client_addr_len = sizeof(client_addr);
-	memset(&client_addr, 0, sizeof(client_addr));
-	const char IPV4_SERVADDR[] = { "127.0.0.1" };
-	//const char IPV4_SERVADDR[] = { "192.168.43.63" };
-	err = sock_init(SOCK_SERVER, IPV4_SERVADDR, IPv4, &servaddr,
-			sizeof(servaddr), sockfd);
-	if (err < 0) {
-		printf("error during socket initialization (error code: %d)",
-		       err);
-		return -1;
-	}
-#endif
-#ifdef USE_IPV6
+
 	struct sockaddr_in6 servaddr;
 	//struct sockaddr_in6 client_addr;
 	client_addr_len = sizeof(client_addr);
 	memset(&client_addr, 0, sizeof(client_addr));
-	const char IPV6_SERVADDR[] = { "2001:db8::2" };
-	err = sock_init(SOCK_SERVER, IPV6_SERVADDR, IPv6, &servaddr,
-			sizeof(servaddr), sockfd);
+	const char IPV6_SERVADDR[] = { "2001:db8::1" };
+	err = ipv6_sock_init(SOCK_SERVER, IPV6_SERVADDR, &servaddr,
+			     sizeof(servaddr), sockfd);
 	if (err < 0) {
 		printf("error during socket initialization (error code: %d)",
 		       err);
 		return -1;
 	}
-#endif
 
 	return 0;
 }
-/**
- * @brief	Sends CoAP packet over network.
- * @param	pdu pointer to CoAP packet
- * @retval	error code
- */
-static int send_coap_reply(void *sock, CoapPDU *pdu)
-{
-	int r;
 
-	r = sendto(*((int *)sock), pdu->getPDUPointer(), pdu->getPDULength(), 0,
-		   (struct sockaddr *)&client_addr, client_addr_len);
-	if (r < 0) {
-		printf("Error: failed to send reply (Code: %d, ErrNo: %d)\n", r,
-		       errno);
-		return r;
-	}
-
-	printf("CoAP reply sent!\n");
-	return 0;
-}
+struct coap_packet cp_req;
 
 enum err ead_process(void *params, struct byte_array *ead13)
 {
@@ -115,59 +56,84 @@ enum err ead_process(void *params, struct byte_array *ead13)
 
 enum err tx(void *sock, struct byte_array *data)
 {
-	txPDU->setCode(CoapPDU::COAP_CHANGED);
-	txPDU->setPayload(data->ptr, data->len);
-	send_coap_reply(sock, txPDU);
+	char buffer[MAXLINE];
+	struct coap_packet cp_ack;
+	int r;
+	const uint8_t COAP_CHANGED = 0b01000100;
+
+	r = coap_ack_init(&cp_ack, &cp_req, buffer, sizeof(buffer),
+			  COAP_CHANGED);
+	if (r < 0) {
+		printf("coap_ack_init failed\n");
+		return unexpected_result_from_ext_lib;
+	}
+
+	r = coap_packet_append_payload_marker(&cp_ack);
+	if (r < 0) {
+		printf("coap_packet_append_payload_marker failed\n");
+		return unexpected_result_from_ext_lib;
+	}
+
+	r = coap_packet_append_payload(&cp_ack, data->ptr, data->len);
+	if (r < 0) {
+		printf("coap_packet_append_payload failed\n");
+		return unexpected_result_from_ext_lib;
+	}
+
+	PRINT_ARRAY("Sending CoAP message", buffer, cp_ack.offset);
+
+	r = sendto(*((int *)sock), buffer, cp_ack.offset, 0,
+		   (struct sockaddr *)&client_addr, client_addr_len);
+	if (r < 0) {
+		printf("Error: failed to send reply (Code: %d, ErrNo: %d)\n", r,
+		       errno);
+		return r;
+	}
+
 	return ok;
 }
 
 enum err rx(void *sock, struct byte_array *data)
 {
 	int n;
+	char buffer[MAXLINE];
+
+	const uint8_t *edhoc_data_p;
+	uint16_t edhoc_data_len;
 
 	/* receive */
 	client_addr_len = sizeof(client_addr);
 	memset(&client_addr, 0, sizeof(client_addr));
+	memset(&cp_req, 0, sizeof(cp_req));
+	memset(&buffer, 0, sizeof(buffer));
 
+	printf("waiting to receive in rx()\n");
 	n = recvfrom(*((int *)sock), (char *)buffer, sizeof(buffer), 0,
 		     (struct sockaddr *)&client_addr, &client_addr_len);
 	if (n < 0) {
-		printf("recv error");
+		printf("recv error\n");
 	}
 
-	rxPDU = new CoapPDU((uint8_t *)buffer, n);
+	PRINT_ARRAY("received data", buffer, n);
 
-	if (rxPDU->validate()) {
-		rxPDU->printHuman();
-	}
+	TRY_EXPECT(coap_packet_parse(&cp_req, buffer, n, NULL, 0), 0);
 
-	PRINT_ARRAY("CoAP message", rxPDU->getPayloadPointer(),
-		    rxPDU->getPayloadLength());
+	edhoc_data_p = coap_packet_get_payload(&cp_req, &edhoc_data_len);
 
-	uint32_t payload_len = rxPDU->getPayloadLength();
-	if (data->len >= payload_len) {
-		memcpy(data->ptr, rxPDU->getPayloadPointer(), payload_len);
-		data->len = payload_len;
+	PRINT_ARRAY("received EDHOC data", edhoc_data_p, edhoc_data_len);
+
+	if (data->len >= edhoc_data_len) {
+		memcpy(data->ptr, edhoc_data_p, edhoc_data_len);
+		data->len = edhoc_data_len;
 	} else {
 		printf("insufficient space in buffer");
+		return buffer_to_small;
 	}
 
-	txPDU->reset();
-	txPDU->setVersion(rxPDU->getVersion());
-	txPDU->setMessageID(rxPDU->getMessageID());
-	txPDU->setToken(rxPDU->getTokenPointer(), rxPDU->getTokenLength());
-
-	if (rxPDU->getType() == CoapPDU::COAP_CONFIRMABLE) {
-		txPDU->setType(CoapPDU::COAP_ACKNOWLEDGEMENT);
-	} else {
-		txPDU->setType(CoapPDU::COAP_NON_CONFIRMABLE);
-	}
-
-	delete rxPDU;
 	return ok;
 }
 
-int main()
+int internal_main(void)
 {
 	int sockfd;
 	BYTE_ARRAY_NEW(prk_exporter, 32, 32);
@@ -183,7 +149,7 @@ int main()
 	uint8_t TEST_VEC_NUM = 2;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
-	TRY_EXPECT(start_coap_server(&sockfd), 0);
+	start_coap_server(&sockfd);
 
 	c_r.sock = &sockfd;
 	c_r.c_r.ptr = (uint8_t *)test_vectors[vec_num_i].c_r;
@@ -225,57 +191,33 @@ int main()
 	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
-
-#ifdef USE_RANDOM_EPHEMERAL_DH_KEY
-	uint32_t seed;
-	BYTE_ARRAY_NEW(Y_random, 32, 32);
-	BYTE_ARRAY_NEW(G_Y_random, 32, 32);
-	c_r.g_y.ptr = G_Y_random.ptr;
-	c_r.g_y.len = G_Y_random.len;
-	c_r.y.ptr = Y_random.ptr;
-	c_r.y.len = Y_random.len;
-#endif
-
 	while (1) {
-#ifdef USE_RANDOM_EPHEMERAL_DH_KEY
-		/*create ephemeral DH keys from seed*/
-		/*create a random seed*/
-		FILE *fp;
-		fp = fopen("/dev/urandom", "r");
-		uint64_t seed_len =
-			fread((uint8_t *)&seed, 1, sizeof(seed), fp);
-		fclose(fp);
-		PRINT_ARRAY("seed", (uint8_t *)&seed, seed_len);
-
-		TRY(ephemeral_dh_key_gen(P256, seed, &Y_random, &G_Y_random));
-		PRINT_ARRAY("secret ephemeral DH key", c_r.g_y.ptr,
-			    c_r.g_y.len);
-		PRINT_ARRAY("public ephemeral DH key", c_r.y.ptr, c_r.y.len);
-#endif
-
-#ifdef TINYCRYPT
-		/* Register RNG function */
-		uECC_set_rng(default_CSPRNG);
-#endif
-
-		TRY(edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out,
-					tx, rx, ead_process));
+		edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out, tx,
+				    rx, ead_process);
 		PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
-		TRY(prk_out2exporter(SHA_256, &PRK_out, &prk_exporter));
+		prk_out2exporter(SHA_256, &PRK_out, &prk_exporter);
 		PRINT_ARRAY("prk_exporter", prk_exporter.ptr, prk_exporter.len);
 
-		TRY(edhoc_exporter(SHA_256, OSCORE_MASTER_SECRET, &prk_exporter,
-				   &oscore_master_secret));
+		edhoc_exporter(SHA_256, OSCORE_MASTER_SECRET, &prk_exporter,
+			       &oscore_master_secret);
 		PRINT_ARRAY("OSCORE Master Secret", oscore_master_secret.ptr,
 			    oscore_master_secret.len);
 
-		TRY(edhoc_exporter(SHA_256, OSCORE_MASTER_SALT, &prk_exporter,
-				   &oscore_master_salt));
+		edhoc_exporter(SHA_256, OSCORE_MASTER_SALT, &prk_exporter,
+			       &oscore_master_salt);
 		PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 			    oscore_master_salt.len);
 	}
 
 	close(sockfd);
 	return 0;
+}
+
+void main(void)
+{
+	int r = internal_main();
+	if (r != 0) {
+		printf("error during initiator run. Error code: %d\n", r);
+	}
 }

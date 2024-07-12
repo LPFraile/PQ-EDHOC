@@ -96,7 +96,7 @@ enum err hash(enum hash_alg alg, const struct byte_array *in,
  * @param[out] out 		Signature.
  * @return 			Ok or error code.
  */
-enum err sign(enum sign_alg alg, const struct byte_array *sk,
+enum err sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 	      const struct byte_array *pk, const struct byte_array *msg,
 	      uint8_t *out, uint32_t* out_len);
 
@@ -110,7 +110,7 @@ enum err sign(enum sign_alg alg, const struct byte_array *sk,
  * @param[out] result 		True if the verification is successfully.
  * @return 			Ok or error code.
  */
-enum err verify(enum sign_alg alg, const struct byte_array *pk,
+enum err verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 		struct const_byte_array *msg, struct const_byte_array *sgn,
 		bool *result);
 

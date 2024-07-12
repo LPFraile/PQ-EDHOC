@@ -10,13 +10,29 @@
 */
 
 #include <stdio.h>
-#include <zephyr/net/coap.h>
+#include <zephyr/net/coap_client.h>
 
 #include "edhoc.h"
 #include "sock.h"
 #include "edhoc_test_vectors_p256_v16.h"
 
 #define URI_PATH 11
+static struct coap_client client;
+//struct coap_client_request *req;
+uint8_t my_buffer[2000];
+uint8_t* ptr = my_buffer;
+size_t ptr_len = 0;
+size_t my_buffer_len = 0;
+int sockfd;
+struct k_sem my_sem;
+struct k_sem my_sem_tx;
+uint8_t my_buffer_tx[2000];
+size_t my_buffer_tx_len = 0;
+//struct k_sem my_sem_init;
+/*struct byte_array {
+	uint32_t len;
+	uint8_t *ptr;
+};*/
 
 /**
  * @brief	Initializes sockets for CoAP client.
@@ -25,11 +41,13 @@
  */
 static int start_coap_client(int *sockfd)
 {
+	PRINT_MSG("START COAP CLIENT\n");
 	struct sockaddr_in6 servaddr;
 	//const char IPV6_SERVADDR[] = { "::1" };
 	const char IPV6_SERVADDR[] = { "2001:db8::2" };
 	int r = ipv6_sock_init(SOCK_CLIENT, IPV6_SERVADDR, &servaddr,
 			       sizeof(servaddr), sockfd);
+	PRINTF("SOCKFD0-%d",sockfd);			   
 	if (r < 0) {
 		printf("error during socket initialization (error code: %d)",
 		       r);
@@ -44,7 +62,24 @@ enum err ead_process(void *params, struct byte_array *ead13)
 	/*to save RAM we use FEATURES += -DEAD_SIZE=0*/
 	return ok;
 }
-
+void response_cb(int16_t code, size_t offset, const uint8_t *payload, size_t len,
+                 bool last_block, void *user_data)
+{
+	PRINT_MSG("Response callback\n");
+    if (code >= 0) {
+            PRINTF("CoAP response from server %d\n", code);
+			memcpy(ptr,payload,len);
+			ptr_len = ptr_len + len;
+            if (last_block) {
+                PRINT_MSG("Last packet received");
+				my_buffer_len = ptr_len;
+				PRINT_ARRAY("MSG:",my_buffer,my_buffer_len);
+				k_sem_give(&my_sem);
+            }
+    } else {
+            PRINTF("Error in sending request %d", code);
+    }
+}
 /**
  * @brief	Callback function called inside the frontend when data needs to 
  * 		be send over the network. We use here CoAP as transport 
@@ -52,39 +87,70 @@ enum err ead_process(void *params, struct byte_array *ead13)
  */
 enum err tx(void *sock, struct byte_array *data)
 {
-	/* Initialize the CoAP message */
-	char *path = ".well-known/edhoc";
-	struct coap_packet request;
-	uint8_t _data[1000];
+	PRINT_MSG("Tx Message\n");
 
-	TRY_EXPECT(coap_packet_init(&request, _data, sizeof(_data), 1,
-				    COAP_TYPE_CON, 8, coap_next_token(),
-				    COAP_METHOD_POST, coap_next_id()),
-		   0);
-
-	/* Append options */
-	TRY_EXPECT(coap_packet_append_option(&request, URI_PATH, path,
-					     strlen(path)),
-		   0);
-
-	/* Append Payload marker if you are going to add payload */
-	TRY_EXPECT(coap_packet_append_payload_marker(&request), 0);
-
-	/* Append payload */
-	TRY_EXPECT(coap_packet_append_payload(&request, data->ptr, data->len),
-		   0);
-
-	PRINT_ARRAY("CoAP packet", request.data, request.offset);
-	ssize_t n = send(*((int *)sock), request.data, request.offset, 0);
-	if (n < 0) {
-		printf("send failed with error code: %d\n", n);
-	} else {
-		printf("%d bytes sent\n", n);
-	}
-
+	memcpy(my_buffer_tx,data->ptr,data->len);
+	my_buffer_tx_len = data->len;
+	//my_buffer_tx_len = 2000; 
+	PRINT_ARRAY("MSG1-0:",data->ptr,data->len);
+	PRINT_ARRAY("MSG1-0:",my_buffer_tx,my_buffer_tx_len);
+	k_sem_give(&my_sem_tx);
 	return ok;
 }
+struct coap_client_option options [1];  
+/*= {
+	.code = 60,
+	.len = 2,
+	.value = 806 ,
+}*/
+struct coap_client_request req = {
+		.method = COAP_METHOD_POST,
+		.confirmable = true,
+		.path = "edhoc",
+		.fmt = COAP_CONTENT_FORMAT_TEXT_PLAIN,
+		.cb = response_cb,
+		.payload = NULL,
+		.len = 0,
+		.options = options,
+		.num_options = 1,
 
+	};
+static int txrx_edhoc(int sockfd)
+{
+	PRINT_MSG("in txrx edhoc\n");
+	int ret = 0;
+	if (k_sem_take(&my_sem_tx, K_FOREVER) != 0) {
+        PRINT_MSG("Input data not available in txrx!\n");
+    } else {
+		PRINT_MSG("Send the messages\n");
+		PRINT_ARRAY("MSG1:",my_buffer_tx,my_buffer_tx_len);
+		req.payload = my_buffer_tx;
+		req.len = my_buffer_tx_len;
+		options.code = 60;
+		options.len = 2;
+		options.value = my_buffer_tx_len;
+		PRINTF("SOCKFD1-%d",sockfd);
+		ret = coap_client_req(&client, sockfd, NULL, &req, -1);
+		if (ret < 0){
+			PRINTF("operation fail- %d\n",ret);
+		}
+	}	
+	if (k_sem_take(&my_sem_tx, K_FOREVER) != 0) {
+        PRINT_MSG("Input data not available in txrx!\n");
+    } else {
+		k_sleep(K_MSEC(500));
+		PRINT_MSG("Send the messages\n");
+		PRINT_ARRAY("MSG3:",my_buffer_tx,my_buffer_tx_len);
+		req.payload = my_buffer_tx;
+		req.len = my_buffer_tx_len;
+		PRINTF("SOCKFD1-%d",sockfd);
+		ret = coap_client_req(&client, sockfd, NULL, &req, -1);
+		if (ret < 0){
+			PRINTF("operation fail- %d\n",ret);
+		}
+	}	
+	return ret;
+}
 /**
  * @brief	Callback function called inside the frontend when data needs to 
  * 		be received over the network. We use here CoAP as transport 
@@ -92,49 +158,70 @@ enum err tx(void *sock, struct byte_array *data)
  */
 enum err rx(void *sock, struct byte_array *data)
 {
-	int n;
-	char buffer[MAXLINE];
-	struct coap_packet reply;
-	const uint8_t *edhoc_data_p;
-	uint16_t edhoc_data_len;
-
-	/* receive */
-	n = recv(*((int *)sock), (char *)buffer, MAXLINE, MSG_WAITALL);
-	if (n < 0) {
-		printf("recv error");
-	}
-
-	PRINT_ARRAY("received data", buffer, n);
-
-	TRY_EXPECT(coap_packet_parse(&reply, buffer, n, NULL, 0), 0);
-
-	edhoc_data_p = coap_packet_get_payload(&reply, &edhoc_data_len);
-
-	PRINT_ARRAY("received EDHOC data", edhoc_data_p, edhoc_data_len);
-
-	if (data->len >= edhoc_data_len) {
+	PRINT_MSG("On RX");
+	if (k_sem_take(&my_sem, K_FOREVER) != 0) {
+        PRINT_MSG("Input data not available!");
+    } else {
+		PRINT_MSG("SET data\n");
+		memcpy(data->ptr,my_buffer,my_buffer_len);
+		data->len = my_buffer_len;
+        /* fetch available data */
+    }
+/*	if (data->len >= edhoc_data_len) {
 		memcpy(data->ptr, edhoc_data_p, edhoc_data_len);
 		data->len = edhoc_data_len;
 	} else {
 		printf("insufficient space in buffer");
 		return buffer_to_small;
-	}
+	}*/
 	return ok;
 }
 
+void edhoc_initiator_init(void)
+{
+	PRINT_MSG("Init EDHOC");
+	int r = internal_main();
+	if (r != 0) {
+		printf("error during initiator run. Error code: %d\n", r);
+	}
+}
+
+
 int internal_main(void)
 {
-	int32_t s = 10000;
-	printf("sleep for %d msecond after connection in order to have time to start wireshark on bt0\n",
-	       s);
-	k_msleep(s);
+	/*if (k_sem_take(&my_sem_init, K_MSEC(50)) != 0) {
+	}
+	else{
+		PRINT_MSG("ok\n");
+	}	*/
 
-	int sockfd;
-	BYTE_ARRAY_NEW(prk_exporter, 32, 32);
+
+	/*BYTE_ARRAY_NEW(prk_exporter, 32, 32);
 	BYTE_ARRAY_NEW(oscore_master_secret, 16, 16);
 	BYTE_ARRAY_NEW(oscore_master_salt, 8, 8);
 	BYTE_ARRAY_NEW(PRK_out, 32, 32);
-	BYTE_ARRAY_NEW(err_msg, 0, 0);
+	BYTE_ARRAY_NEW(err_msg, 0, 0);*/
+	uint8_t prk_ex[32];
+	uint8_t oscore_secret[16];
+	uint8_t oscore_salt[8];
+	uint8_t PRK[32];	
+	uint8_t err[0];
+	struct byte_array prk_exporter;
+	prk_exporter.ptr = prk_ex;
+	prk_exporter.len = 32;
+	struct byte_array err_msg;
+	err_msg.ptr = err;
+	err_msg.len = 1;
+	struct byte_array PRK_out;
+	PRK_out.ptr = PRK;
+	PRK_out.len = 32;
+	struct byte_array oscore_master_secret;
+    oscore_master_secret.ptr = oscore_secret;
+	oscore_master_secret.len = 16;
+
+	struct byte_array oscore_master_salt;
+    oscore_master_salt.ptr = oscore_salt;
+	oscore_master_salt.len = 8;
 
 	/* test vector inputs */
 	struct other_party_cred cred_r;
@@ -185,7 +272,7 @@ int internal_main(void)
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
 
-	start_coap_client(&sockfd);
+
 	edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
 
@@ -204,14 +291,31 @@ int internal_main(void)
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
 
-	close(sockfd);
+	//close(sockfd);
 	return 0;
 }
 
+
 void main(void)
 {
-	int r = internal_main();
-	if (r != 0) {
+	//int r = internal_main();
+	PRINT_MSG("MAIN\n");
+	k_sem_init(&my_sem, 0, 1);
+	k_sem_init(&my_sem_tx, 0, 2);
+	start_coap_client(&sockfd);
+    coap_client_init(&client, NULL);
+	txrx_edhoc(sockfd);
+	//coap_client_init(&client, NULL);
+	//k_sem_give(&my_sem_init);
+	/*if (r != 0) {
 		printf("error during initiator run. Error code: %d\n", r);
-	}
+	}*/
 }
+/* Create thread for EDHOC */
+K_THREAD_DEFINE(edhoc_thread, //name
+		32008, //stack_size
+		edhoc_initiator_init, //entry_function
+		NULL, NULL, NULL, //parameter1,parameter2,parameter3
+		5, //priority
+		0, //options
+		20000); //delayz

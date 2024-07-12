@@ -26,8 +26,8 @@ extern "C" {
 }
 #include "cantcoap.h"
 
-#define USE_IPV4
-//#define USE_IPV6
+//#define USE_IPV4
+#define USE_IPV6
 
 CoapPDU *txPDU = new CoapPDU();
 
@@ -180,7 +180,7 @@ int main()
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 10;
+	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	TRY_EXPECT(start_coap_server(&sockfd), 0);

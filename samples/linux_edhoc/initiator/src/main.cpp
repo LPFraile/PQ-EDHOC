@@ -28,7 +28,7 @@ extern "C" {
 #define USE_IPV4
 //#define USE_IPV6
 /*comment this out to use DH keys from the test vectors*/
-#define USE_RANDOM_EPHEMERAL_DH_KEY
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
 
 /**
  * @brief	Initializes sockets for CoAP client.
@@ -148,7 +148,7 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	uint8_t TEST_VEC_NUM = 1;
+	uint8_t TEST_VEC_NUM = 2;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;

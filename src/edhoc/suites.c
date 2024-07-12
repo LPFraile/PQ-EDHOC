@@ -15,6 +15,9 @@
 #ifdef LIBOQS
 #include <oqs/kem.h>
 #endif
+#ifdef PQM4
+#include <api.h>
+#endif
 enum err get_suite(enum suite_label label, struct suite *suite)
 {
 	switch (label) {
@@ -58,7 +61,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 		break;
-	#ifdef LIBOQS
+	#if defined(PQM4) || defined(LIBOQS) 
 	case SUITE__22:
 		suite->suite_label = SUITE__22;
 		suite->edhoc_aead = AES_CCM_16_64_128;
@@ -75,7 +78,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->edhoc_hash = SHA_256;
 		suite->edhoc_mac_len_static_dh = MAC8;
 		suite->edhoc_ecdh = KYBER_LEVEL1;
-		suite->edhoc_sign = FALCON_LEVEL1;
+		suite->edhoc_sign = FALCON_PADDED_LEVEL1;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
@@ -206,6 +209,15 @@ uint32_t get_signature_len(enum sign_alg alg)
 		return OQS_SIG_dilithium_2_length_signature;	
 		break;
 	#endif
+	#ifdef PQM4
+	case FALCON_LEVEL1:
+		return 690;
+		break;
+	case DILITHIUM_LEVEL2:
+		return CRYPTO_BYTES;	
+		break;
+	#endif
+	
 	default: 
 		return 0;
 	}
@@ -236,6 +248,11 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 		return OQS_KEM_hqc_128_length_public_key;
 		break;
 	#endif
+	#ifdef PQM4
+	case KYBER_LEVEL1:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	#endif
 	default: 
 		return 0;
 	}
@@ -257,6 +274,11 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 		break;
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
+		break;
+	#endif
+	#ifdef PQM4
+	case KYBER_LEVEL1:
+		return CRYPTO_PUBLICKEYBYTES;
 		break;
 	#endif
 	default: 
@@ -282,6 +304,11 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 		return OQS_KEM_hqc_128_length_secret_key;
 		break;
 	#endif
+	#ifdef PQM4
+	case KYBER_LEVEL1:
+		return CRYPTO_SECRETKEYBYTES;
+		break;
+	#endif
 	default: 
 		return 0;
 	}
@@ -303,6 +330,11 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 		break;
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_ciphertext;
+		break;
+	#endif
+	#ifdef PQM4
+	    case KYBER_LEVEL1:
+		return 768;
 		break;
 	#endif
 	default: 

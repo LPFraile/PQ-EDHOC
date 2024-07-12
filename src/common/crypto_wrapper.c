@@ -355,10 +355,10 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 				   struct byte_array *sk,
 				   struct byte_array *pk)
 {
-
+	int ret = 0;
+	#ifdef LIBOQS
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
-	int ret = 0;
 
 	if (ret == 0) {
         algName = OQS_ID2name(alg);
@@ -412,8 +412,9 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 	}
     
 	OQS_SIG_free(sig);
+	
+	#endif
 	return ret;
-
 }
 
 
@@ -500,7 +501,7 @@ enum err WEAK sign_verify(enum sign_alg alg,
         (OQS_SIG_verify(sig,(const uint8_t *) msg->ptr, (size_t) msg->len,
 		(const uint8_t *) signature->ptr, (size_t) signature->len , 
 		(const uint8_t *) pk->ptr)
-         = OQS_ERROR)) {
+         == OQS_ERROR)) {
         ret = SIG_BAD_FUNC_ARG;
     }
 
@@ -514,8 +515,7 @@ enum err WEAK sign_verify(enum sign_alg alg,
 	int ret = 0;
 
 	 if ((ret == 0) &&
-        (crypto_sign_verify(sig,(const uint8_t *) msg->ptr, (size_t) msg->len,
-		(const uint8_t *) signature->ptr, (size_t) signature->len , 
+        (crypto_sign_verify((const uint8_t *) signature->ptr, (size_t) signature->len,(const uint8_t *) msg->ptr, (size_t) msg->len,
 		(const uint8_t *) pk->ptr)
          != 0)) {
         ret = SIG_BAD_FUNC_ARG;
@@ -833,10 +833,11 @@ sign_mock_args_match_predefined(struct edhoc_mock_sign_in_out *predefined,
 }
 #endif // EDHOC_MOCK_CRYPTO_WRAPPER
 
-enum err WEAK sign(enum sign_alg alg, const struct byte_array *sk,
+enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 		   const struct byte_array *pk, const struct byte_array *msg,
 		   uint8_t *out, uint32_t* out_len)
 {
+	PRINT_MSG("Inside the sign\n");
 #ifdef EDHOC_MOCK_CRYPTO_WRAPPER
 	for (uint32_t i = 0; i < edhoc_crypto_mock_cb.sign_in_out_count; i++) {
 		struct edhoc_mock_sign_in_out *predefined_in_out =
@@ -859,7 +860,7 @@ enum err WEAK sign(enum sign_alg alg, const struct byte_array *sk,
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
 	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
-	#if defined(LIBOQS)	
+	#if defined(PQM4) || defined(LIBOQS) 
 		int ret = sign_signature(alg, sk, msg,out,out_len);
 		if (ret == 0){
 			return ok;
@@ -926,10 +927,13 @@ enum err WEAK sign(enum sign_alg alg, const struct byte_array *sk,
 	return unsupported_ecdh_curve;
 }
 
-enum err WEAK verify(enum sign_alg alg, const struct byte_array *pk,
+enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 		     struct const_byte_array *msg, struct const_byte_array *sgn,
 		     bool *result)
 {
+	
+	PRINT_MSG("ON verify\n");
+	//PRINTF("Algorithm number %d\n",alg);
 	if (alg == EdDSA) {
 #ifdef COMPACT25519
 		int verified =
@@ -944,7 +948,9 @@ enum err WEAK verify(enum sign_alg alg, const struct byte_array *pk,
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
 	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
-	#if defined(LIBOQS)	
+		PRINT_MSG("from falcon leve1 to dilithium level 5 in verify\n");	
+	#if defined(PQM4) || defined(LIBOQS) 
+		PRINT_MSG("PQM4 or LIBOQS for verify\n");	
 		int ret = sign_verify(alg, pk, (const struct byte_array *) msg, (const struct byte_array *) sgn);
 		PRINTF("Signature verify return %d \n",ret);
 		if (ret == 0){
@@ -1168,6 +1174,7 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 				   const struct byte_array *pk,
 				   uint8_t *shared_secret)
 {
+	PRINT_MSG("SHARED SECRET DERIVE\n");
 	if (alg == X25519) {
 #ifdef COMPACT25519
 		uint8_t e[F25519_SIZE];
@@ -1193,6 +1200,7 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 
 		return ok;
 #elif defined(MBEDTLS) /* TINYCRYPT / MBEDTLS */
+        PRINT_MSG("in MBEDTLS\n");
 		psa_key_id_t key_id = PSA_KEY_HANDLE_INIT;
 		psa_algorithm_t psa_alg;
 		size_t bits;
@@ -1201,9 +1209,11 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 		psa_alg = PSA_ALG_ECDH;
 		bits = PSA_BYTES_TO_BITS(sk->len);
 
+		PRINT_MSG("1\n");
 		TRY_EXPECT_PSA(psa_crypto_init(), PSA_SUCCESS, key_id,
 			       unexpected_result_from_ext_lib);
 
+		PRINT_MSG("2\n");
 		psa_key_attributes_t attr = PSA_KEY_ATTRIBUTES_INIT;
 		psa_set_key_lifetime(&attr, PSA_KEY_LIFETIME_VOLATILE);
 		psa_set_key_usage_flags(&attr, PSA_KEY_USAGE_DERIVE);
@@ -1222,13 +1232,16 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 		size_t shared_secret_len = 0;
 
 		size_t pk_decompressed_len;
+		PRINT_MSG("3\n");
 		uint8_t pk_decompressed[P_256_PUB_KEY_UNCOMPRESSED_SIZE];
 
 		mbedtls_pk_context ctx_verify = { 0 };
 		mbedtls_pk_init(&ctx_verify);
+		PRINT_MSG("4\n");
 		if (PSA_SUCCESS !=
 		    mbedtls_pk_setup(&ctx_verify, mbedtls_pk_info_from_type(
 							  MBEDTLS_PK_ECKEY))) {
+								PRINT_MSG("error at MBEDTLS_PK_ECKEY\n");
 			result = unexpected_result_from_ext_lib;
 			goto cleanup;
 		}
@@ -1236,13 +1249,16 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 		    mbedtls_ecp_group_load(&mbedtls_pk_ec(ctx_verify)->grp,
 					   MBEDTLS_ECP_DP_SECP256R1)) {
 			result = unexpected_result_from_ext_lib;
+			PRINT_MSG("error at MBEDTLS_ECP_DP_SECP256R1\n");
 			goto cleanup;
 		}
+		PRINT_ARRAY("PK",pk->ptr,pk->len);
 		if (PSA_SUCCESS !=
 		    mbedtls_ecp_decompress(&mbedtls_pk_ec(ctx_verify)->grp,
 					   pk->ptr, pk->len, pk_decompressed,
 					   &pk_decompressed_len,
 					   sizeof(pk_decompressed))) {
+						PRINT_MSG("error at decompress\n");
 			result = unexpected_result_from_ext_lib;
 			goto cleanup;
 		}
@@ -1254,6 +1270,7 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 		    psa_raw_key_agreement(PSA_ALG_ECDH, key_id, pk_decompressed,
 					  pk_decompressed_len, shared_secret,
 					  shared_size, &shared_secret_len)) {
+			PRINT_MSG("unexpected results\n");			
 			result = unexpected_result_from_ext_lib;
 			goto cleanup;
 		}

@@ -28,12 +28,21 @@ extern "C" {
 }
 
 #include "coap3/coap.h"
-#define USE_IPV4
-//#define USE_IPV6 
+//#define USE_IPV4
+#define USE_IPV6 
 //#define SERVER_ADDR "2001:db8::1"
-#define SERVER_ADDR "127.0.0.1"
-#define SERVER_PORT "5683"
-#define RESOURCE_PATH "edhoc"
+//#define SERVER_ADDR "127.0.0.1"
+//#define SERVER_PORT "5683"
+//#define RESOURCE_PATH "edhoc"
+
+#ifdef USE_IPV4
+#define COAP_CLIENT_URI "coap://127.0.0.1:5683/edhoc"
+#endif
+
+#ifdef USE_IPV6
+#define SERVER_ADDR "2001:db8::2"
+#define COAP_CLIENT_URI "coap://2001:db8::2:5683/edhoc"
+#endif
 
 /*comment this out to use DH keys from the test vectors*/
 #define USE_RANDOM_EPHEMERAL_DH_KEY
@@ -64,7 +73,20 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 	const uint8_t *data;
 	size_t offset;
 	size_t total;
-	printf("Handle post\n");
+	PRINT_MSG("Handle post\n");
+ // Manually extract the token from the CoAP request
+   /* coap_bin_const_t token = coap_pdu_get_token(request);
+    size_t token_length = token.length;
+
+    // Print the token in hexadecimal format
+    printf("Received token: ");
+    for (size_t i = 0; i < token_length; i++) {
+        printf("%02x", token.s[i]);
+    }
+    printf("\n");
+
+    // Set the token in the response
+    coap_add_token(response, token_length, token.s);*/
 
 	coap_get_data_large(request, &size, &data, &offset, &total);
 	PRINT_MSG("large data get it!\n");
@@ -133,10 +155,16 @@ int setup_server(void)
 
     // Set up server address
     coap_address_init(&server_addr);
+	#ifdef USE_IPV4
     server_addr.addr.sin.sin_family = AF_INET;
     server_addr.addr.sin.sin_port = htons(5683); // Standard CoAP port
     server_addr.addr.sin.sin_addr.s_addr = inet_addr("127.0.0.1"); // Server IPv4 address
-
+	#endif
+	#ifdef USE_IPV6
+	server_addr.addr.sin6.sin6_family = AF_INET6;
+    server_addr.addr.sin6.sin6_port = htons(5683); // Standard CoAP port
+    inet_pton(AF_INET6, SERVER_ADDR, &server_addr.addr.sin6.sin6_addr);
+    #endif
     // Create CoAP endpoint
     endpoint = coap_new_endpoint(ctx, &server_addr, COAP_PROTO_UDP);
     if (!endpoint) {

@@ -10,15 +10,11 @@ FILE(GLOB app_sources
 	../../../externals/zcbor/src/*.c
 	../../../externals/compact25519/src/c25519/*.c
 	../../../externals/compact25519/src/*.c
-	../../../externals/mbedtls/library/*.c
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.c
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.i
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.S
-	../../../externals/pqm4/common/*.c
-	../../../externals/pqm4/common/*.S)
+	../../../externals/mbedtls/library/*.c)
 target_sources(app PRIVATE ${app_sources})
-
-
+target_sources(app PRIVATE ${ZEPHYR_BASE}/subsys/net/lib/coap/coap_client.c)
+target_sources(app PRIVATE ${ZEPHYR_BASE}/subsys/net/lib/coap/coap.c)
+target_include_directories(app PRIVATE $ENV{ZEPHYR_BASE}/include)
 target_include_directories(app PRIVATE 
 	$ENV{ZEPHYR_BASE}/subsys/net/ip
 	.
@@ -29,17 +25,25 @@ target_include_directories(app PRIVATE
 	../../../externals/mbedtls/library 
 	../../../externals/mbedtls/include 
 	../../../externals/mbedtls/include/mbedtls 
-	../../../externals/mbedtls/include/psa
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack
-	../../../externals/pqm4/common)
+	../../../externals/mbedtls/include/psa)
 
-
+	#target_include_directories(app PRIVATE ${ZEPHYR_BASE}/include/)
 
 add_definitions(
 	-DMBEDTLS_CONFIG_FILE="mbedtls_config_uoscore_uedhoc.h"
 	-DDEBUG_PRINT
 	-DZCBOR_CANONICAL
 )
+add_compile_definitions(CONFIG_COAP_CLIENT=y)
+add_compile_definitions(CONFIG_COAP_CLIENT_BLOCK_SIZE=256)
+add_compile_definitions(CONFIG_COAP_CLIENT_MESSAGE_SIZE=256)
+add_compile_definitions(CONFIG_COAP_CLIENT_MESSAGE_HEADER_SIZE=48)
+add_compile_definitions(CONFIG_COAP_CLIENT_STACK_SIZE=4048)
+add_compile_definitions(CONFIG_COAP_CLIENT_THREAD_PRIORITY=4)
+add_compile_definitions(CONFIG_COAP_LOG_LEVEL=4)
+add_compile_definitions(CONFIG_NET_SOCKETS_POSIX_NAMES=y)
+add_compile_definitions(CONFIG_COAP_INIT_ACK_TIMEOUT_MS=2000)
+
 
 # The external static library that we are linking with does not know
 # how to build for this platform so we export all the flags used in
@@ -109,3 +113,4 @@ target_include_directories(test INTERFACE
 	${INCLUDE_DIR})
 
 target_link_libraries(app PRIVATE test)
+
