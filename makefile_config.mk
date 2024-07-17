@@ -71,11 +71,11 @@ FEATURES += -DC_I_SIZE=1
 # Size of the connection identifier of the initiator C_R
 FEATURES += -DC_R_SIZE=1
 
-# Size of ID_CRED_R
-FEATURES += -DID_CRED_R_SIZE=2960
+# # Size of ID_CRED_R
+# FEATURES += -DID_CRED_R_SIZE=2960
 
-# Size of ID_CRED_I
-FEATURES += -DID_CRED_I_SIZE=2960
+# # Size of ID_CRED_I
+# FEATURES += -DID_CRED_I_SIZE=2960
 
 
 # Number of supported suites by the initiator
@@ -92,9 +92,10 @@ FEATURES += -DKYBER_LEVEL_1
 ################################################################################
 # Select the PQ Signature algorithm to be used, just one for the initiator, all that you want to support the server
 
-FEATURES += -DFALCON_LEVEL_1
-# FEATURES += -DDILITHIUM_LEVEL_2
+# FEATURES += -DFALCON_LEVEL_1
+FEATURES += -DDILITHIUM_LEVEL_2
 
+FEATURES += -DUSE_X5CHAIN
 
 
 ################################################################################

@@ -29,8 +29,14 @@ extern "C" {
 //#define USE_IPV6
 /*comment this out to use DH keys from the test vectors*/
 #define PQ_PROPOSAL_1
-#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1)
+#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 11;
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 8;
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 12;
 #else
 uint8_t TEST_VEC_NUM = 7;
 #endif

@@ -68,8 +68,15 @@
 
 #endif
 #endif
-#define CRED_I_SIZE PK_SIZE*3
-#define CRED_R_SIZE PK_SIZE*3
+#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+
+#if defined (USE_X5CHAIN)
+
+#define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+
+#endif
 
 #endif
 
@@ -126,8 +133,8 @@
 #endif
 #endif
 #endif
-#define CRED_I_SIZE PK_SIZE*3
-#define CRED_R_SIZE PK_SIZE*3
+#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 500
+#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 500
 
 #endif
 
