@@ -464,7 +464,7 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 		!= 0)) {
 		ret = SIG_BAD_FUNC_ARG;
     }
-
+	
 	return ret;
 
 
@@ -479,7 +479,7 @@ enum err WEAK sign_verify(enum sign_alg alg,
 
 
 #ifdef LIBOQS
-
+	PRINT_MSG("on liboqs");
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
 	int ret = 0;
@@ -511,7 +511,7 @@ enum err WEAK sign_verify(enum sign_alg alg,
 
 #else //LIBOQS
 	// This is PQM4
-
+	PRINT_MSG("on pqm4\n");
 	int ret = 0;
 
 	 if ((ret == 0) &&
@@ -863,6 +863,8 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 	#if defined(PQM4) || defined(LIBOQS) 
 		int ret = sign_signature(alg, sk, msg,out,out_len);
 		if (ret == 0){
+			PRINT_MSG("sign_signature correct\n");
+			printf("create signature of alg:%d corrected\n",alg);
 			return ok;
 		}
 	#endif
@@ -932,8 +934,6 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 		     bool *result)
 {
 	
-	PRINT_MSG("ON verify\n");
-	//PRINTF("Algorithm number %d\n",alg);
 	if (alg == EdDSA) {
 #ifdef COMPACT25519
 		int verified =
@@ -948,14 +948,15 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
 	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
-		PRINT_MSG("from falcon leve1 to dilithium level 5 in verify\n");	
 	#if defined(PQM4) || defined(LIBOQS) 
-		PRINT_MSG("PQM4 or LIBOQS for verify\n");	
 		int ret = sign_verify(alg, pk, (const struct byte_array *) msg, (const struct byte_array *) sgn);
-		PRINTF("Signature verify return %d \n",ret);
 		if (ret == 0){
 			*result = true;
+			printf("verify signature of alg:%d\n",alg);
 			return ok;
+		}
+		else {
+			*result = false;
 		}
 	#endif
 	}
@@ -1113,7 +1114,6 @@ enum err WEAK hkdf_expand(enum hash_alg alg, const struct byte_array *prk,
 	psa_status_t status;
 	psa_key_attributes_t attr = PSA_KEY_ATTRIBUTES_INIT;
 	psa_key_id_t key_id = PSA_KEY_HANDLE_INIT;
-	PRINTF("key_id: %d\n", key_id);
 
 	TRY_EXPECT_PSA(psa_crypto_init(), PSA_SUCCESS, key_id,
 		       unexpected_result_from_ext_lib);

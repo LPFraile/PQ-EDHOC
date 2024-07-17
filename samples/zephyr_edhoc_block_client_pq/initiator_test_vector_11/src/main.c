@@ -18,18 +18,22 @@
 
 #define URI_PATH 11
 #define PQ_PROPOSAL_1
-#define MAX_PAYLOAD_SIZE 2000
 static struct coap_client client;
-uint8_t my_buffer[MAX_PAYLOAD_SIZE];
+//struct coap_client_request *req;
+uint8_t my_buffer[2000];
 uint8_t* ptr = my_buffer;
 size_t ptr_len = 0;
 size_t my_buffer_len = 0;
 int sockfd;
 struct k_sem my_sem;
 struct k_sem my_sem_tx;
-uint8_t my_buffer_tx[MAX_PAYLOAD_SIZE];
+uint8_t my_buffer_tx[2000];
 size_t my_buffer_tx_len = 0;
-
+//struct k_sem my_sem_init;
+/*struct byte_array {
+	uint32_t len;
+	uint8_t *ptr;
+};*/
 
 /**
  * @brief	Initializes sockets for CoAP client.
@@ -40,6 +44,7 @@ static int start_coap_client(int *sockfd)
 {
 	PRINT_MSG("START COAP CLIENT\n");
 	struct sockaddr_in6 servaddr;
+	//const char IPV6_SERVADDR[] = { "::1" };
 	const char IPV6_SERVADDR[] = { "2001:db8::2" };
 	int r = ipv6_sock_init(SOCK_CLIENT, IPV6_SERVADDR, &servaddr,
 			       sizeof(servaddr), sockfd);
@@ -68,7 +73,10 @@ void response_cb(int16_t code, size_t offset, const uint8_t *payload, size_t len
 				PRINT_MSG("ACk with block 2\n");
 				memcpy(my_buffer + ptr_len ,payload,len);
 				ptr_len = ptr_len + len;
-
+				//(*ptr) = (*ptr) + len;
+				//PRINT_ARRAY("BLOCK:",payload,len);
+				//PRINT_ARRAY("buffer:",ptr,ptr_len);
+				//PRINT_ARRAY("my buffer:",my_buffer,ptr_len);
             	if (last_block) {
                 	PRINT_MSG("Last packet received\n");
 					my_buffer_len = ptr_len;
@@ -95,12 +103,18 @@ enum err tx(void *sock, struct byte_array *data)
 
 	memcpy(my_buffer_tx,data->ptr,data->len);
 	my_buffer_tx_len = data->len;
+	//my_buffer_tx_len = 2000; 
 	PRINT_ARRAY("MSG1-0:",data->ptr,data->len);
 	PRINT_ARRAY("MSG1-0:",my_buffer_tx,my_buffer_tx_len);
 	k_sem_give(&my_sem_tx);
 	return ok;
 }
 struct coap_client_option options [1];  
+/*= {
+	.code = 60,
+	.len = 2,
+	.value = 806 ,
+}*/
 struct coap_client_request req = {
 		.method = COAP_METHOD_POST,
 		.confirmable = true,
@@ -126,12 +140,8 @@ static int txrx_edhoc(int sockfd)
 		req.len = my_buffer_tx_len;
 		options[0].code = 60;
 		options[0].len = 2;
-		options[0].value[0] = (my_buffer_tx_len >> 8) & 0xFF;
-		options[0].value[1] = my_buffer_tx_len & 0xFF;
-		//PRINTF("value %02X\n",options[0].value[0]);
-		//PRINTF("value %02X\n",options[0].value[1]);
-		/*options[0].value[0] = 0x03;
-		options[0].value[1] = 0x26;*/
+		options[0].value[0] = 0x03;
+		options[0].value[1] = 0x26;
 		PRINTF("SOCKFDb-%d\n",sockfd);
 		ret = coap_client_req(&client, sockfd, NULL, &req, -1);
 		if (ret < 0){
@@ -146,10 +156,8 @@ static int txrx_edhoc(int sockfd)
 		PRINT_ARRAY("MSG3:",my_buffer_tx,my_buffer_tx_len);
 		req.payload = my_buffer_tx;
 		req.len = my_buffer_tx_len;
-		//options[0].value[0] = 0x02;
-		//options[0].value[1] = 0xad;
-		options[0].value[0] = (my_buffer_tx_len >> 8) & 0xFF;
-		options[0].value[1] = my_buffer_tx_len & 0xFF;
+		options[0].value[0] = 0x02;
+		options[0].value[1] = 0xad;
 		PRINTF("SOCKFD1-%d",sockfd);
 		ret = coap_client_req(&client, sockfd, NULL, &req, -1);
 		if (ret < 0){
@@ -174,6 +182,13 @@ enum err rx(void *sock, struct byte_array *data)
 		data->len = my_buffer_len;
         /* fetch available data */
     }
+/*	if (data->len >= edhoc_data_len) {
+		memcpy(data->ptr, edhoc_data_p, edhoc_data_len);
+		data->len = edhoc_data_len;
+	} else {
+		printf("insufficient space in buffer");
+		return buffer_to_small;
+	}*/
 	return ok;
 }
 
@@ -189,7 +204,18 @@ void edhoc_initiator_init(void)
 
 int internal_main(void)
 {
+	/*if (k_sem_take(&my_sem_init, K_MSEC(50)) != 0) {
+	}
+	else{
+		PRINT_MSG("ok\n");
+	}	*/
 
+
+	/*BYTE_ARRAY_NEW(prk_exporter, 32, 32);
+	BYTE_ARRAY_NEW(oscore_master_secret, 16, 16);
+	BYTE_ARRAY_NEW(oscore_master_salt, 8, 8);
+	BYTE_ARRAY_NEW(PRK_out, 32, 32);
+	BYTE_ARRAY_NEW(err_msg, 0, 0);*/
 	uint8_t prk_ex[32];
 	uint8_t oscore_secret[16];
 	uint8_t oscore_salt[8];
@@ -216,7 +242,7 @@ int internal_main(void)
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	const uint8_t TEST_VEC_NUM = 7;
+	const uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -276,8 +302,15 @@ int internal_main(void)
 	c_i.x.ptr = PQ_secret_random;
 	c_i.x.len = get_kem_sk_len(suit_in.edhoc_ecdh);
 
+	//BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
+	//BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
+	//PRINTF("Arrive here\n");
 	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &c_i.x,&c_i.g_x));
+	/*BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
+	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
+	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));*/
 
+	//c_i.x.len = PQ_secret_random.len;
 	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
 	#endif
@@ -288,9 +321,8 @@ int internal_main(void)
 
 	edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
-    //print("PRK_out", PRK_out.ptr, PRK_out.len);
-	print_array( PRK_out.ptr, PRK_out.len);
-	//PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
+
+	PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
 	prk_out2exporter(SHA_256, &PRK_out, &prk_exporter);
 	PRINT_ARRAY("prk_exporter", prk_exporter.ptr, prk_exporter.len);
@@ -304,7 +336,6 @@ int internal_main(void)
 		       &oscore_master_salt);
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
-	k_thread_abort(k_current_get());
 
 	//close(sockfd);
 	return 0;
@@ -313,16 +344,18 @@ int internal_main(void)
 
 void main(void)
 {
-
+	//int r = internal_main();
 	PRINT_MSG("MAIN\n");
 	k_sem_init(&my_sem, 0, 1);
 	k_sem_init(&my_sem_tx, 0, 2);
 	start_coap_client(&sockfd);
     coap_client_init(&client, NULL);
 	txrx_edhoc(sockfd);
-	//close(sockfd);
-	PRINT_MSG("Main finish\n");
-
+	//coap_client_init(&client, NULL);
+	//k_sem_give(&my_sem_init);
+	/*if (r != 0) {
+		printf("error during initiator run. Error code: %d\n", r);
+	}*/
 }
 /* Create thread for EDHOC */
 K_THREAD_DEFINE(edhoc_thread, //name

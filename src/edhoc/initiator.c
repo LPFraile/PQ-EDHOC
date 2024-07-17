@@ -320,6 +320,7 @@ enum err edhoc_initiator_run_extended(
 	
 	/*create and send message 1*/
 	TRY(msg1_gen(c, &rc));
+	printf("MSG 1 size: %d\n",rc.msg.len);
 	PRINT_ARRAY("MSG:",rc.msg.ptr,rc.msg.len);
 	TRY(tx(c->sock, &rc.msg));
 
@@ -327,10 +328,12 @@ enum err edhoc_initiator_run_extended(
 	PRINT_MSG("waiting to receive message 2...\n");
 	rc.msg.len = sizeof(rc.msg_buf);
 	TRY(rx(c->sock, &rc.msg));
+	printf("MSG 2 size: %d\n",rc.msg.len);
 
 	/*create and send message 3*/
 	TRY(msg3_gen(c, &rc, cred_r_array, c_r_bytes, prk_out));
 	TRY(ead_process(c->params_ead_process, &rc.ead));
+	printf("MSG 3 size: %d\n",rc.msg.len);
 	TRY(tx(c->sock, &rc.msg));
 
 	/*receive message 4*/

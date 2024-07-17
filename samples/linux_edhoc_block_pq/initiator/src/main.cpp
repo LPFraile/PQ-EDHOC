@@ -28,6 +28,7 @@ extern "C" {
 #include "coap3/coap.h"
 #define PQ_PROPOSAL_1
 #define USE_IPV4
+uint8_t TEST_VEC_NUM = 8;
 //#define USE_IPV6 
 //#define SERVER_ADDR "2001:db8::1"
 #define SERVER_ADDR "127.0.0.1"
@@ -292,8 +293,6 @@ int main()
 	/* test vector inputs */
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
-
-	uint8_t TEST_VEC_NUM = 8;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;

@@ -14,14 +14,10 @@ FILE(GLOB app_sources
 	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.c
 	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.i
 	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.S
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.c
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.i
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.S
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.s
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.c
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.i
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.S
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.s
+	../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.c
+	../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.i
+	../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.S
+	../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.s
 	../../../externals/pqm4/common/randombytes.c
 	../../../externals/pqm4/common/keccakf1600.S
 	../../../externals/pqm4/common/crypto_hashblocks_sha512*.*
@@ -44,8 +40,8 @@ target_include_directories(app PRIVATE
 	../../../externals/mbedtls/include/psa
 	../../../externals/pqm4/crypto_kem/kyber512/m4fstack
 	../../../externals/pqm4/common/aes.h
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack
+	#../../../externals/pqm4/crypto_sign/falcon-512/m4-ct
+	../../../externals/pqm4/crypto_sign/dilithium2/m4fstack
 	../../../externals/pqm4/mupq/common
 	../../../externals/pqm4/libopencm3/include)
 
@@ -53,7 +49,7 @@ target_include_directories(app PRIVATE
 
 add_definitions(
 	-DMBEDTLS_CONFIG_FILE="mbedtls_config_uoscore_uedhoc.h"
-	#-DDEBUG_PRINT
+	-DDEBUG_PRINT
 	-DZCBOR_CANONICAL
 )
 add_compile_definitions(CONFIG_COAP_CLIENT=y)

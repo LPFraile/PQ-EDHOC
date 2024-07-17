@@ -78,7 +78,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->edhoc_hash = SHA_256;
 		suite->edhoc_mac_len_static_dh = MAC8;
 		suite->edhoc_ecdh = KYBER_LEVEL1;
-		suite->edhoc_sign = FALCON_PADDED_LEVEL1;
+		suite->edhoc_sign = FALCON_LEVEL1;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
@@ -101,14 +101,15 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->edhoc_sign = FALCON_LEVEL1;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
+
 	break;
 		case SUITE_10:
 		suite->suite_label = SUITE_10;
 		suite->edhoc_aead = AES_CCM_16_64_128;
 		suite->edhoc_hash = SHA_256;
 		suite->edhoc_mac_len_static_dh = MAC8;
-		suite->edhoc_ecdh = KYBER_LEVEL1	;
-		suite->edhoc_sign = FALCON_PADDED_LEVEL1;
+		suite->edhoc_ecdh = HQC_LEVEL1;
+		suite->edhoc_sign = FALCON_LEVEL1;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
@@ -117,7 +118,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->edhoc_aead = AES_CCM_16_64_128;
 		suite->edhoc_hash = SHA_256;
 		suite->edhoc_mac_len_static_dh = MAC8;
-		suite->edhoc_ecdh = HQC_LEVEL1;
+		suite->edhoc_ecdh = BIKE;
 		suite->edhoc_sign = FALCON_LEVEL1;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;

@@ -58,6 +58,14 @@
 	//#define CRED_R_SIZE 2000
 	#define PK_SIZE OQS_SIG_falcon_512_length_public_key
 #endif
+#ifdef FALCON_PADDED_LEVEL_1
+	#define SIGNATURE_SIZE OQS_SIG_falcon_padded_512_length_signature 
+ 
+	//#define CRED_I_SIZE 2000
+	//#define CRED_R_SIZE 2000
+	#define PK_SIZE OQS_SIG_falcon_padded_512_length_public_key
+#endif
+
 #endif
 #endif
 #define CRED_I_SIZE PK_SIZE*3

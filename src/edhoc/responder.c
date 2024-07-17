@@ -364,16 +364,19 @@ enum err edhoc_responder_run_extended(
 	/*receive message 1*/
 	PRINT_MSG("waiting to receive message 1...\n");
 	TRY(rx(c->sock, &rc.msg));
+	printf("MSG 1 size: %d\n",rc.msg.len);
 
 	/*create and send message 2*/
 	TRY(msg2_gen(c, &rc, c_i_bytes));
 	TRY(ead_process(c->params_ead_process, &rc.ead));
+	printf("MSG 2 size: %d\n",rc.msg.len);
 	TRY(tx(c->sock, &rc.msg));
 
 	/*receive message 3*/
 	PRINT_MSG("waiting to receive message 3...\n");
 	rc.msg.len = sizeof(rc.msg_buf);
 	TRY(rx(c->sock, &rc.msg));
+	printf("MSG 3 size: %d\n",rc.msg.len);
 	TRY(msg3_process(c, &rc, cred_i_array, prk_out, initiator_pub_key));
 	TRY(ead_process(c->params_ead_process, &rc.ead));
 

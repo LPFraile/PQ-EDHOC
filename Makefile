@@ -166,9 +166,13 @@ endif
 
 ifeq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
 C_INCLUDES += -Iexternals/pqm4/common
+ifeq ($(findstring KYBER_LEVEL_1,$(EXTENDED_CFLAGS)),KYBER_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber512/m4fstack
+endif
 #C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+ifeq ($(findstring FALCON_LEVEL_1,$(EXTENDED_CFLAGS)),FALCON_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_sign/falcon-512/m4-ct
+endif
 C_INCLUDES += -Iexternals/pqm4/libopencm3/include
 endif
 

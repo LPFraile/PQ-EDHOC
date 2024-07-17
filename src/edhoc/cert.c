@@ -278,7 +278,7 @@ enum err cert_c509_verify(struct const_byte_array *cert,
 	struct const_byte_array sgn = BYTE_ARRAY_INIT(
 		c.cert_signature.value, (uint32_t)c.cert_signature.len);
 
-	TRY(verify((enum sign_alg)c.cert_issuer_signature_algorithm, &root_pk,
+	TRY(verify_edhoc((enum sign_alg)c.cert_issuer_signature_algorithm, &root_pk,
 		   &m, &sgn, verified));
 
 	TRY(_memcpy_s(pk->ptr, pk->len, c.cert_pk.value,
@@ -374,7 +374,7 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 	/*verify the certificates signature*/
 	struct const_byte_array m =
 		BYTE_ARRAY_INIT(m_cert.tbs.p, (uint32_t)m_cert.tbs.len);
-	TRY(verify(sign_alg, &root_pk, &m, (struct const_byte_array *)&sig,
+	TRY(verify_edhoc(sign_alg, &root_pk, &m, (struct const_byte_array *)&sig,
 		   verified));
 
 	/* export the public key from certificate */

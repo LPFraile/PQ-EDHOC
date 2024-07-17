@@ -29,6 +29,7 @@ enum suite_label {
 	SUITE_10 = 10,
 	SUITE_11 = 11,
 	SUITE_12 = 12,
+	SUITE_13 = 13,
 };
 
 enum aead_alg {
@@ -45,6 +46,7 @@ enum ecdh_alg {
 	KYBER_LEVEL3 = -49,
 	KYBER_LEVEL5 = -50,
 	HQC_LEVEL1 = -51,
+	BIKE = -52,
 };
 
 enum sign_alg {

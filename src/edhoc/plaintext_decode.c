@@ -108,8 +108,7 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 	/*ID_CRED_x*/
 	if (p.plaintext_ID_CRED_x_choice == plaintext_ID_CRED_x_map_m_c) {
 		if (p.plaintext_ID_CRED_x_map_m.map_x5chain_present) {
-			PRINT_MSG(
-				"ID_CRED of the other party has label x5chain\n");
+			PRINT_MSG("ID_CRED of x5chain type\n");
 			TRY(id_cred_x_encode(
 				x5chain, 0,
 				p.plaintext_ID_CRED_x_map_m.map_x5chain
@@ -119,7 +118,7 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 				id_cred_x));
 		}
 		if (p.plaintext_ID_CRED_x_map_m.map_x5t_present) {
-			PRINT_MSG("ID_CRED of the other party has label x5t\n");
+			PRINT_MSG("ID_CRED of x5t type\n");
 			TRY(id_cred_x_encode(
 				x5t,
 				p.plaintext_ID_CRED_x_map_m.map_x5t

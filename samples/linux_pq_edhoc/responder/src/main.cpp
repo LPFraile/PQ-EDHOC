@@ -26,8 +26,10 @@ extern "C" {
 }
 #include "cantcoap.h"
 
-//#define USE_IPV4
-#define USE_IPV6
+#define USE_IPV4
+#define PQ_PROPOSAL_1
+uint8_t TEST_VEC_NUM = 13;
+
 
 CoapPDU *txPDU = new CoapPDU();
 
@@ -35,8 +37,8 @@ char buffer[MAXLINE];
 CoapPDU *rxPDU;
 
 /*comment this out to use DH keys from the test vectors*/
-#define USE_RANDOM_EPHEMERAL_DH_KEY
-
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
+#define PQ_PROPOSAL_1
 #ifdef USE_IPV6
 struct sockaddr_in6 client_addr;
 #endif
@@ -180,7 +182,7 @@ int main()
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 8;
+	
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	TRY_EXPECT(start_coap_server(&sockfd), 0);
@@ -225,10 +227,15 @@ int main()
 	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
-    PRINTF("responder test vector number %d:", vec_num_i);
-	PRINT_ARRAY("responder cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
-	PRINT_ARRAY("responder sk:", c_r.sk_r.ptr,c_r.sk_r.len);
-	
+	//get_suite(enum suite_label label, struct suite *suite)
+    PRINTF("test vector number: %d\n", vec_num_i+1);
+	struct suite suit_in;
+	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
+		      &suit_in);
+	//PRINT_ARRAY("cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
+	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
 	BYTE_ARRAY_NEW(Y_random, 32, 32);
@@ -237,6 +244,14 @@ int main()
 	c_r.g_y.len = G_Y_random.len;
 	c_r.y.ptr = Y_random.ptr;
 	c_r.y.len = Y_random.len;
+#endif
+#ifdef PQ_PROPOSAL_1
+	BYTE_ARRAY_NEW(G_Y_ENC, get_kem_cc_len(suit_in.edhoc_ecdh), get_kem_cc_len(suit_in.edhoc_ecdh));
+	//BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
+	c_r.g_y.ptr = G_Y_ENC.ptr;
+	c_r.g_y.len = G_Y_ENC.len;
+	c_r.y.ptr = NULL;
+	c_r.y.len = 0;
 #endif
 
 	while (1) {

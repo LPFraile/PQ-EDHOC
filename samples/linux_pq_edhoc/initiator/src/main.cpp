@@ -29,6 +29,7 @@ extern "C" {
 //#define USE_IPV6
 /*comment this out to use DH keys from the test vectors*/
 #define PQ_PROPOSAL_1
+uint8_t TEST_VEC_NUM = 13;
 
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
 
@@ -148,7 +149,7 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	uint8_t TEST_VEC_NUM = 8;
+
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -194,7 +195,8 @@ int main()
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
     PRINTF("initiator test vector number %d:", vec_num_i);
 	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,c_i.suites_i.len);
-	PRINT_ARRAY("initiator sk:", c_i.sk_i.ptr,c_i.sk_i.len);
+	PRINTF("initiator sk size:%d \n",c_i.sk_i.len);
+	PRINTF("initiator pk size:%d \n",c_i.pk_i.len);
 	
 
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
@@ -226,7 +228,7 @@ int main()
 
 #ifdef PQ_PROPOSAL_1
     /*Ephemeral Key generation for KEMs*/
-
+	PRINTF("test vector number: %d\n", vec_num_i+1);
 	struct suite suit_in;
 	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
 		      &suit_in);
@@ -241,8 +243,8 @@ int main()
 	c_i.g_x.len = PQ_public_random.len;
 	c_i.x.ptr = PQ_secret_random.ptr;
 	c_i.x.len = PQ_secret_random.len;
-	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
-	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
+	PRINTF("public ephemeral PQ Key size %d\n", c_i.g_x.len);
+	PRINTF("secret ephemeral PQ Key size %d\n", c_i.x.len);
 
 #endif
 

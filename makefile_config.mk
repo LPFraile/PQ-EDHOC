@@ -25,7 +25,7 @@ OPT = -O0
 ################################################################################
 # Print helpful debug messages
 ################################################################################
-DEBUG_PRINT += -DDEBUG_PRINT
+#DEBUG_PRINT += -DDEBUG_PRINT
 
 ################################################################################
 # Use Address Sanitizer, e.g. with native_posix
@@ -86,11 +86,14 @@ FEATURES += -DSUITES_I_SIZE=1
 ################################################################################
 # Select the PQ KEM algorithm to be used, just one for the initiator, all that you want to support the server
 FEATURES += -DKYBER_LEVEL_1
+#FEATURES += -DKYBER_LEVEL_3
+#FEATURES += -DHQC_LEVEL_1
 
 ################################################################################
 # Select the PQ Signature algorithm to be used, just one for the initiator, all that you want to support the server
 
 FEATURES += -DFALCON_LEVEL_1
+
 #FEATURES += -DDILITHIUM_LEVEL_2
 
 
@@ -167,11 +170,11 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
 
-#CRYPTO_ENGINE += -DTINYCRYPT
-#CRYPTO_ENGINE += -DCOMPACT25519
-CRYPTO_ENGINE += -DMBEDTLS
+CRYPTO_ENGINE += -DTINYCRYPT
+CRYPTO_ENGINE += -DCOMPACT25519
+#CRYPTO_ENGINE += -DMBEDTLS
 
 
-#CRYPTO_ENGINE += -DLIBOQS
-CRYPTO_ENGINE += -DPQM4
+CRYPTO_ENGINE += -DLIBOQS
+#CRYPTO_ENGINE += -DPQM4
 

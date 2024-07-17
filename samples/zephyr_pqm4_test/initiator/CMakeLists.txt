@@ -53,7 +53,7 @@ target_include_directories(app PRIVATE
 
 add_definitions(
 	-DMBEDTLS_CONFIG_FILE="mbedtls_config_uoscore_uedhoc.h"
-	#-DDEBUG_PRINT
+	-DDEBUG_PRINT
 	-DZCBOR_CANONICAL
 )
 add_compile_definitions(CONFIG_COAP_CLIENT=y)

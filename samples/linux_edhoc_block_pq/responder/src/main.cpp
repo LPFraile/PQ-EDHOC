@@ -29,11 +29,11 @@ extern "C" {
 
 #include "coap3/coap.h"
 //#define USE_IPV4
-#define USE_IPV6 
-//#define SERVER_ADDR "2001:db8::1"
-//#define SERVER_ADDR "127.0.0.1"
-//#define SERVER_PORT "5683"
-//#define RESOURCE_PATH "edhoc"
+#define USE_IPV6
+#define PQ_PROPOSAL_1
+/*comment this out to use PQ keys from the test vectors*/
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
+uint8_t TEST_VEC_NUM = 7;
 
 #ifdef USE_IPV4
 #define COAP_CLIENT_URI "coap://127.0.0.1:5683/edhoc"
@@ -44,17 +44,12 @@ extern "C" {
 #define COAP_CLIENT_URI "coap://2001:db8::2:5683/edhoc"
 #endif
 
-/*comment this out to use DH keys from the test vectors*/
-#define USE_RANDOM_EPHEMERAL_DH_KEY
-#define OAP_DEBUG_BUF_SIZE 5000
-//#define COAP_Q_BLOCK_SUPPORT 1
 #define MAX_PAYLOAD_SIZE 5000
 #define MAX_BLOCK_SIZE 512
-#define COAP_SESSION_MTU 600
 
-static uint8_t my_buffer[5000];
+static uint8_t my_buffer[MAX_PAYLOAD_SIZE];
 static int my_buffer_len = 0;
-static uint8_t my_buffer2[5000];
+static uint8_t my_buffer2[MAX_PAYLOAD_SIZE];
 static int my_buffer_len2 = 0;
 coap_context_t *ctx = NULL;
 coap_endpoint_t *endpoint;
@@ -64,6 +59,7 @@ coap_address_t server_addr;
 
 sem_t semaphore;
 sem_t semaphore2;
+sem_t semaphore_finish;
 
 
 static void
@@ -74,19 +70,6 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 	size_t offset;
 	size_t total;
 	PRINT_MSG("Handle post\n");
- // Manually extract the token from the CoAP request
-   /* coap_bin_const_t token = coap_pdu_get_token(request);
-    size_t token_length = token.length;
-
-    // Print the token in hexadecimal format
-    printf("Received token: ");
-    for (size_t i = 0; i < token_length; i++) {
-        printf("%02x", token.s[i]);
-    }
-    printf("\n");
-
-    // Set the token in the response
-    coap_add_token(response, token_length, token.s);*/
 
 	coap_get_data_large(request, &size, &data, &offset, &total);
 	PRINT_MSG("large data get it!\n");
@@ -96,25 +79,24 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 	}
 	memcpy(my_buffer, data, size);
 	my_buffer_len = size;
-	PRINT_ARRAY("MSG:",my_buffer,my_buffer_len);
-
+	//PRINT_ARRAY("MSG:",my_buffer,my_buffer_len);
+	PRINTF("RX MSG size %d\n",my_buffer_len);
     sem_post(&semaphore2);	
     sem_wait(&semaphore);
    
     coap_pdu_set_code(response,COAP_RESPONSE_CODE_CHANGED);
-    PRINT_ARRAY("MSG:",my_buffer2,my_buffer_len2);
+    PRINTF("TX MSG size %d\n",my_buffer_len2);
+	//PRINT_ARRAY("MSG:",my_buffer2,my_buffer_len2);
   
-    /* Echo back the data received in the request payload */
+    /* Add the MSG2 received in the request payload */
     coap_add_data_large_response(resource, session, request, response, query, COAP_MEDIATYPE_TEXT_PLAIN, -1, 0,
                                 my_buffer_len2,my_buffer2, NULL, NULL);
-  	/* Print the payload */
-  	printf("Received POST data: %.*s\n", (int)size, data);
 }
 
 enum err tx(void* sock,struct byte_array *data)
 {
    PRINT_MSG("in TX\n");
-   PRINT_ARRAY("MSG to TX:",data->ptr,data->len);
+   //PRINT_ARRAY("MSG to TX:",data->ptr,data->len);
    memcpy(my_buffer2,data->ptr,data->len);
    my_buffer_len2 = data->len;
    sem_post(&semaphore);
@@ -126,7 +108,7 @@ enum err rx(void* sock, struct byte_array *data) {
 	sem_wait(&semaphore2);
 	memcpy(data->ptr,my_buffer,my_buffer_len);
 	data->len = my_buffer_len;
-	PRINT_ARRAY("MSG RX:",data->ptr,data->len);
+	//PRINT_ARRAY("MSG RX:",data->ptr,data->len);
 	return ok;
   
 } 
@@ -135,7 +117,7 @@ int setup_server(void)
 {
 
     // Initialize CoAP library
-	printf("SETUP SERVER\n");
+	PRINT_MSG("SETUP SERVER\n");
     coap_startup();
     // Create CoAP context
     ctx = coap_new_context(NULL);
@@ -145,12 +127,12 @@ int setup_server(void)
     }
     
 	coap_context_set_block_mode(ctx,  COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
-	//size_t max_block_size = 64;
+	
 	if(coap_context_set_max_block_size(ctx,MAX_BLOCK_SIZE)==1){
-		printf("Block size setting to %zu\n",MAX_BLOCK_SIZE);
+		PRINTF("Block size setting to %zu\n",MAX_BLOCK_SIZE);
 	}
 	else{
-		printf("Erros ins et max block size\n");
+		PRINT_MSG("Erros in set max block size\n");
 	}
 
     // Set up server address
@@ -172,56 +154,22 @@ int setup_server(void)
         coap_free_context(ctx);
         return -1;
     }
-	    // Create the CoAP resource
-   // coap_str_const_t *path = coap_make_str_const(".well-known/edhoc");
-     //   resource = coap_resource_init(path, 0);
-	 resource =  coap_resource_init(coap_make_str_const("edhoc"), 0);
-        if (!resource) {
-            fprintf(stderr, "Cannot create resource\n");
-            coap_free_context(ctx);
-            return -1;
-        }
-
-        // Register the handler for POST requests
-        coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
-
-        // Add the resource to the context
-        coap_add_resource(ctx, resource);
-   
-
-		  /* Create the CoAP resource */
-	/*resource =  coap_resource_init(coap_make_str_const(".well-known/edhoc"), 0);
-	//resource =  coap_resource_unknown_init2(hnd_post, 0);
-	if (!resource) {
-		PRINT_MSG("Cannot create resource\n");
-		coap_free_context(ctx);
-		return -1;
-	}*/
-	  /* Create the CoAP resource */
-	/*resource =  coap_resource_unknown_init2(hnd_post, 0);
+	
+	// Create the CoAP resource
+	resource =  coap_resource_init(coap_make_str_const("edhoc"), 0);
 	if (!resource) {
 		fprintf(stderr, "Cannot create resource\n");
 		coap_free_context(ctx);
 		return -1;
-	}*/
-	 
-	//coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
-    //coap_add_resource(ctx, resource);
-    printf("FINISHED to  setup server\n");
-	// Run CoAP server main loop (pseudo-code)
-    /*while (1) {
-        coap_run_once(ctx, 0); // Non-blocking operation
-    } */
+	}
 
-	// Main loop to handle incoming requests
-    while (1) {
-        coap_io_process(ctx, COAP_IO_WAIT);
-    }
+	// Register the handler for POST requests
+	coap_register_handler(resource, COAP_REQUEST_POST, hnd_post);
 
-	   // Clean up
-	PRINT_MSG("GO TO FREE CONTEXTS\n");
-    coap_free_context(ctx);
-    coap_cleanup();
+	// Add the resource to the context
+	coap_add_resource(ctx, resource);
+
+	
     return 0;
 }
 
@@ -262,7 +210,7 @@ void * edhoc_responder_init(void *arg)
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	uint8_t TEST_VEC_NUM = 8;
+
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_r.sock = &sockfd;
@@ -322,7 +270,21 @@ void * edhoc_responder_init(void *arg)
 	c_r.y.ptr = Y_random.ptr;
 	c_r.y.len = Y_random.len;
 #endif
-
+#ifdef PQ_PROPOSAL_1
+	PRINTF("test vector number: %d\n", vec_num_i+1);
+	struct suite suit_in;
+	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
+		      &suit_in);
+	uint8_t G_Y[get_kem_cc_len(suit_in.edhoc_ecdh)];
+	c_r.g_y.ptr = G_Y;
+	c_r.g_y.len = get_kem_cc_len(suit_in.edhoc_ecdh);
+	c_r.y.ptr = NULL;
+	c_r.y.len = 0;
+	PRINTF("test vector number: %d\n", vec_num_i+1);
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
+	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
+#endif
 	while (1) {
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 		/*create ephemeral DH keys from seed*/
@@ -369,22 +331,35 @@ void * edhoc_responder_init(void *arg)
 		}
 		PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 			    oscore_master_salt.len);
+		sem_post(&semaphore_finish);
+		//pthread_exit(0);
 	}
 	
-
 }
 int main()
 {
-	pthread_t thread1;
-	sem_init(&semaphore, 0, 0);
-	coap_set_log_level(LOG_DEBUG);
-	pthread_create(&thread1, NULL, edhoc_responder_init, NULL);
-	if (setup_server() != 0) {
-			fprintf(stderr, "Failed to set up CoAP\n");
-			return EXIT_FAILURE;
-	}
-	
-    pthread_join(thread1, NULL);
-	
+	//while(1){
+		PRINT_MSG("on while main\n");
+		pthread_t thread1;
+		//sem_init(&semaphore, 0, 0);
+		coap_set_log_level(LOG_DEBUG);
+		pthread_create(&thread1, NULL, edhoc_responder_init, NULL);
+		if (setup_server() != 0) {
+				fprintf(stderr, "Failed to set up CoAP\n");
+				return EXIT_FAILURE;
+		}
+		// Main loop to handle incoming requests
+       while (1) {
+        coap_io_process(ctx, COAP_IO_WAIT);
+       }
+
+		// Clean up
+		PRINT_MSG("GO TO FREE CONTEXTS\n");
+		coap_free_context(ctx);
+		coap_cleanup();
+			//pthread_join(thread1, NULL);
+			//sem_wait(&semaphore_finish);
+			PRINT_MSG("FINISHING MAIN\n");
+		//}
 	return 0;
 }

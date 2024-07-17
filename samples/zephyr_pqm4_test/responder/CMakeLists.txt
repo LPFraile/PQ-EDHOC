@@ -2,38 +2,21 @@
 
 cmake_minimum_required(VERSION 3.13.1)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(initiator)
+project(responder)
 
 FILE(GLOB app_sources 
 	src/*.c
 	../../common/sock_ipv6.c
 	../../../externals/zcbor/src/*.c
-	#../../../externals/compact25519/src/c25519/*.c
-	#../../../externals/compact25519/src/*.c
-	../../../externals/mbedtls/library/*.c
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.c
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.i
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.S
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.c
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.i
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.S
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack/*.s
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.c
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.i
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.S
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct/*.s
-	../../../externals/pqm4/common/randombytes.c
-	../../../externals/pqm4/common/keccakf1600.S
-	../../../externals/pqm4/common/crypto_hashblocks_sha512*.*
-	../../../externals/pqm4/common/aes.*
-	../../../externals/pqm4/mupq/common/fips202.c)
+	../../../externals/compact25519/src/c25519/*.c
+	../../../externals/compact25519/src/*.c
+	../../../externals/mbedtls/library/*.c)
 target_sources(app PRIVATE ${app_sources})
-target_sources(app PRIVATE ${ZEPHYR_BASE}/subsys/net/lib/coap/coap_client.c)
-target_sources(app PRIVATE ${ZEPHYR_BASE}/subsys/net/lib/coap/coap.c)
-target_include_directories(app PRIVATE $ENV{ZEPHYR_BASE}/include)
+target_include_directories(app PRIVATE $ENV{ZEPHYR_BASE}/subsys/net/ip)
+
+
 target_include_directories(app PRIVATE 
 	$ENV{ZEPHYR_BASE}/subsys/net/ip
-	.
 	../../common
 	../../../inc
 	../../../test_vectors
@@ -41,32 +24,12 @@ target_include_directories(app PRIVATE
 	../../../externals/mbedtls/library 
 	../../../externals/mbedtls/include 
 	../../../externals/mbedtls/include/mbedtls 
-	../../../externals/mbedtls/include/psa
-	../../../externals/pqm4/crypto_kem/kyber512/m4fstack
-	../../../externals/pqm4/common/aes.h
-	../../../externals/pqm4/crypto_sign/falcon-512/m4-ct
-	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack
-	../../../externals/pqm4/mupq/common
-	../../../externals/pqm4/libopencm3/include)
-
-	#target_include_directories(app PRIVATE ${ZEPHYR_BASE}/include/)
+	../../../externals/mbedtls/include/psa)
 
 add_definitions(
-	-DMBEDTLS_CONFIG_FILE="mbedtls_config_uoscore_uedhoc.h"
-	#-DDEBUG_PRINT
+	-DDEBUG_PRINT
 	-DZCBOR_CANONICAL
 )
-add_compile_definitions(CONFIG_COAP_CLIENT=y)
-add_compile_definitions(CONFIG_COAP_CLIENT_BLOCK_SIZE=512)
-add_compile_definitions(CONFIG_COAP_CLIENT_MESSAGE_SIZE=512)
-add_compile_definitions(CONFIG_COAP_CLIENT_MESSAGE_HEADER_SIZE=48)
-add_compile_definitions(CONFIG_COAP_CLIENT_STACK_SIZE=2024)
-add_compile_definitions(CONFIG_COAP_CLIENT_THREAD_PRIORITY=4)
-add_compile_definitions(CONFIG_COAP_LOG_LEVEL=1)
-add_compile_definitions(CONFIG_NET_SOCKETS_POSIX_NAMES=y)
-add_compile_definitions(CONFIG_COAP_INIT_ACK_TIMEOUT_MS=20000)
-
-
 
 # The external static library that we are linking with does not know
 # how to build for this platform so we export all the flags used in
@@ -136,4 +99,3 @@ target_include_directories(test INTERFACE
 	${INCLUDE_DIR})
 
 target_link_libraries(app PRIVATE test)
-
