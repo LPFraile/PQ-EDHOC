@@ -405,8 +405,12 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 
 	const uint8_t *tbs_start = cert->ptr;
 	const uint8_t *tbs_end = &cert->ptr[cert->len];
-	// We select PQ DSA algorithm by hand here...
-	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(FALCON_PADDED_LEVEL1));
+	// Giorgos: Change the signature length if we add more algorithms
+#if defined(FALCON_LEVEL_1)
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(FALCON_LEVEL1));
+#elif defined(DILITHIUM_LEVEL_2)
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(DILITHIUM_LEVEL2));
+#endif
 
 	enum err rv = certificate_authentication_failed;
 
@@ -574,7 +578,12 @@ do {
 				    root_pk.len);
 			struct const_byte_array s = { .ptr = sig.ptr,
 						      .len = sig.len };
-			rv = verify(FALCON_PADDED_LEVEL1, &root_pk, &m, &s, verified);
+// Giorgos: Change this if we add more algorithms
+#if defined(FALCON_LEVEL_1)
+			rv = verify_edhoc(FALCON_LEVEL1, &root_pk, &m, &s, verified);
+#elif defined(DILITHIUM_LEVEL_2)
+			rv = verify_edhoc(DILITHIUM_LEVEL2, &root_pk, &m, &s, verified);
+#endif
 		}
 	}
 	return rv;

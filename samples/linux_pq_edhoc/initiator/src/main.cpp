@@ -29,7 +29,7 @@ extern "C" {
 //#define USE_IPV6
 /*comment this out to use DH keys from the test vectors*/
 #define PQ_PROPOSAL_1
-uint8_t TEST_VEC_NUM = 13;
+uint8_t TEST_VEC_NUM = 12;
 
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
 

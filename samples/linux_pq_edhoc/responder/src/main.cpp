@@ -28,7 +28,7 @@ extern "C" {
 
 #define USE_IPV4
 #define PQ_PROPOSAL_1
-uint8_t TEST_VEC_NUM = 13;
+uint8_t TEST_VEC_NUM = 12;
 
 
 CoapPDU *txPDU = new CoapPDU();

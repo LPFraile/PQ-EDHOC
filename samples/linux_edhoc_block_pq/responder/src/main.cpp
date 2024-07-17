@@ -28,8 +28,8 @@ extern "C" {
 }
 
 #include "coap3/coap.h"
-//#define USE_IPV4
-#define USE_IPV6
+#define USE_IPV4
+// #define USE_IPV6
 #define PQ_PROPOSAL_1
 /*comment this out to use PQ keys from the test vectors*/
 //#define USE_RANDOM_EPHEMERAL_DH_KEY
