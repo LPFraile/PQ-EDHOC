@@ -28,8 +28,11 @@ extern "C" {
 
 #define USE_IPV4
 #define PQ_PROPOSAL_1
-uint8_t TEST_VEC_NUM = 12;
-
+#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1)
+uint8_t TEST_VEC_NUM = 7;
+#else
+uint8_t TEST_VEC_NUM = 7;
+#endif
 
 CoapPDU *txPDU = new CoapPDU();
 

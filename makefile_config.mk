@@ -92,8 +92,8 @@ FEATURES += -DKYBER_LEVEL_1
 ################################################################################
 # Select the PQ Signature algorithm to be used, just one for the initiator, all that you want to support the server
 
-# FEATURES += -DFALCON_LEVEL_1
-FEATURES += -DDILITHIUM_LEVEL_2
+FEATURES += -DFALCON_LEVEL_1
+# FEATURES += -DDILITHIUM_LEVEL_2
 
 
 
@@ -169,9 +169,9 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
 
-CRYPTO_ENGINE += -DTINYCRYPT
-CRYPTO_ENGINE += -DCOMPACT25519
-#CRYPTO_ENGINE += -DMBEDTLS
+# CRYPTO_ENGINE += -DTINYCRYPT
+# CRYPTO_ENGINE += -DCOMPACT25519
+CRYPTO_ENGINE += -DMBEDTLS
 
 
 CRYPTO_ENGINE += -DLIBOQS

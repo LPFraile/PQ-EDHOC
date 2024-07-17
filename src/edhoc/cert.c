@@ -23,7 +23,7 @@
 
 #include "cbor/edhoc_decode_cert.h"
 
-#ifdef MBEDTLS
+#if defined(MBEDTLS) && !defined(LIBOQS)
 #define MBEDTLS_ALLOW_PRIVATE_ACCESS
 
 #include <psa/crypto.h>
@@ -184,7 +184,7 @@ static enum err ca_pk_get(const struct cred_array *cred_array,
 {
 	/* when single credential without certificate is stored, return stored ca_pk if available */
 	if (1 == cred_array->len
-#ifdef MBEDTLS
+#if defined(MBEDTLS) && !defined(LIBOQS)
 	    /* In case no MBEDTLS is enabled, issuer identification is not extracted from certificate */
 	    && (0 == cred_array->ptr[0].ca.len ||
 		NULL == cred_array->ptr[0].ca.ptr)
@@ -200,7 +200,7 @@ static enum err ca_pk_get(const struct cred_array *cred_array,
 		return ok;
 	}
 
-#ifdef MBEDTLS
+#if defined(MBEDTLS) && !defined(LIBOQS)
 	/* Accept only certificate based search if multiple credentials available*/
 	for (uint16_t i = 0; i < cred_array->len; i++) {
 		if (NULL == cred_array->ptr[i].ca.ptr ||
@@ -292,7 +292,7 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 			  const struct cred_array *cred_array,
 			  struct byte_array *pk, bool *verified)
 {
-#ifdef MBEDTLS
+#if defined(MBEDTLS) && !defined(LIBOQS)
 
 	PRINT_MSG("Start parsing an ASN.1 certificate\n");
 
