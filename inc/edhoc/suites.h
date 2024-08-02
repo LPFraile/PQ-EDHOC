@@ -46,7 +46,7 @@ enum ecdh_alg {
 	KYBER_LEVEL3 = -49,
 	KYBER_LEVEL5 = -50,
 	HQC_LEVEL1 = -51,
-	BIKE = -52,
+	BIKE_LEVEL1 = -52,
 };
 
 enum sign_alg {
@@ -59,6 +59,7 @@ enum sign_alg {
 	DILITHIUM_LEVEL2 = -61,
 	DILITHIUM_LEVEL3 = -62,
 	DILITHIUM_LEVEL5 = -63,
+
 	/*ML_DSA_LEVEL2 = -,
 	ML_DSA_LEVEL3 = -,
 	ML_DSA_LEVEL5 = -*/

@@ -28,3 +28,6 @@
 [submodule "externals/pqm4"]
 	path = externals/pqm4
 	url = https://github.com/mupq/pqm4.git
+[submodule "externals/libcoap"]
+	path = externals/libcoap
+	url = https://github.com/obgm/libcoap.git

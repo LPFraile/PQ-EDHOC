@@ -25,7 +25,7 @@ OPT = -O0
 ################################################################################
 # Print helpful debug messages
 ################################################################################
-DEBUG_PRINT += -DDEBUG_PRINT
+#DEBUG_PRINT += -DDEBUG_PRINT
 
 ################################################################################
 # Use Address Sanitizer, e.g. with native_posix
@@ -81,21 +81,39 @@ FEATURES += -DC_R_SIZE=1
 # Number of supported suites by the initiator
 FEATURES += -DSUITES_I_SIZE=1 
 
-
+################################################################################
+# Select for use EDHOC DH algorithm
+#FEATURES += -DDH
 
 ################################################################################
-# Select the PQ KEM algorithm to be used, just one for the initiator, all that you want to support the server
+# Select the PQ KEM algorithm to be used, 
 FEATURES += -DKYBER_LEVEL_1
 #FEATURES += -DKYBER_LEVEL_3
 #FEATURES += -DHQC_LEVEL_1
+#FEATURES += -DBIKE_LEVEL_1
 
 ################################################################################
-# Select the PQ Signature algorithm to be used, just one for the initiator, all that you want to support the server
+# Select the PQ Signature algorithm to be used
 
-# FEATURES += -DFALCON_LEVEL_1
-FEATURES += -DDILITHIUM_LEVEL_2
+FEATURES += -DFALCON_LEVEL_1
+#FEATURES += -DDILITHIUM_LEVEL_2
 
-FEATURES += -DUSE_X5CHAIN
+################################################################################
+# Select for use X5CHAIN credentials instead of by default X5T
+#FEATURES += -DUSE_X5CHAIN
+
+
+###############################################################
+# Select block wise transfer block size 
+#  The maximum block size a server supports.  Can be 0
+# (reset), or must be  32, 64, 128, 256, 512 or 1024.
+FEATURES += -DUSE_COAP_BLOCK_SIZE=512 
+
+##################################################################
+# Define to use TCP. By default it use UDP 
+#FEATURES += -DUSE_TCP 
+
+
 
 
 ################################################################################
@@ -169,12 +187,11 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | 0/1/2/3 | 0/1/2/3 | MBEDTLS and COMPACT25519
 # | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
-
-# CRYPTO_ENGINE += -DTINYCRYPT
-# CRYPTO_ENGINE += -DCOMPACT25519
-CRYPTO_ENGINE += -DMBEDTLS
-
-
-CRYPTO_ENGINE += -DLIBOQS
 #CRYPTO_ENGINE += -DPQM4
+CRYPTO_ENGINE += -DTINYCRYPT
+CRYPTO_ENGINE += -DCOMPACT25519
+################################################################
+# Enable that for PQ tests
+CRYPTO_ENGINE += -DLIBOQS
+
 

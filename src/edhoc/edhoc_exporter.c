@@ -41,3 +41,7 @@ enum err edhoc_exporter(enum hash_alg app_hash_alg, enum export_label label,
 {
 	return edhoc_kdf(app_hash_alg, prk_exporter, label, &NULL_ARRAY, out);
 }
+
+size_t edhoc_get_max_msg_size(){
+	return MSG_MAX_SIZE;
+}

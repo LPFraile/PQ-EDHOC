@@ -93,6 +93,10 @@ CXXFLAGS += -DLINUX_SOCKETS
 CXXFLAGS += -DMAXLINE=10000
 CFLAGS += -DMAXLINE=10000
 
+CFLAGS += $(FEATURES)
+CXXFLAGS += $(FEATURES)
+
+
 # use AddressSanitizer to find memory bugs
 # comment this out for better speed
 #CFLAGS += -fsanitize=address -fno-omit-frame-pointer

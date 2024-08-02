@@ -44,7 +44,7 @@ export ARCH
 endif
 
 # debug build?
-DEBUG = 1
+DEBUG = 0
 
 # optimization
 OPT = -Og
@@ -158,6 +158,9 @@ CXXFLAGS += -DLINUX_SOCKETS
 CXXFLAGS += -DMAXLINE=10000
 CFLAGS += -DMAXLINE=10000
 
+
+CFLAGS += $(FEATURES)
+CXXFLAGS += $(FEATURES)
 # use AddressSanitizer to find memory bugs
 # comment this out for better speed
 #CFLAGS += -fsanitize=address -fno-omit-frame-pointer

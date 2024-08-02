@@ -23,13 +23,94 @@ extern "C" {
 #include "sock.h"
 #include "edhoc_test_vectors_p256_v16.h"
 }
-//#include "cantcoap.h"
 
 #include "coap3/coap.h"
-#define PQ_PROPOSAL_1
+
+/*******************************************************
+ * Define coap parameter for retransmisions is use UDP
+ * *********************************************************/
+/*************************************************************** 
+ * Maximum number of retransmisions. If not define by default is 4
+ ****************************************************************/
+//#define COAP_SESSION_MAX_RET 4 
+
+/*****************************************************************
+ * Number of seconds when to expect an ACK or a response to an outstanding 
+ * CON message
+ * If not define by default is 2 seconds
+ ******************************************************************/ 
+//#define COAP_SESSION_ACK_TIMEOUT_INT 2  /**< Integer part of fixed point variable */
+//#define COAP_SESSION_ACK_TIMEOUT_FRA 0 /**< Fractional part of fixed point variable 1/1000 (3 points) precision */
+
+/*****************************************************************
+ * A factor that is used to randomize the wait time before a message
+ * is retransmitted to prevent synchronization effects.
+ * Default value of ACK_RANDOM_FACTOR is 1.5
+******************************************************************/
+//#define COAP_SESSION_ACK_RANDOM_FACTOR_INT 1 /**< Integer part of fixed point variable */
+//#define COAP_SESSION_ACK_RANDOM_FACTOR_FRA 5 /**< Fractional part of fixed point variable 1/1000 (3 points) precision */
+
+
+/*Define IPv4 or IPv6*/
 #define USE_IPV4
+//#define USE_IPV6
+#ifdef USE_COAP_BLOCK_SIZE
+#define COAP_MAX_BLOCK_SIZE USE_COAP_BLOCK_SIZE
+#else
+#define COAP_MAX_BLOCK_SIZE 512
+#endif
+/*is used to set the MTU size (the maximum message size) of the data in a packet, excluding any IP or
+TCP/UDP overhead to _mtu_ for the client endpoint's _session_.  The default
+MTU is 1152.*/
+#define COAP_SESSION_MTU COAP_MAX_BLOCK_SIZE + 80
+#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
-//#define USE_IPV6 
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 1500
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 8;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3200
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 9;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 1800
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 10;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3500
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 11;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3209
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 12;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 7104
+#elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 13;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 7000
+#elif defined(FALCON_LEVEL_1) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 14;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 7000
+#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 15;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 7000
+#elif defined(DH) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 2;
+#define USE_RANDOM_EPHEMERAL_DH_KEY
+#define MAX_PAYLOAD_SIZE 800 
+#elif defined(DH) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 3;
+#define MAX_PAYLOAD_SIZE 800
+#define USE_RANDOM_EPHEMERAL_DH_KEY 
+#else
+#error "you must select a correct test combination in makefile_config.mk file"
+#endif
+
 //#define SERVER_ADDR "2001:db8::1"
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT "5683"
@@ -42,12 +123,8 @@ uint8_t TEST_VEC_NUM = 7;
 #ifdef USE_IPV6
 #define COAP_CLIENT_URI "coap://2001:db8::1/edhoc"
 #endif
-/*comment this out to use DH keys from the test vectors*/
-//#define USE_RANDOM_EPHEMERAL_DH_KEY
 
-#define DEFAULT_WAIT_TIME 90
-#define MAX_BLOCK_SIZE 512
-#define COAP_SESSION_MTU 600
+
 /**
  * @brief	Initializes sockets for CoAP client.
  * @param
@@ -57,9 +134,9 @@ coap_context_t *ctx = NULL;
 coap_session_t *session = NULL;
 coap_address_t server_addr;
 
-static uint8_t my_buffer[5000];
+static uint8_t my_buffer[MAX_PAYLOAD_SIZE];
 static int my_buffer_len = 0;
-static uint8_t my_buffer_2[5000];
+static uint8_t my_buffer_2[MAX_PAYLOAD_SIZE];
 static int my_buffer_len_2 = 0;
 
 static coap_response_t
@@ -79,7 +156,7 @@ message_handler(coap_session_t *session  COAP_UNUSED,
     (void)id;
     if (coap_get_data_large(received, &len, &data, &offset, &total)) {
         PRINT_MSG("Get large data:\n");
-		PRINT_ARRAY("MSG",data,len);
+		//PRINT_ARRAY("MSG",data,len);
 		memcpy(my_buffer,data,len);
 		my_buffer_len = len;
         if (len + offset == total) {
@@ -100,17 +177,30 @@ int setup(void) {
         fprintf(stderr, "Failed to create CoAP context\n");
         return -1;
     }
-
+    
+	
 	coap_context_set_block_mode(ctx,
-                              COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY);
-    // Create CoAP session
+                              COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
+	
+	if(coap_context_set_max_block_size(ctx,COAP_MAX_BLOCK_SIZE)==1){
+		printf("Block size setting to %zu\n",COAP_MAX_BLOCK_SIZE);
+	}
+	else{
+		printf("Erros in set max block size\n");
+	}
+
+
+	// Create CoAP session
     coap_address_init(&server_addr);
     server_addr.addr.sin6.sin6_family = AF_INET6;
     inet_pton(AF_INET6, SERVER_ADDR, &server_addr.addr.sin6.sin6_addr);
     server_addr.addr.sin6.sin6_port = htons(atoi(SERVER_PORT));
-
-    session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
-    if (!session) {
+    #ifdef USE_TCP
+    session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_TCP);
+    #else
+	session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
+	#endif
+	if (!session) {
         fprintf(stderr, "Failed to create CoAP session\n");
         coap_free_context(ctx);
         return -1;
@@ -134,11 +224,11 @@ int setup(void) {
 	coap_context_set_block_mode(ctx,
                               COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
 	
-	if(coap_context_set_max_block_size(ctx,MAX_BLOCK_SIZE)==1){
-		printf("Block size setting to %zu\n",MAX_BLOCK_SIZE);
+	if(coap_context_set_max_block_size(ctx,COAP_MAX_BLOCK_SIZE)==1){
+		printf("Block size setting to %zu\n",COAP_MAX_BLOCK_SIZE);
 	}
 	else{
-		printf("Erros ins et max block size\n");
+		printf("Erros in set max block size\n");
 	}
 
 	coap_register_response_handler(ctx, message_handler);
@@ -154,8 +244,26 @@ int setup(void) {
     inet_pton(AF_INET6, SERVER_ADDR, &server_addr.addr.sin6.sin6_addr);
     server_addr.addr.sin6.sin6_port = htons(atoi(SERVER_PORT));
 	#endif
-    session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
+	#ifdef USE_TCP
+    session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_TCP);
+	#else
+	session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
+	#endif
 	coap_session_set_mtu(session,COAP_SESSION_MTU);
+	coap_fixed_point_t value;
+	#ifdef COAP_SESSION_MAX_RET
+	coap_session_set_max_retransmit(session,COAP_SESSION_MAX_RET);
+	#endif
+	#ifdef COAP_SESSION_ACK_TIMEOUT
+	value.integer_part = COAP_SESSION_ACK_TIMEOUT_INT;
+	value.fractional_part = COAP_SESSION_ACK_TIMEOUT_FRA;
+	coap_session_set_ack_timeout(session,COAP_SESSION_ACK_TIMEOUT);
+	#endif
+	#ifdef COAP_SESSION_ACK_RANDOM_FACTOR
+	value.integer_part = COAP_SESSION_ACK_RANDOM_FACTOR_INT;
+	value.fractional_part = COAP_SESSION_ACK_RANDOM_FACTOR_FRA;
+	coap_session_set_ack_random_factor(session,COAP_SESSION_ACK_RANDOM_FACTOR);
+	#endif
     if (!session) {
         fprintf(stderr, "Failed to create CoAP session\n");
         coap_free_context(ctx);
@@ -190,14 +298,6 @@ enum err tx(void* sock,struct byte_array *data)
 {
 	coap_pdu_t *request_pdu = NULL;
     coap_uri_t uri;
-	//uint8_t data_test[1000];
-	//size_t data_len= 1000;
-	 // Parse server URI
-   /* if (!coap_split_uri((const uint8_t *)"coap://[" SERVER_ADDR "]:"  RESOURCE_PATH, strlen(SERVER_ADDR) + strlen(SERVER_PORT) + strlen(RESOURCE_PATH) + 8, &uri)) {
-        fprintf(stderr, "Failed to parse URI\n");
-        cleanup();
-		return unexpected_result_from_ext_lib;
-    }*/
 	memcpy(my_buffer_2,data->ptr,data->len);
 	my_buffer_len_2 = data->len;
    const char *coap_uri = COAP_CLIENT_URI;
@@ -207,43 +307,19 @@ enum err tx(void* sock,struct byte_array *data)
 		PRINTF("Failed to parse uri %s\n", coap_uri);
 	}
   
-	// Create POST request PDU (confirmable)
-    /*request_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_CODE_POST, 0 , coap_session_max_pdu_size(session));
-    if (!request_pdu) {
-        fprintf(stderr, "Failed to create request PDU\n");
-        cleanup();
-		return unexpected_result_from_ext_lib;
-    }
-	*/
-    PRINT_ARRAY("uri path:",uri.path.s,uri.path.length);
-	PRINT_ARRAY("uri host:",uri.host.s,uri.host.length);
 
-	PRINTF("uri port:%d",uri.port);
     const char *path2 = "edhoc";
-    // Create CoAP session
-    /*session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
-    if (!session) {
-        fprintf(stderr, "Failed to create CoAP session\n");
-        coap_free_context(ctx);
-        //return -1;
-    }*/
 
   // Prepare request PDU
     request_pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_POST,session);
     if (!request_pdu) {
         fprintf(stderr, "Failed to create CoAP request PDU\n");
         coap_free_context(ctx);
-       // return -1;
     }
 	// Set URI path and payload
     coap_add_option(request_pdu, COAP_OPTION_URI_PATH, uri.path.length, uri.path.s);
-    //coap_add_data(request_pdu,data->len,data->ptr);
-	PRINT_ARRAY("DATA",data->ptr, data->len);
-	//coap_add_data_large_request(session,request_pdu,data->len,data->ptr,NULL,NULL);	
 	coap_add_data_large_request(session,request_pdu,my_buffer_len_2,my_buffer_2,NULL,NULL);	
 	
-	//coap_add_data_large_request(session,request_pdu,data_len,data_test,NULL,NULL);
-
 
     int result = coap_send(session, request_pdu);
     if (result == COAP_INVALID_TID) {
@@ -257,32 +333,21 @@ enum err tx(void* sock,struct byte_array *data)
 
 // Function to receive CoAP response
 enum err rx(void* sock, struct byte_array *data) {
- /* PRINT_MSG("In RX\n");	*/
-  unsigned int wait_seconds = DEFAULT_WAIT_TIME;
+
   int result = -1;
-  unsigned int wait_ms = wait_seconds * 1000;
-  printf("RX %d\n",result);
   while (coap_io_pending(ctx)) {
 	uint32_t timeout_ms;
 	result = coap_io_process(ctx, timeout_ms);
-	printf("RESULT %d\n",result);
-	//if(result>0){
-		printf("result is biigger than 0\n");
 		memcpy(data->ptr,my_buffer,my_buffer_len);
 		data->len = my_buffer_len;
-		PRINT_ARRAY("data:",data->ptr,data->len);
-	//}
+
   }
-/*
-  coap_session_release(session);
-  coap_free_context(ctx);
-  coap_cleanup();*/
-    return ok;
+  return ok;
 }
 
 int main()
 {
-	coap_set_log_level(LOG_DEBUG);
+	coap_set_log_level(LOG_INFO);
 	int sockfd;
 	BYTE_ARRAY_NEW(prk_exporter, 32, 32);
 	BYTE_ARRAY_NEW(oscore_master_secret, 16, 16);
@@ -368,19 +433,20 @@ int main()
 	struct suite suit_in;
 	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
 		      &suit_in);
+	PRINTF("Test vector: %d\n",TEST_VEC_NUM);
 	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
 	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
 	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,&PQ_public_random));
-	/*BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
-	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
-	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));*/
+
 	c_i.g_x.ptr = PQ_public_random.ptr;
 	c_i.g_x.len = PQ_public_random.len;
 	c_i.x.ptr = PQ_secret_random.ptr;
 	c_i.x.len = PQ_secret_random.len;
-	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
-	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
+	PRINTF("public ephemeral PQ Key size: %d\n",c_i.g_x.len);
+	PRINTF("secret ephemeral PQ Key size: %d\n",c_i.x.len);
+	PRINTF("MAX MSG SIZE: %d\n",edhoc_get_max_msg_size());
+
 
 #endif
 
@@ -394,7 +460,6 @@ int main()
         fprintf(stderr, "Failed to set up CoAP\n");
         return EXIT_FAILURE;
     }
-	//TRY_EXPECT(start_coap_client(&sockfd), 0);
 	TRY(edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 				ead_process));
 
@@ -416,13 +481,6 @@ int main()
 	while (coap_io_pending(ctx)) {
 		uint32_t timeout_ms;
 		result = coap_io_process(ctx, timeout_ms);
-		printf("RESULT %d\n",result);
-		//if(result>0){
-			printf("waiting for something \n");
-		//memcpy(data->ptr,my_buffer,my_buffer_len);
-		//data->len = my_buffer_len;
-		//PRINT_ARRAY("data:",data->ptr,data->len);
-		//}
   	}
 
 	close(sockfd);

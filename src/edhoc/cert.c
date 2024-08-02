@@ -23,7 +23,7 @@
 
 #include "cbor/edhoc_decode_cert.h"
 
-#if defined(MBEDTLS) && !defined(LIBOQS)
+#if defined(MBEDTLS) && !defined(PQM4)
 #define MBEDTLS_ALLOW_PRIVATE_ACCESS
 
 #include <psa/crypto.h>
@@ -184,7 +184,7 @@ static enum err ca_pk_get(const struct cred_array *cred_array,
 {
 	/* when single credential without certificate is stored, return stored ca_pk if available */
 	if (1 == cred_array->len
-#if defined(MBEDTLS) && !defined(LIBOQS)
+#if defined(MBEDTLS) && !defined(PQM4)
 	    /* In case no MBEDTLS is enabled, issuer identification is not extracted from certificate */
 	    && (0 == cred_array->ptr[0].ca.len ||
 		NULL == cred_array->ptr[0].ca.ptr)
@@ -200,7 +200,7 @@ static enum err ca_pk_get(const struct cred_array *cred_array,
 		return ok;
 	}
 
-#if defined(MBEDTLS) && !defined(LIBOQS)
+#if defined(MBEDTLS) && !defined(PQM4)
 	/* Accept only certificate based search if multiple credentials available*/
 	for (uint16_t i = 0; i < cred_array->len; i++) {
 		if (NULL == cred_array->ptr[i].ca.ptr ||
@@ -292,7 +292,7 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 			  const struct cred_array *cred_array,
 			  struct byte_array *pk, bool *verified)
 {
-#if defined(MBEDTLS) && !defined(LIBOQS)
+#if defined(MBEDTLS) && !defined(PQM4)
 
 	PRINT_MSG("Start parsing an ASN.1 certificate\n");
 
@@ -409,12 +409,16 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 #if defined(FALCON_LEVEL_1)
 	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(FALCON_LEVEL1));
 #elif defined(DILITHIUM_LEVEL_2)
+    PRINTF("Signature size in buffer: %d",SIGNATURE_SIZE);
+	PRINTF("Signature size in get: %d",get_signature_len(DILITHIUM_LEVEL2));
 	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(DILITHIUM_LEVEL2));
 #endif
 
 	enum err rv = certificate_authentication_failed;
 
-#ifndef LIBOQS
+#if  !defined(LIBOQS) && !defined(PQM4)
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(ES256));
+//#ifndef LIBOQS
 	/* Crude way to get TBSCertificate address, public key and signature */
 	do {
 		const uint8_t *cursor = cert->ptr;
@@ -578,12 +582,15 @@ do {
 				    root_pk.len);
 			struct const_byte_array s = { .ptr = sig.ptr,
 						      .len = sig.len };
-// Giorgos: Change this if we add more algorithms
-#if defined(FALCON_LEVEL_1)
-			rv = verify_edhoc(FALCON_LEVEL1, &root_pk, &m, &s, verified);
-#elif defined(DILITHIUM_LEVEL_2)
-			rv = verify_edhoc(DILITHIUM_LEVEL2, &root_pk, &m, &s, verified);
-#endif
+							  
+			// Giorgos: Change this if we add more algorithms
+			#if defined(FALCON_LEVEL_1)
+				rv = verify_edhoc(FALCON_LEVEL1, &root_pk, &m, &s, verified);
+			#elif defined(DILITHIUM_LEVEL_2)
+				rv = verify_edhoc(DILITHIUM_LEVEL2, &root_pk, &m, &s, verified);
+			#else
+				rv = verify_edhoc(ES256, &root_pk, &m, &s, verified);
+			#endif	
 		}
 	}
 	return rv;

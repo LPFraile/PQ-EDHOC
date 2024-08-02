@@ -18,10 +18,12 @@
 #include "edhoc/messages.h"
 #include "edhoc/suites.h"
 #include "edhoc/hkdf_info.h"
+#include "edhoc/buffer_sizes.h"
 
 #include "common/oscore_edhoc_error.h"
 #include "common/byte_array.h"
 #include "common/print_util.h"
+
 
 #ifdef _WIN32
 #define WEAK
@@ -307,5 +309,12 @@ enum export_label {
 enum err edhoc_exporter(enum hash_alg app_hash_alg, enum export_label label,
 			struct byte_array *prk_exporter,
 			struct byte_array *out);
+
+
+/**
+ * @brief 			Retern the maximum message size for the actual configuration
+ * @return			MAX MESSAGE SIZE
+ */
+size_t edhoc_get_max_msg_size();
 
 #endif

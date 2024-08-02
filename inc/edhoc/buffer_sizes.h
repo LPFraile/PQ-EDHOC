@@ -17,6 +17,15 @@
 	#define ECDH_SECRET_SIZE 64
 #endif
 
+#ifdef BIKE_LEVEL_1
+#ifndef HQC_LEVEL_1
+	#define PQ_KEM BIKE_LEVEL1
+	#define G_Y_SIZE OQS_KEM_bike_l1_length_ciphertext
+	#define G_X_SIZE OQS_KEM_bike_l1_length_public_key
+	#define G_I_SIZE OQS_KEM_bike_l1_length_secret_key
+	#define ECDH_SECRET_SIZE 32
+#endif
+#endif
 #ifdef KYBER_LEVEL_3 
 #ifndef HQC_LEVEL_1
 	#define PQ_KEM KYBER_LEVEL3
@@ -72,10 +81,8 @@
 #define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 
 #if defined (USE_X5CHAIN)
-
 #define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
-
 #endif
 
 #endif
@@ -86,18 +93,27 @@
 
 #ifdef HQC_LEVEL_1
 	#define PQ_KEM HQC_LEVEL1
-	#define G_Y_SIZE CRYPTO_BYTES 
-	#define G_X_SIZE CRYPTO_PUBLICKEYBYTES
-	#define G_I_SIZE CRYPTO_SECRETKEYBYTES 
+	#define G_Y_SIZE 4433
+	#define G_X_SIZE 2249
+	#define G_I_SIZE 2305 
 	#define ECDH_SECRET_SIZE 64
+#endif
+#ifdef BIKE_LEVEL_1
+#ifndef HQC_LEVEL_1
+	#define PQ_KEM BIKE_LEVEL1
+	#define G_Y_SIZE 1573
+	#define G_X_SIZE 1541
+	#define G_I_SIZE 5223
+	#define ECDH_SECRET_SIZE 32
+#endif
 #endif
 
 #ifdef KYBER_LEVEL_3 
 #ifndef HQC_LEVEL_1
 	#define PQ_KEM KYBER_LEVEL3
-	#define G_Y_SIZE CRYPTO_BYTES 
-	#define G_X_SIZE CRYPTO_PUBLICKEYBYTES
-	#define G_I_SIZE CRYPTO_SECRETKEYBYTES 
+	#define G_Y_SIZE 1088 
+	#define G_X_SIZE 1184
+	#define G_I_SIZE 2400 
 #endif
 #endif
 
@@ -120,8 +136,8 @@
 
 #ifndef FALCON_LEVEL_5
 #ifdef DILITHIUM_LEVEL_2
-	#define SIGNATURE_SIZE CRYPTO_BYTES  
-	#define PK_SIZE CRYPTO_PUBLICKEYBYTES
+	#define SIGNATURE_SIZE 2420 
+	#define PK_SIZE 1312
 #endif
 #endif
 
@@ -133,8 +149,13 @@
 #endif
 #endif
 #endif
-#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 500
-#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 500
+#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+
+#if defined (USE_X5CHAIN)
+#define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#endif
 
 #endif
 

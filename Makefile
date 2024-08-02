@@ -93,7 +93,7 @@ EXTENDED_CFLAGS += -Wcast-qual
 #EXTENDED_CFLAGS += -Wstack-usage=9000
 EXTENDED_CFLAGS += -Wconversion
 EXTENDED_CFLAGS += -Wpedantic
-#EXTENDED_CFLAGS += -Werror
+EXTENDED_CFLAGS += -Wno-error
 
 #Clang warning flags
 else ifeq ($(findstring clang,$(CC)),clang)
@@ -112,7 +112,7 @@ EXTENDED_CFLAGS += -Wextra
 EXTENDED_CFLAGS += -Wpedantic
 EXTENDED_CFLAGS += -Wstack-exhausted
 EXTENDED_CFLAGS += -Wconversion
-#EXTENDED_CFLAGS += -Werror
+EXTENDED_CFLAGS += -Wno-error
 endif
 
 ifeq ($(findstring ASAN,$(ASAN)),ASAN)
@@ -169,9 +169,19 @@ C_INCLUDES += -Iexternals/pqm4/common
 ifeq ($(findstring KYBER_LEVEL_1,$(EXTENDED_CFLAGS)),KYBER_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber512/m4fstack
 endif
+ifeq ($(findstring KYBER_LEVEL_3,$(EXTENDED_CFLAGS)),KYBER_LEVEL_3)
+C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber768/m4fstack
+endif
+ifeq ($(findstring BIKE_LEVEL_1,$(EXTENDED_CFLAGS)),BIKE_LEVEL_1)
+C_INCLUDES += -Iexternals/pqm4/crypto_kem/bikel1/m4f
+endif
 #C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
 ifeq ($(findstring FALCON_LEVEL_1,$(EXTENDED_CFLAGS)),FALCON_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_sign/falcon-512/m4-ct
+endif
+ifeq ($(findstring DILITHIUM_LEVEL_2,$(EXTENDED_CFLAGS)),DILITHIUM_LEVEL_2)
+#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4f
 endif
 C_INCLUDES += -Iexternals/pqm4/libopencm3/include
 endif

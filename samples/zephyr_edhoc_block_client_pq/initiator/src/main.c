@@ -18,7 +18,43 @@
 
 #define URI_PATH 11
 #define PQ_PROPOSAL_1
-#define MAX_PAYLOAD_SIZE 2000
+uint8_t TEST_VEC_NUM = 7;
+#define MAX_PAYLOAD_SIZE 1500
+/*comment this out to use DH keys from the test vectors*/
+/*#define PQ_PROPOSAL_1
+
+#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 7;
+#define MAX_PAYLOAD_SIZE 1500
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 8;
+#define MAX_PAYLOAD_SIZE 3200
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 9;
+#define MAX_PAYLOAD_SIZE 1800
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 10;
+#define MAX_PAYLOAD_SIZE 3500
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 11;
+#define MAX_PAYLOAD_SIZE 3209
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 12;
+#define MAX_PAYLOAD_SIZE 7104
+#elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 13;
+#define MAX_PAYLOAD_SIZE 5200
+#elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 13;
+#define MAX_PAYLOAD_SIZE 5200
+#elif defined(FALCON_LEVEL_1) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 14;
+#define MAX_PAYLOAD_SIZE 2300
+#else
+uint8_t TEST_VEC_NUM = 2;
+#define MAX_PAYLOAD_SIZE 800
+#endif
+*/
 static struct coap_client client;
 uint8_t my_buffer[MAX_PAYLOAD_SIZE];
 uint8_t* ptr = my_buffer;
@@ -27,6 +63,7 @@ size_t my_buffer_len = 0;
 int sockfd;
 struct k_sem my_sem;
 struct k_sem my_sem_tx;
+struct k_sem sem_coap_finish;
 uint8_t my_buffer_tx[MAX_PAYLOAD_SIZE];
 size_t my_buffer_tx_len = 0;
 
@@ -61,27 +98,33 @@ enum err ead_process(void *params, struct byte_array *ead13)
 void response_cb(int16_t code, size_t offset, const uint8_t *payload, size_t len,
                  bool last_block, void *user_data)
 {
-	PRINT_MSG("Response callback\n");
+	printf("Response callback\n");
     if (code >= 0) {
-            PRINTF("CoAP response from server %d\n", code);
+            printf("CoAP response from server %d\n", code);
 			if (code == 68){
-				PRINT_MSG("ACk with block 2\n");
+				printf("ACk 2.04 changed\n");
 				memcpy(my_buffer + ptr_len ,payload,len);
 				ptr_len = ptr_len + len;
+				if(len == 0){
+					printf("ACk 2.04 changed without block 2\n");
+				}
+				else{
+					printf("ACk 2.04 changed with block 2\n");
+					k_sem_give(&sem_coap_finish);
+				}
 
             	if (last_block) {
-                	PRINT_MSG("Last packet received\n");
+                	printf("Last packet received %d\n",my_buffer_len);
 					my_buffer_len = ptr_len;
-					PRINT_ARRAY("MSG:",my_buffer,my_buffer_len);
+					//PRINT_ARRAY("MSG:",my_buffer,my_buffer_len);
 					k_sem_give(&my_sem);
-            }
-			else if (code  == 95){
-				PRINT_MSG("ACK long block go to send next block\n");
+            	}
+			}	
+			else if (code == 95){
+				printf("ACK 2.31 continue\n");
 			}
-		}
-			
     } else {
-            PRINTF("Error in sending request %d", code);
+            printf("Error in sending request %d\n", code);
     }
 }
 /**
@@ -91,12 +134,12 @@ void response_cb(int16_t code, size_t offset, const uint8_t *payload, size_t len
  */
 enum err tx(void *sock, struct byte_array *data)
 {
-	PRINT_MSG("Tx Message\n");
+	printf("Tx Message\n");
 
 	memcpy(my_buffer_tx,data->ptr,data->len);
 	my_buffer_tx_len = data->len;
-	PRINT_ARRAY("MSG1-0:",data->ptr,data->len);
-	PRINT_ARRAY("MSG1-0:",my_buffer_tx,my_buffer_tx_len);
+	//PRINT_ARRAY("MSG1-0:",data->ptr,data->len);
+	//PRINT_ARRAY("MSG1-0:",my_buffer_tx,my_buffer_tx_len);
 	k_sem_give(&my_sem_tx);
 	return ok;
 }
@@ -115,13 +158,13 @@ struct coap_client_request req = {
 	};
 static int txrx_edhoc(int sockfd)
 {
-	PRINT_MSG("in txrx edhoc\n");
+	printf("in txrx edhoc\n");
 	int ret = 0;
 	if (k_sem_take(&my_sem_tx, K_FOREVER) != 0) {
-        PRINT_MSG("Input data not available in txrx!\n");
+        printf("Input data not available in txrx!\n");
     } else {
-		PRINT_MSG("Send the messages\n");
-		PRINT_ARRAY("MSG1:",my_buffer_tx,my_buffer_tx_len);
+		printf("Send the messages MSG1\n");
+		//PRINT_ARRAY("MSG1:",my_buffer_tx,my_buffer_tx_len);
 		req.payload = my_buffer_tx;
 		req.len = my_buffer_tx_len;
 		options[0].code = 60;
@@ -132,28 +175,28 @@ static int txrx_edhoc(int sockfd)
 		//PRINTF("value %02X\n",options[0].value[1]);
 		/*options[0].value[0] = 0x03;
 		options[0].value[1] = 0x26;*/
-		PRINTF("SOCKFDb-%d\n",sockfd);
+		printf("SOCKFDb-%d\n",sockfd);
 		ret = coap_client_req(&client, sockfd, NULL, &req, -1);
 		if (ret < 0){
-			PRINTF("operation fail- %d\n",ret);
+			printf("operation fail- %d\n",ret);
 		}
 	}	
 	if (k_sem_take(&my_sem_tx, K_FOREVER) != 0) {
-        PRINT_MSG("Input data not available in txrx!\n");
+        printf("Input data not available in txrx!\n");
     } else {
-		k_sleep(K_MSEC(500));
-		PRINT_MSG("Send the messages\n");
-		PRINT_ARRAY("MSG3:",my_buffer_tx,my_buffer_tx_len);
+		//k_sleep(K_MSEC(500));
+		printf("Send the messages MSG3\n");
+		//PRINT_ARRAY("MSG3:",my_buffer_tx,my_buffer_tx_len);
 		req.payload = my_buffer_tx;
 		req.len = my_buffer_tx_len;
 		//options[0].value[0] = 0x02;
 		//options[0].value[1] = 0xad;
 		options[0].value[0] = (my_buffer_tx_len >> 8) & 0xFF;
 		options[0].value[1] = my_buffer_tx_len & 0xFF;
-		PRINTF("SOCKFD1-%d",sockfd);
+		printf("SOCKFD1-%d",sockfd);
 		ret = coap_client_req(&client, sockfd, NULL, &req, -1);
 		if (ret < 0){
-			PRINTF("operation fail- %d\n",ret);
+			printf("operation fail- %d\n",ret);
 		}
 	}	
 	return ret;
@@ -165,11 +208,11 @@ static int txrx_edhoc(int sockfd)
  */
 enum err rx(void *sock, struct byte_array *data)
 {
-	PRINT_MSG("On RX\n");
+	printf("On RX\n");
 	if (k_sem_take(&my_sem, K_FOREVER) != 0) {
-        PRINT_MSG("Input data not available!");
+        printf("Input data not available!");
     } else {
-		PRINT_MSG("SET data\n");
+		printf("SET data\n");
 		memcpy(data->ptr,my_buffer,my_buffer_len);
 		data->len = my_buffer_len;
         /* fetch available data */
@@ -179,7 +222,7 @@ enum err rx(void *sock, struct byte_array *data)
 
 void edhoc_initiator_init(void)
 {
-	PRINT_MSG("Init EDHOC\n");
+	printf("Init EDHOC\n");
 	int r = internal_main();
 	if (r != 0) {
 		printf("error during initiator run. Error code: %d\n", r);
@@ -216,7 +259,6 @@ int internal_main(void)
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-	const uint8_t TEST_VEC_NUM = 7;
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -265,7 +307,8 @@ int internal_main(void)
 	struct suite suit_in;
 	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
 		      &suit_in);
-	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	printf("Test vector: %d\n",TEST_VEC_NUM);		  
+	printf("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign);
 	uint8_t PQ_public_random[get_kem_pk_len(suit_in.edhoc_ecdh)];
 	uint8_t PQ_secret_random[get_kem_sk_len(suit_in.edhoc_ecdh)];
 	//PRINTF("Arrive here 2\n");
@@ -278,8 +321,8 @@ int internal_main(void)
 
 	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &c_i.x,&c_i.g_x));
 
-	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
-	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
+	printf("public ephemeral PQ Key size: %d\n", c_i.g_x.len);
+	printf("secret ephemeral PQ Key size: %d\n", c_i.x.len);
 	#endif
 
    
@@ -288,23 +331,36 @@ int internal_main(void)
 
 	edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
-    //print("PRK_out", PRK_out.ptr, PRK_out.len);
+    printf("PRK out:");
 	print_array( PRK_out.ptr, PRK_out.len);
 	//PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
 	prk_out2exporter(SHA_256, &PRK_out, &prk_exporter);
-	PRINT_ARRAY("prk_exporter", prk_exporter.ptr, prk_exporter.len);
+	printf("prk_exporter:");
+	print_array(prk_exporter.ptr,prk_exporter.len);
+	//PRINT_ARRAY("prk_exporter", prk_exporter.ptr, prk_exporter.len);
 
 	edhoc_exporter(SHA_256, OSCORE_MASTER_SECRET, &prk_exporter,
 		       &oscore_master_secret);
-	PRINT_ARRAY("OSCORE Master Secret", oscore_master_secret.ptr,
-		    oscore_master_secret.len);
+	printf("OSCORE Master Secret:");
+	print_array(oscore_master_secret.ptr,oscore_master_secret.len);
+	//PRINT_ARRAY("OSCORE Master Secret", oscore_master_secret.ptr,oscore_master_secret.len);
 
 	edhoc_exporter(SHA_256, OSCORE_MASTER_SALT, &prk_exporter,
 		       &oscore_master_salt);
-	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
-		    oscore_master_salt.len);
-	k_thread_abort(k_current_get());
+	printf("OSCORE Master Salt:");
+	print_array( oscore_master_salt.ptr,oscore_master_salt.len);
+	printf("EDHOC stop to wait  to coapa FINISH\n");
+	if (k_sem_take(&sem_coap_finish, K_FOREVER) != 0) {
+        printf("Waiting for coap finished\n");
+    } else {
+		printf("COAP finish\n");
+	}	
+	printf("EDHOC finish\n");
+	//PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
+	//	    oscore_master_salt.len);
+	//
+	//k_thread_abort(k_current_get());
 
 	//close(sockfd);
 	return 0;
@@ -314,19 +370,20 @@ int internal_main(void)
 void main(void)
 {
 
-	PRINT_MSG("MAIN\n");
+	printf("MAIN\n");
 	k_sem_init(&my_sem, 0, 1);
 	k_sem_init(&my_sem_tx, 0, 2);
+	k_sem_init(&sem_coap_finish, 0, 1);
 	start_coap_client(&sockfd);
     coap_client_init(&client, NULL);
 	txrx_edhoc(sockfd);
 	//close(sockfd);
-	PRINT_MSG("Main finish\n");
+	printf("Main finish\n");
 
 }
 /* Create thread for EDHOC */
 K_THREAD_DEFINE(edhoc_thread, //name
-		50008, //stack_size
+		49008, //stack_size
 		edhoc_initiator_init, //entry_function
 		NULL, NULL, NULL, //parameter1,parameter2,parameter3
 		5, //priority

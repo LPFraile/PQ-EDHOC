@@ -118,7 +118,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->edhoc_aead = AES_CCM_16_64_128;
 		suite->edhoc_hash = SHA_256;
 		suite->edhoc_mac_len_static_dh = MAC8;
-		suite->edhoc_ecdh = BIKE;
+		suite->edhoc_ecdh = BIKE_LEVEL1;
 		suite->edhoc_sign = FALCON_LEVEL1;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
@@ -129,6 +129,16 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->edhoc_hash = SHA_256;
 		suite->edhoc_mac_len_static_dh = MAC8;
 		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = DILITHIUM_LEVEL2;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_13:
+		suite->suite_label = SUITE_13;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = BIKE_LEVEL1;
 		suite->edhoc_sign = DILITHIUM_LEVEL2;
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
@@ -212,10 +222,10 @@ uint32_t get_signature_len(enum sign_alg alg)
 	#endif
 	#ifdef PQM4
 	case FALCON_LEVEL1:
-		return 690;
+		return 690; //Was working before with 690
 		break;
 	case DILITHIUM_LEVEL2:
-		return CRYPTO_BYTES;	
+		return 2420;	
 		break;
 	#endif
 	
@@ -248,9 +258,21 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
 		break;
+	case BIKE_LEVEL1:
+		return OQS_KEM_bike_l1_length_public_key;
+		break;
 	#endif
 	#ifdef PQM4
 	case KYBER_LEVEL1:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	case KYBER_LEVEL3:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	case HQC_LEVEL1:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	case BIKE_LEVEL1:
 		return CRYPTO_PUBLICKEYBYTES;
 		break;
 	#endif
@@ -276,9 +298,21 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_public_key;
 		break;
+	case BIKE_LEVEL1:
+		return OQS_KEM_bike_l1_length_public_key;
+		break;
 	#endif
 	#ifdef PQM4
 	case KYBER_LEVEL1:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	case KYBER_LEVEL3:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	case HQC_LEVEL1:
+		return CRYPTO_PUBLICKEYBYTES;
+		break;
+	case BIKE_LEVEL1:
 		return CRYPTO_PUBLICKEYBYTES;
 		break;
 	#endif
@@ -304,9 +338,21 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_secret_key;
 		break;
+	case BIKE_LEVEL1:
+		return OQS_KEM_bike_l1_length_secret_key;
+		break;
 	#endif
 	#ifdef PQM4
 	case KYBER_LEVEL1:
+		return CRYPTO_SECRETKEYBYTES;
+		break;
+	case KYBER_LEVEL3:
+		return CRYPTO_SECRETKEYBYTES;
+		break;
+	case HQC_LEVEL1:
+		return CRYPTO_SECRETKEYBYTES;
+		break;
+	case BIKE_LEVEL1:
 		return CRYPTO_SECRETKEYBYTES;
 		break;
 	#endif
@@ -332,10 +378,22 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 	case HQC_LEVEL1:
 		return OQS_KEM_hqc_128_length_ciphertext;
 		break;
+	case BIKE_LEVEL1:
+		return OQS_KEM_bike_l1_length_ciphertext;
+		break;
 	#endif
 	#ifdef PQM4
-	    case KYBER_LEVEL1:
+	case KYBER_LEVEL1:
 		return 768;
+		break;
+	case KYBER_LEVEL3:
+		return 1088;
+		break;
+	case HQC_LEVEL1:
+		return 4433;
+		break;
+	case BIKE_LEVEL1:
+		return 1573;
 		break;
 	#endif
 	default: 

@@ -19,9 +19,16 @@ enum err encode_bstr(const struct byte_array *in, struct byte_array *out)
 	struct zcbor_string tmp;
 	tmp.value = in->ptr;
 	tmp.len = in->len;
-	TRY_EXPECT(cbor_encode_bstr_type_b_str(out->ptr, out->len, &tmp,
+	PRINTF("TMP size: %d\n",tmp.len);
+	int ret = cbor_encode_bstr_type_b_str(out->ptr, out->len, &tmp,
+					       &payload_len_out);
+    PRINTF("CBOR ENCODE ERROR: %d\n",ret);
+	if (ret != 0){
+		TRY_EXPECT(1,0);
+	}						   
+	/*TRY_EXPECT(cbor_encode_bstr_type_b_str(out->ptr, out->len, &tmp,
 					       &payload_len_out),
-		   0);
+		   0);*/
 	out->len = (uint32_t)payload_len_out;
 	return ok;
 }

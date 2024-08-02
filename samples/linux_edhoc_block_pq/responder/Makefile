@@ -157,6 +157,10 @@ CFLAGS += -DZCBOR_CANONICAL
 CFLAGS += -DLINUX_SOCKETS
 CXXFLAGS += -DLINUX_SOCKETS
 
+CFLAGS += $(FEATURES)
+CXXFLAGS += $(FEATURES)
+
+
 # use AddressSanitizer to find memory bugs
 # comment this out for better speed
 #CFLAGS += -fsanitize=address -fno-omit-frame-pointer

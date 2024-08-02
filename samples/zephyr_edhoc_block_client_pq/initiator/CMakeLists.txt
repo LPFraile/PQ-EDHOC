@@ -55,6 +55,9 @@ add_definitions(
 	-DMBEDTLS_CONFIG_FILE="mbedtls_config_uoscore_uedhoc.h"
 	#-DDEBUG_PRINT
 	-DZCBOR_CANONICAL
+	#-DKYBER_LEVEL_1
+	#-DFALCON_LEVEL_1
+
 )
 add_compile_definitions(CONFIG_COAP_CLIENT=y)
 add_compile_definitions(CONFIG_COAP_CLIENT_BLOCK_SIZE=512)

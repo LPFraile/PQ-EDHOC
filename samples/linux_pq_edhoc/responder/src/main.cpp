@@ -27,27 +27,50 @@ extern "C" {
 #include "cantcoap.h"
 
 #define USE_IPV4
-#define PQ_PROPOSAL_1
+
 #if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
-#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
-uint8_t TEST_VEC_NUM = 11;
+#define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 8;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 9;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 10;
+#define PQ_PROPOSAL_1
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 11;
+#define PQ_PROPOSAL_1
 #elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 12;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 13;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 14;
+#define PQ_PROPOSAL_1
+#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 15;
+#define PQ_PROPOSAL_1
+#elif defined(DH) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 2;
+#define USE_RANDOM_EPHEMERAL_DH_KEY 
+#elif defined(DH) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 3;
+#define USE_RANDOM_EPHEMERAL_DH_KEY 
 #else
-uint8_t TEST_VEC_NUM = 7;
+#error "you must select a correct test combination in makefile_config.mk file"
 #endif
+
 
 CoapPDU *txPDU = new CoapPDU();
 
 char buffer[MAXLINE];
 CoapPDU *rxPDU;
 
-/*comment this out to use DH keys from the test vectors*/
-//#define USE_RANDOM_EPHEMERAL_DH_KEY
-#define PQ_PROPOSAL_1
 #ifdef USE_IPV6
 struct sockaddr_in6 client_addr;
 #endif

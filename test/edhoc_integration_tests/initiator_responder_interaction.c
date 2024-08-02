@@ -10,7 +10,7 @@
 
 #include <edhoc.h>
 
-#include "edhoc_test_vectors_p256_v15.h"
+#include "edhoc_test_vectors_p256_v16.h"
 #include "latency.h"
 
 uint8_t I_prk_exporter_buf[32];
@@ -387,10 +387,10 @@ int test_initiator_responder_interaction(int vec_num)
 
 void t_initiator_responder_interaction1()
 {
-	MEASURE_LATENCY(test_initiator_responder_interaction(1));
+	MEASURE_LATENCY(test_initiator_responder_interaction(2));
 }
 
 void t_initiator_responder_interaction2()
 {
-	MEASURE_LATENCY(test_initiator_responder_interaction(2));
+	MEASURE_LATENCY(test_initiator_responder_interaction(3));
 }

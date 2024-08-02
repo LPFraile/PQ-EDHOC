@@ -136,17 +136,19 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			     struct byte_array *PRK_3e2m)
 {
 	uint32_t g_y_size = 0;
-	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_12)){
+	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_13)){
 		/*Set Gy size to the ciphertext size for KEMs*/
 		g_y_size = get_kem_cc_len(rc->suite.edhoc_ecdh);
-		PRINTF("Set gy to the ciphertext size for KEMS: %d\n",g_y_size);
+		PRINTF("Suit:%d",rc->suite.edhoc_ecdh);
+		PRINTF("G_Y_SIZE: %d",G_Y_SIZE);
+		PRINTF("Set gy to the ciphertext size for KEMS: %d\n",G_Y_SIZE);
 	}
 	else{
 		/*Set Gy size to the dh key size for DH*/
 		PRINT_MSG("Set gy to the dh key size for DH");
 		g_y_size =  get_ecdh_pk_len(rc->suite.edhoc_ecdh);
 	}
-	PRINTF("G_Y_SIZE: %d",G_Y_SIZE);
+	
 	BYTE_ARRAY_NEW(g_y, G_Y_SIZE, g_y_size);
   uint32_t ciphertext_len = rc->msg.len - g_y.len;
 
@@ -161,7 +163,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	/*calculate the DH shared secret*/
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 
-	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_12)){
+	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_13)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
@@ -197,13 +199,13 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	BYTE_ARRAY_NEW(id_cred_r, ID_CRED_R_SIZE, ID_CRED_R_SIZE);
 
 	plaintext.len = ciphertext.len;
-	PRINT_MSG("Arrive here1");
+	//PRINT_MSG("Arrive here1");
 	TRY(check_buffer_size(PLAINTEXT2_SIZE, plaintext.len));
-    PRINT_MSG("Arrive here2"); 
+    //PRINT_MSG("Arrive here2"); 
 	TRY(ciphertext_decrypt_split(CIPHERTEXT2, &rc->suite, c_r, &id_cred_r,
 				     &sign_or_mac, &rc->ead, &PRK_2e, &th2,
 				     &ciphertext, &plaintext));
-    PRINT_MSG("Arrive here3");
+    //PRINT_MSG("Arrive here3");
 	/*check the authenticity of the responder*/
 	BYTE_ARRAY_NEW(cred_r, CRED_R_SIZE, CRED_R_SIZE);
 	BYTE_ARRAY_NEW(pk, PK_SIZE, PK_SIZE);
@@ -256,7 +258,11 @@ static enum err msg3_only_gen(const struct edhoc_initiator_context *c,
 			   &sign_or_mac_3, &c->ead_3, PRK_3e2m, th3,
 			   &ciphertext, &plaintext));
 
+	PRINT_ARRAY("CIPHERTEXT:",ciphertext.ptr,ciphertext.len);
+
 	/*massage 3 create and send*/
+	rc->msg.len = ciphertext.len + PLAINTEXT3_SIZE_ENCODING_OVERHEAD;
+	PRINTF("MSG out size:%d\n",rc->msg.len);
 	TRY(encode_bstr(&ciphertext, &rc->msg));
 	PRINT_ARRAY("msg3", rc->msg.ptr, rc->msg.len);
 
@@ -329,6 +335,7 @@ enum err edhoc_initiator_run_extended(
 	rc.msg.len = sizeof(rc.msg_buf);
 	TRY(rx(c->sock, &rc.msg));
 	printf("MSG 2 size: %d\n",rc.msg.len);
+	PRINTF("Max MSG2 size %d",MSG_2_SIZE);
 
 	/*create and send message 3*/
 	TRY(msg3_gen(c, &rc, cred_r_array, c_r_bytes, prk_out));

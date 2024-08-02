@@ -27,21 +27,44 @@ extern "C" {
 
 #define USE_IPV4
 //#define USE_IPV6
-/*comment this out to use DH keys from the test vectors*/
-#define PQ_PROPOSAL_1
+
 #if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
-#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
-uint8_t TEST_VEC_NUM = 11;
+#define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 8;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 9;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 10;
+#define PQ_PROPOSAL_1
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 11;
+#define PQ_PROPOSAL_1
 #elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 12;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 13;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 14;
+#define PQ_PROPOSAL_1
+#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 15;
+#define PQ_PROPOSAL_1
+#elif defined(DH) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 2;
+#define USE_RANDOM_EPHEMERAL_DH_KEY 
+#elif defined(DH) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 3;
+#define USE_RANDOM_EPHEMERAL_DH_KEY 
 #else
-uint8_t TEST_VEC_NUM = 7;
+#error "you must select a correct test combination in makefile_config.mk file"
 #endif
 
-//#define USE_RANDOM_EPHEMERAL_DH_KEY
 
 /**
  * @brief	Initializes sockets for CoAP client.
@@ -159,7 +182,11 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-
+    #ifdef LIBOQS
+	PRINT_MSG("DEFINED LIBOQS\n");
+	#else
+	PRINT_MSG("NO DEFINED LIBOQS\n");
+	#endif
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	c_i.sock = &sockfd;
@@ -203,7 +230,7 @@ int main()
 	cred_r.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r_pk;
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
-    PRINTF("initiator test vector number %d:", vec_num_i);
+    PRINTF("initiator test vector number %d:", vec_num_i+1);
 	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,c_i.suites_i.len);
 	PRINTF("initiator sk size:%d \n",c_i.sk_i.len);
 	PRINTF("initiator pk size:%d \n",c_i.pk_i.len);
@@ -243,17 +270,18 @@ int main()
 	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
 		      &suit_in);
 	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	PRINTF("PQ_public buffer size %d\n",get_kem_pk_len(suit_in.edhoc_ecdh));
+	PRINTF("PQ_secret buffer size %d\n",get_kem_pk_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
 	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,&PQ_public_random));
-	/*BYTE_ARRAY_NEW(PQ_public_random, 800, 800);
-	BYTE_ARRAY_NEW(PQ_secret_random, 1632, 1632);
-	TRY(ephemeral_kem_key_gen(KYBER_LEVEL1, &PQ_secret_random,&PQ_public_random));*/
 	c_i.g_x.ptr = PQ_public_random.ptr;
 	c_i.g_x.len = PQ_public_random.len;
 	c_i.x.ptr = PQ_secret_random.ptr;
 	c_i.x.len = PQ_secret_random.len;
 	PRINTF("public ephemeral PQ Key size %d\n", c_i.g_x.len);
+	//PRINT_ARRAY("PK eph:",c_i.g_x.ptr,c_i.g_x.len);
+	//PRINT_ARRAY("SK eph:",c_i.x.ptr,c_i.x.len);
 	PRINTF("secret ephemeral PQ Key size %d\n", c_i.x.len);
 
 #endif

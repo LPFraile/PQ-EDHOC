@@ -24,7 +24,8 @@ FILE(GLOB app_sources
   ../test_vectors/*.c
   ../externals/PQClean/crypto_kem/kyber512/clean/*.c)
 target_sources(app PRIVATE ${app_sources})
-
+target_compile_options(app PRIVATE -Wno-error=implicit-int)
+zephyr_compile_options(-Wno-error=implicit-int)
 include_directories(
   .
   ../inc
@@ -41,9 +42,10 @@ add_definitions(
   -DUNIT_TEST
   -DDEBUG_PRINT
   -DZCBOR_CANONICAL
-  #-DMEASURE_LATENCY_ON
-  #-DREPORT_STACK_USAGE
+  -DMEASURE_LATENCY_ON
+  -DREPORT_STACK_USAGE
 )
+#add_compile_options(-Wno-error=implicit-int -Wno-error=return-type)
 
 # The external static library that we are linking with does not know
 # how to build for this platform so we export all the flags used in
@@ -106,6 +108,7 @@ ExternalProject_Add(
 
 # Create a wrapper CMake library that our app can link with
 add_library(test STATIC IMPORTED GLOBAL)
+
 add_dependencies(
   test
   oscore_edhoc_project

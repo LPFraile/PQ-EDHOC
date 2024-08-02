@@ -56,6 +56,11 @@ static enum err mac(const struct byte_array *prk, const struct byte_array *c_r,
 	TRY(encode_bstr(th, &th_enc));
 
 	/**/
+	/*PRINTF("MAX ID CRED: %d\n",ID_CRED_MAX_SIZE);
+	PRINTF("MAX CRED: %d\n", CRED_MAX_SIZE );
+	PRINTF("CONTEXT_MAC_SIZE: %d\n",CONTEXT_MAC_SIZE);
+	PRINTF("CONTEXT_MAC len: %d\n",AS_BSTR_SIZE(c_r->len) + id_cred->len + cred->len +
+			       ead->len + th_enc.len);*/
 	BYTE_ARRAY_NEW(context_mac, CONTEXT_MAC_SIZE,
 		       AS_BSTR_SIZE(c_r->len) + id_cred->len + cred->len +
 			       ead->len + th_enc.len);
@@ -165,10 +170,11 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 			TRY(signature_struct_gen(th, id_cred, cred, ead,
 						 signature_or_mac,
 						 &sign_struct));
-
+           
 			signature_or_mac->len =
 			get_signature_len(suite->edhoc_sign);
-	
+	        PRINTF("Signature or mac size: %d",signature_or_mac->len);
+			
 			memset(signature_or_mac->ptr,0,signature_or_mac->len);
 			TRY(sign_edhoc(suite->edhoc_sign, sk, pk, &sign_struct,
 				 signature_or_mac->ptr, &signature_or_mac->len));

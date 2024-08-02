@@ -196,7 +196,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 	
-	if((suites_i.ptr[suites_i.len -1] >= SUITE_7)&&(suites_i.ptr[suites_i.len -1] <= SUITE_12)){
+	if((suites_i.ptr[suites_i.len -1] >= SUITE_7)&&(suites_i.ptr[suites_i.len -1] <= SUITE_13)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Encapsulate the ephemeral key (in g_x) enc(ephpk)->(ss,c) ( enc(g_x)->(g_xy,g_y))
 		*   Set the g_y with the ciphertex message c   
@@ -204,6 +204,8 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	    PRINT_MSG("PQ KEM encapsulation\n");
 		#if defined(PQM4) || defined(LIBOQS)
 	    PRINT_ARRAY("PQ DEV - g_x ", g_x.ptr, g_x.len);
+		PRINTF("cc size: %d\n",c->g_y.len);
+		PRINTF("ss size: %d\n",g_xy.len);
 		TRY(kem_encapsulate(rc->suite.edhoc_ecdh,&g_x,&c->g_y,&g_xy));
 		PRINT_ARRAY("G_XY (PQ SS)", g_xy.ptr, g_xy.len);
 		PRINT_ARRAY("G_Y (PQ C)", c->g_y.ptr, c->g_y.len);
@@ -235,6 +237,10 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 
 	/*compute signature_or_MAC_2*/
 	PRINTF("Signature len %d - %d\n", SIGNATURE_SIZE, get_signature_len(rc->suite.edhoc_sign));
+    if(get_signature_len(rc->suite.edhoc_sign) > SIGNATURE_SIZE){
+		printf("Set correctly the suits in the external makefile_config.mk\n");
+		//return -1;
+	}
 	BYTE_ARRAY_NEW(sign_or_mac_2, SIGNATURE_SIZE,
 		       get_signature_len(rc->suite.edhoc_sign));
 	TRY(signature_or_mac(GENERATE, static_dh_r, &rc->suite, &c->sk_r,

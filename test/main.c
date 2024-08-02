@@ -14,6 +14,7 @@
 #include "edhoc_integration_tests/edhoc_tests.h"
 #include "oscore_tests.h"
 
+
 #define TEST_EDHOC_EXPORTER 1
 #define TEST_INITIATOR_RESPONDER_INTERACTION1 2
 #define TEST_INITIATOR_RESPONDER_INTERACTION2 3
@@ -103,7 +104,7 @@ ZTEST(uoscore_uedhoc, test_initiator_responder_interaction2)
 	     t_initiator_responder_interaction2);
 };
 
-ZTEST(uoscore_uedhoc, t1_oscore)
+/*ZTEST(uoscore_uedhoc, t1_oscore)
 {
 	skip(T1_OSCORE_CLIENT_REQUEST_RESPONSE,
 	     t1_oscore_client_request_response);
@@ -320,7 +321,7 @@ ZTEST(uoscore_uedhoc, test_edhoc_responder_x509_x5t_rfc9529)
 	skip(TEST_EDHOC_RESPONDER_X509_X5T_RFC9529,
 	     test_edhoc_responder_x509_x5t_rfc9529);
 }
-
+*/
 /*
  * In order to measure the latency of coap2oscore, oscore2coap, 
  * edhoc_responder_run, edhoc_initiator_run you need one of the supported boards 

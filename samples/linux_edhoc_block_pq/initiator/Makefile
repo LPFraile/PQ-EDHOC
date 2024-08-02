@@ -89,6 +89,10 @@ CXXFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # required for gddl-gen library
 CFLAGS += -DZCBOR_CANONICAL 
 
+
+CFLAGS += $(FEATURES)
+CXXFLAGS += $(FEATURES)
+
 # use linux sockets 
 #CFLAGS += -DLINUX_SOCKETS
 #CXXFLAGS += -DLINUX_SOCKETS
