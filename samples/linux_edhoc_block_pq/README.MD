@@ -34,30 +34,17 @@ The coap client and server are setting to works with block wise transfer. The bl
 
 Optionally can be chosen three diferent paramete to manage the retransmisions when the tarnsport layers is setting to TCP. This must be selected in the Initiator/src/main.c code.
 
-/*******************************************************
- * Define coap parameter for retransmisions is use UDP
- * *********************************************************/
-/*************************************************************** 
- * Maximum number of retransmisions. If not define by default is 4
- ****************************************************************/
-//#define COAP_SESSION_MAX_RET 4 
+### Define coap parameter for retransmisions is use UDP
+Maximum number of retransmisions. If not define by default is 4
+- #define COAP_SESSION_MAX_RET 4 
 
-/*****************************************************************
- * Number of seconds when to expect an ACK or a response to an outstanding 
- * CON message
- * If not define by default is 2 seconds
- ******************************************************************/ 
-//#define COAP_SESSION_ACK_TIMEOUT_INT 2  /**< Integer part of fixed point variable */
-//#define COAP_SESSION_ACK_TIMEOUT_FRA 0 /**< Fractional part of fixed point variable 1/1000 (3 points) precision */
+### Number of seconds when to expect an ACK or a response to an outstanding CON message. If not define by default is 2 seconds
+- #define COAP_SESSION_ACK_TIMEOUT_INT 2  /**< Integer part of fixed point variable */
+- #define COAP_SESSION_ACK_TIMEOUT_FRA 0 /**< Fractional part of fixed point variable 1/1000 (3 points) precision */
 
-/*****************************************************************
- * A factor that is used to randomize the wait time before a message
- * is retransmitted to prevent synchronization effects.
- * Default value of ACK_RANDOM_FACTOR is 1.5
-******************************************************************/
-//#define COAP_SESSION_ACK_RANDOM_FACTOR_INT 1 /**< Integer part of fixed point variable */
-//#define COAP_SESSION_ACK_RANDOM_FACTOR_FRA 5 /**< Fractional part of fixed point variable 1/1000 (3 points) precision */
-
+### A factor that is used to randomize the wait time before a message is retransmitted to prevent synchronization effects. Default value of ACK_RANDOM_FACTOR is 1.5
+- #define COAP_SESSION_ACK_RANDOM_FACTOR_INT 1 /**< Integer part of fixed point variable */
+- #define COAP_SESSION_ACK_RANDOM_FACTOR_FRA 5 /**< Fractional part of fixed point variable 1/1000 (3 points) precision */
 
 ## PQ KEMs algortithm
 The PQ KEMs that are going to be used must be selected on the makefile_config.mk file in order to reserve the smaller necessary buffers. Behind a list of available KEMs until the date. 
