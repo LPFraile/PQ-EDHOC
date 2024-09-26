@@ -30,8 +30,8 @@ extern "C" {
 #include "coap3/coap.h"
 
 /*Define IPv4 or IPv6*/
-#define USE_IPV4
-//#define USE_IPV6
+//#define USE_IPV4
+#define USE_IPV6
 
 #ifdef USE_COAP_BLOCK_SIZE
 #define COAP_MAX_BLOCK_SIZE USE_COAP_BLOCK_SIZE
@@ -75,6 +75,22 @@ uint8_t TEST_VEC_NUM = 14;
 uint8_t TEST_VEC_NUM = 15;
 #define PQ_PROPOSAL_1
 #define MAX_PAYLOAD_SIZE 7000
+#elif defined(HAWK_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
+#elif defined(HAWK_LEVEL_1) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
+#elif defined(HAETAE_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
+#elif defined(HAETAE_LEVEL_2) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
 #define USE_RANDOM_EPHEMERAL_DH_KEY
@@ -113,7 +129,37 @@ sem_t semaphore2;
 sem_t semaphore_finish;
 uint8_t rx_msg_num = 0;
 
-
+void printsuits(int num){
+	switch (num)
+	{
+	case KYBER_LEVEL1:
+		printf("KEM: Kyber Level 1\n");
+		break;
+	case KYBER_LEVEL3:
+		printf("Kyber Level 3");
+		break;
+	case KYBER_LEVEL5:
+		printf("Kyber Level 5");
+		break;
+	case BIKE_LEVEL1:
+		printf("Signature: BIKE Level 1\n");
+		break;
+	case HQC_LEVEL1:
+		printf("Signature: HQC Level 1\n");
+		break;			
+	case FALCON_LEVEL1:
+		printf("Signature: Falcon Level 1\n");
+		break;
+	case FALCON_LEVEL5:
+		printf("Signature: Falcon Level 5\n");
+		break;
+	case DILITHIUM_LEVEL2:
+		printf("Signature: Dilithium Level 2\n");
+		break;
+	default:
+		break;
+	}
+}
 static void
 hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *request,
     const coap_string_t *query, coap_pdu_t *response) {
@@ -122,10 +168,10 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 	size_t offset;
 	size_t total;
 	rx_msg_num = rx_msg_num + 1;
-	PRINTF("Handle post: %d \n",rx_msg_num);
+	//PRINTF("Handle post: %d \n",rx_msg_num);
 
 	coap_get_data_large(request, &size, &data, &offset, &total);
-	PRINT_MSG("large data get it!\n");
+	//PRINT_MSG("large data get it!\n");
 	if (size > MAX_PAYLOAD_SIZE) {
 		PRINT_MSG("Size biger than max payload\n");
 		size = MAX_PAYLOAD_SIZE;
@@ -133,13 +179,13 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 	memcpy(my_buffer, data, size);
 	my_buffer_len = size;
 
-	PRINTF("RX MSG size %d\n",my_buffer_len);
+	//PRINTF("RX MSG size %d\n",my_buffer_len);
     sem_post(&semaphore2);
 	if(rx_msg_num == 1){
-		PRINT_MSG("Waiting for the MSG2\n");
+		
 		sem_wait(&semaphore);
-	
-	    PRINTF("TX MSG size %d\n",my_buffer_len2);
+	    
+	    //PRINTF("TX MSG1 (size %d)\n",my_buffer_len2);
 	
 		coap_pdu_set_code(response,COAP_RESPONSE_CODE_CHANGED);
 	
@@ -147,8 +193,10 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
     	/* Add the MSG2 received in the request payload */
     	coap_add_data_large_response(resource, session, request, response, query, COAP_MEDIATYPE_TEXT_PLAIN, -1, 0,
                                 my_buffer_len2,my_buffer2, NULL, NULL);
+
+		//PRINT_MSG("Waiting for the MSG2 .........\n");							
 	}else{
-		PRINT_MSG("ACK final block from MSG3\n");
+		//PRINT_MSG(" Sending ACK for MSG3 ...\n");
 		rx_msg_num = 0;
 		coap_pdu_set_code(response,COAP_RESPONSE_CODE_CHANGED);
 	
@@ -157,7 +205,7 @@ hnd_post(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *r
 
 enum err tx(void* sock,struct byte_array *data)
 {
-   PRINT_MSG("in TX\n");
+  // PRINT_MSG("in TX\n");
    memcpy(my_buffer2,data->ptr,data->len);
    my_buffer_len2 = data->len;
    sem_post(&semaphore);
@@ -165,7 +213,7 @@ enum err tx(void* sock,struct byte_array *data)
 }
 
 enum err rx(void* sock, struct byte_array *data) {
-	PRINT_MSG("In RX\n");	
+	//PRINT_MSG("In RX\n");	
 	sem_wait(&semaphore2);
 	memcpy(data->ptr,my_buffer,my_buffer_len);
 	data->len = my_buffer_len;
@@ -177,7 +225,7 @@ int setup_server(void)
 {
 
     // Initialize CoAP library
-	PRINT_MSG("SETUP SERVER\n");
+	PRINT_MSG("--------------- PQ EDHOC SERVER SETUP ---------------\n");
     coap_startup();
     // Create CoAP context
     ctx = coap_new_context(NULL);
@@ -189,7 +237,7 @@ int setup_server(void)
 	coap_context_set_block_mode(ctx,  COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
 	
 	if(coap_context_set_max_block_size(ctx,COAP_MAX_BLOCK_SIZE)==1){
-		PRINTF("Block size setting to %zu\n",COAP_MAX_BLOCK_SIZE);
+		PRINTF("COAP Block Size: %zu\n",COAP_MAX_BLOCK_SIZE);
 	}
 	else{
 		PRINT_MSG("Erros in set max block size\n");
@@ -209,10 +257,10 @@ int setup_server(void)
     #endif
     // Create CoAP endpoint
 	#ifdef USE_TCP
-	printf("USE TCP\n");
+	PRINT_MSG("Transport layer: TCP\n");
     endpoint = coap_new_endpoint(ctx, &server_addr, COAP_PROTO_TCP);
     #else 
-	printf("USE UDP\n");
+	PRINT_MSG("Transport layer: UDP\n");
 	endpoint = coap_new_endpoint(ctx, &server_addr, COAP_PROTO_UDP);
 	#endif
 	if (!endpoint) {
@@ -346,7 +394,6 @@ void * edhoc_responder_init(void *arg)
 	c_r.y.len = Y_random.len;
 #endif
 #ifdef PQ_PROPOSAL_1
-	PRINTF("test vector number: %d\n", vec_num_i+1);
 	struct suite suit_in;
 	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
 		      &suit_in);
@@ -355,10 +402,13 @@ void * edhoc_responder_init(void *arg)
 	c_r.g_y.len = get_kem_cc_len(suit_in.edhoc_ecdh);
 	c_r.y.ptr = NULL;
 	c_r.y.len = 0;
-	PRINTF("test vector number: %d\n", vec_num_i+1);
-	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
-	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
-	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
+	PRINTF("Test vector number: %d\n", vec_num_i+1);
+	PRINTF("Ciphersuit: KEM %d, Signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign);
+	printsuits(suit_in.edhoc_ecdh);
+	printsuits(suit_in.edhoc_sign);
+	PRINTF("Server authentication pk size: %d \n", c_r.pk_r.len);
+	PRINTF("Server authentication sk size: %d \n", c_r.sk_r.len);
+	PRINT_MSG("-------------------------------------------------------\n");
 #endif
 	while (1) {
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
@@ -383,9 +433,12 @@ void * edhoc_responder_init(void *arg)
 		/* Register RNG function */
 		uECC_set_rng(default_CSPRNG);
 #endif
-	
+
+			
 		edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out,
 					tx, rx, ead_process);
+		PRINT_MSG("-------------------------------------------------------\n");
+	    PRINT_MSG("--------------- KEY DERIVATION RESULTS ---------------\n");
 		PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
 		if(prk_out2exporter(SHA_256, &PRK_out, &prk_exporter)!=ok){
@@ -406,13 +459,14 @@ void * edhoc_responder_init(void *arg)
 		}
 		PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 			    oscore_master_salt.len);
+		PRINT_MSG("-------------------------------------------------------\n");
 		sem_post(&semaphore_finish);
 	}
 	
 }
 int main()
 {
-	PRINT_MSG("on while main\n");
+	//PRINT_MSG("on while main\n");
 	pthread_t thread1;
 	coap_set_log_level(LOG_INFO);
 	pthread_create(&thread1, NULL, edhoc_responder_init, NULL);

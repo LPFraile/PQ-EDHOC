@@ -10,6 +10,7 @@
 */
 
 #include <stdbool.h>
+#include <stdio.h>
 #include "edhoc_internal.h"
 
 #include "common/crypto_wrapper.h"
@@ -136,7 +137,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			     struct byte_array *PRK_3e2m)
 {
 	uint32_t g_y_size = 0;
-	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_13)){
+	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_16)){
 		/*Set Gy size to the ciphertext size for KEMs*/
 		g_y_size = get_kem_cc_len(rc->suite.edhoc_ecdh);
 		PRINTF("Suit:%d",rc->suite.edhoc_ecdh);
@@ -163,7 +164,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	/*calculate the DH shared secret*/
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 
-	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_13)){
+	if((c->suites_i.ptr[c->suites_i.len -1] >= SUITE_7)&&(c->suites_i.ptr[c->suites_i.len -1] <= SUITE_16)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
@@ -323,24 +324,31 @@ enum err edhoc_initiator_run_extended(
 {
 	struct runtime_context rc = { 0 };
 	runtime_context_init(&rc);
-	
+	//printf("----------------- PQ EDHOC HANDSHAKE ------------------\n");
+	//printf("Generating message 1....\n");
 	/*create and send message 1*/
 	TRY(msg1_gen(c, &rc));
-	printf("MSG 1 size: %d\n",rc.msg.len);
+	//printf("MSG 1 size: %d\n",rc.msg.len);
 	PRINT_ARRAY("MSG:",rc.msg.ptr,rc.msg.len);
+	//printf("Sending message 1...\n");
 	TRY(tx(c->sock, &rc.msg));
 
 	/*receive message 2*/
-	PRINT_MSG("waiting to receive message 2...\n");
+	//printf("-------------------------------------------------------\n");
+	//printf("waiting to receive message 2...\n");
 	rc.msg.len = sizeof(rc.msg_buf);
 	TRY(rx(c->sock, &rc.msg));
-	printf("MSG 2 size: %d\n",rc.msg.len);
+	//printf("MSG 2 size: %d\n",rc.msg.len);
 	PRINTF("Max MSG2 size %d",MSG_2_SIZE);
 
 	/*create and send message 3*/
+	//printf("-------------------------------------------------------\n");
+	//printf("Generating message 3...\n");
 	TRY(msg3_gen(c, &rc, cred_r_array, c_r_bytes, prk_out));
 	TRY(ead_process(c->params_ead_process, &rc.ead));
-	printf("MSG 3 size: %d\n",rc.msg.len);
+	//printf("MSG 3 size: %d\n",rc.msg.len);
+	//printf("Sending message 3...\n");
+	//printf("-------------------------------------------------------\n");
 	TRY(tx(c->sock, &rc.msg));
 
 	/*receive message 4*/

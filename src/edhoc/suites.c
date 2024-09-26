@@ -18,6 +18,9 @@
 #ifdef PQM4
 #include <api.h>
 #endif
+#ifdef MUPQ
+#include <api.h>
+#endif
 enum err get_suite(enum suite_label label, struct suite *suite)
 {
 	switch (label) {
@@ -143,6 +146,36 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 	break;
+		case SUITE_14:
+		suite->suite_label = SUITE_14;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = HAWK_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_15:
+		suite->suite_label = SUITE_15;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = HAETAE_LEVEL2;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
+		case SUITE_16:
+		suite->suite_label = SUITE_16;
+		suite->edhoc_aead = AES_CCM_16_64_128;
+		suite->edhoc_hash = SHA_256;
+		suite->edhoc_mac_len_static_dh = MAC8;
+		suite->edhoc_ecdh = KYBER_LEVEL1;
+		suite->edhoc_sign = OV_IP_LEVEL1;
+		suite->app_aead = AES_CCM_16_64_128;
+		suite->app_hash = SHA_256;
+	break;
 	#endif
 	default:
 		return unsupported_cipher_suite;
@@ -217,7 +250,8 @@ uint32_t get_signature_len(enum sign_alg alg)
 		return OQS_SIG_falcon_padded_1024_length_signature;	
 		break;
 	case DILITHIUM_LEVEL2:
-		return OQS_SIG_dilithium_2_length_signature;	
+		return OQS_SIG_ml_dsa_44_ipd_length_signature;
+		//return OQS_SIG_dilithium_2_length_signature;	
 		break;
 	#endif
 	#ifdef PQM4
@@ -227,13 +261,139 @@ uint32_t get_signature_len(enum sign_alg alg)
 	case DILITHIUM_LEVEL2:
 		return 2420;	
 		break;
+	case HAWK_LEVEL1:
+		return 555;	
+		break;
+	case HAETAE_LEVEL2:
+		return 1474;	
+		break;
 	#endif
 	
+	#if(defined MUPQ) && (!defined(PQM4))
+	case HAWK_LEVEL1:
+		return 555;	
+		break;
+	case HAETAE_LEVEL2:
+		return 1474;	
+		break;
+	#endif
+
 	default: 
 		return 0;
 	}
 	return 0;
 }
+
+uint32_t get_sk_len(enum sign_alg alg)
+{
+	switch (alg) {
+	case ES256:
+	case EdDSA:
+		return 32;
+		break;
+	#ifdef LIBOQS
+	case FALCON_LEVEL1:
+		return OQS_SIG_falcon_512_length_secret_key;
+		break;
+	case FALCON_LEVEL5:
+		return OQS_SIG_falcon_1024_length_secret_key;
+		break;
+	case FALCON_PADDED_LEVEL1:
+		return OQS_SIG_falcon_padded_512_length_secret_key;
+		break;
+	case FALCON_PADDED_LEVEL5:
+		return OQS_SIG_falcon_padded_1024_length_secret_key;	
+		break;
+	case DILITHIUM_LEVEL2:
+		//return OQS_SIG_dilithium_2_length_secret_key;	
+		return OQS_SIG_ml_dsa_44_ipd_length_secret_key;	
+		break;
+	#endif
+	#ifdef PQM4
+	case FALCON_LEVEL1:
+		return 1281; //Was working before with 690
+		break;
+	case DILITHIUM_LEVEL2:
+		return 2560;	
+		break;
+	case HAWK_LEVEL1:
+		return 184;	
+		break;
+	case HAETAE_LEVEL2:
+		return 1408;	
+		break;
+	#endif
+	
+	#if(defined MUPQ) && (!defined(PQM4))
+	case HAWK_LEVEL1:
+		return 184;	
+		break;
+	case HAETAE_LEVEL2:
+		return 1404;	
+		break;
+	#endif
+
+	default: 
+		return 0;
+	}
+	return 0;
+}
+
+uint32_t get_pk_len(enum sign_alg alg)
+{
+	switch (alg) {
+	case ES256:
+	case EdDSA:
+		return 32;
+		break;
+	#ifdef LIBOQS
+	case FALCON_LEVEL1:
+		return OQS_SIG_falcon_512_length_public_key;
+		break;
+	case FALCON_LEVEL5:
+		return OQS_SIG_falcon_1024_length_public_key;
+		break;
+	case FALCON_PADDED_LEVEL1:
+		return OQS_SIG_falcon_padded_512_length_public_key;
+		break;
+	case FALCON_PADDED_LEVEL5:
+		return OQS_SIG_falcon_padded_1024_length_public_key;	
+		break;
+	case DILITHIUM_LEVEL2:
+		//return OQS_SIG_dilithium_2_length_public_key;	
+		return OQS_SIG_ml_dsa_44_ipd_length_public_key;	
+		break;
+	#endif
+	#ifdef PQM4
+	case FALCON_LEVEL1:
+		return 897; //Was working before with 690
+		break;
+	case DILITHIUM_LEVEL2:
+		return 1312;	
+		break;
+	case HAWK_LEVEL1:
+		return 1024;	
+		break;
+	case HAETAE_LEVEL2:
+		return 992;	
+		break;
+	#endif
+	
+	#if(defined MUPQ) && (!defined(PQM4))
+	case HAWK_LEVEL1:
+		return 1024;	
+		break;
+	case HAETAE_LEVEL2:
+		return 992;	
+		break;
+	#endif
+
+	default: 
+		return 0;
+	}
+	return 0;
+}
+
 
 uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 {
@@ -264,16 +424,16 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	#endif
 	#ifdef PQM4
 	case KYBER_LEVEL1:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 800;
 		break;
 	case KYBER_LEVEL3:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 1184;
 		break;
 	case HQC_LEVEL1:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 2249;
 		break;
 	case BIKE_LEVEL1:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 1541;
 		break;
 	#endif
 	default: 
@@ -304,16 +464,16 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 	#endif
 	#ifdef PQM4
 	case KYBER_LEVEL1:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 800;
 		break;
 	case KYBER_LEVEL3:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 1184;
 		break;
 	case HQC_LEVEL1:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 2249;
 		break;
 	case BIKE_LEVEL1:
-		return CRYPTO_PUBLICKEYBYTES;
+		return 1541;
 		break;
 	#endif
 	default: 
@@ -344,16 +504,16 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 	#endif
 	#ifdef PQM4
 	case KYBER_LEVEL1:
-		return CRYPTO_SECRETKEYBYTES;
+		return 1632;
 		break;
 	case KYBER_LEVEL3:
-		return CRYPTO_SECRETKEYBYTES;
+		return 2400;
 		break;
 	case HQC_LEVEL1:
-		return CRYPTO_SECRETKEYBYTES;
+		return 2305;
 		break;
 	case BIKE_LEVEL1:
-		return CRYPTO_SECRETKEYBYTES;
+		return 5223;
 		break;
 	#endif
 	default: 
@@ -394,6 +554,47 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 		break;
 	case BIKE_LEVEL1:
 		return 1573;
+		break;
+	#endif
+	default: 
+		return 0;
+	}
+
+	return 0;
+}
+
+uint32_t get_kem_ss_len(enum ecdh_alg alg)
+{
+	switch (alg) {
+	#ifdef LIBOQS
+	case KYBER_LEVEL1:
+		return 32;
+		break;
+	case KYBER_LEVEL3:
+		return 32;
+		break;
+	case KYBER_LEVEL5:
+		return 32;
+		break;
+	case HQC_LEVEL1:
+		return 64;
+		break;
+	case BIKE_LEVEL1:
+		return 32;
+		break;
+	#endif
+	#ifdef PQM4
+	case KYBER_LEVEL1:
+		return 32;
+		break;
+	case KYBER_LEVEL3:
+		return 32;
+		break;
+	case HQC_LEVEL1:
+		return 64;
+		break;
+	case BIKE_LEVEL1:
+		return 32;
 		break;
 	#endif
 	default: 

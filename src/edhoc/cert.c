@@ -412,6 +412,17 @@ enum err cert_x509_verify(struct const_byte_array *cert,
     PRINTF("Signature size in buffer: %d",SIGNATURE_SIZE);
 	PRINTF("Signature size in get: %d",get_signature_len(DILITHIUM_LEVEL2));
 	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(DILITHIUM_LEVEL2));
+#elif defined(HAWK_LEVEL_1)
+    PRINTF("Signature size in buffer: %d",SIGNATURE_SIZE);
+	PRINTF("Signature size in get: %d",get_signature_len(HAWK_LEVEL1));
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(HAWK_LEVEL1));
+#elif defined(HAETAE_LEVEL_2)
+    PRINTF("Signature size in buffer: %d",SIGNATURE_SIZE);
+	PRINTF("Signature size in get: %d",get_signature_len(HAETAE_LEVEL2));
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(HAETAE_LEVEL2));
+#else
+    PRINTF("Non signature selected\n");
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, 0);
 #endif
 
 	enum err rv = certificate_authentication_failed;
@@ -588,6 +599,12 @@ do {
 				rv = verify_edhoc(FALCON_LEVEL1, &root_pk, &m, &s, verified);
 			#elif defined(DILITHIUM_LEVEL_2)
 				rv = verify_edhoc(DILITHIUM_LEVEL2, &root_pk, &m, &s, verified);
+			#elif defined(HAWK_LEVEL_1)
+				rv = verify_edhoc(HAWK_LEVEL1, &root_pk, &m, &s, verified);
+			#elif defined(HAETAE_LEVEL_2)
+				rv = verify_edhoc(HAETAE_LEVEL2, &root_pk, &m, &s, verified);
+			#elif defined(OV_IP_LEVEL_1)
+				rv = verify_edhoc(OV_IP_LEVEL1, &root_pk, &m, &s, verified);
 			#else
 				rv = verify_edhoc(ES256, &root_pk, &m, &s, verified);
 			#endif	

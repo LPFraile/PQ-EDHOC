@@ -19,7 +19,7 @@
 ################################################################################ 
 # Compiler optimization
 ################################################################################ 
-OPT = -O0
+OPT = -Os
 
 
 ################################################################################
@@ -36,7 +36,7 @@ OPT = -O0
 # Unit testing
 ################################################################################
 # Uncomment this to enable building the unit tests
-UNIT_TEST += -DUNIT_TEST
+#UNIT_TEST += -DUNIT_TEST
 
 
 ################################################################################
@@ -87,16 +87,17 @@ FEATURES += -DSUITES_I_SIZE=1
 
 ################################################################################
 # Select the PQ KEM algorithm to be used, 
-FEATURES += -DKYBER_LEVEL_1
+#FEATURES += -DKYBER_LEVEL_1
 #FEATURES += -DKYBER_LEVEL_3
-#FEATURES += -DHQC_LEVEL_1
+FEATURES += -DHQC_LEVEL_1 
 #FEATURES += -DBIKE_LEVEL_1
 
 ################################################################################
 # Select the PQ Signature algorithm to be used
-
-FEATURES += -DFALCON_LEVEL_1
+#FEATURES += -DFALCON_LEVEL_1
 #FEATURES += -DDILITHIUM_LEVEL_2
+#FEATURES += -DHAWK_LEVEL_1
+#FEATURES += -DHAETAE_LEVEL_2
 
 ################################################################################
 # Select for use X5CHAIN credentials instead of by default X5T
@@ -187,11 +188,19 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | 0/1/2/3 | 0/1/2/3 | MBEDTLS and COMPACT25519
 # | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
-#CRYPTO_ENGINE += -DPQM4
+CRYPTO_ENGINE += -DPQM4
 CRYPTO_ENGINE += -DTINYCRYPT
 CRYPTO_ENGINE += -DCOMPACT25519
+###############################################################
+# Enable only when we use HQC KEM
+CRYPTO_ENGINE += -DPQCLEAN
+#CRYPTO_ENGINE += -DMBEDTLS
 ################################################################
 # Enable that for PQ tests
-CRYPTO_ENGINE += -DLIBOQS
+#CRYPTO_ENGINE += -DLIBOQS
+###############################################################
+# Enable only for HAWK and HAETAE in linux
+
+#CRYPTO_ENGINE += -DMUPQ 
 
 

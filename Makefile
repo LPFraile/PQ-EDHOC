@@ -60,40 +60,48 @@ EXTENDED_CFLAGS += -DOSCORE_NVM_SUPPORT
 endif
 
 #generate debug symbols
-EXTENDED_CFLAGS += -g3 -gdwarf-4
+#EXTENDED_CFLAGS += -g3 -gdwarf-4
 
 # Generate dependency information
-EXTENDED_CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+#EXTENDED_CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
 # Generate stack usage information
-EXTENDED_CFLAGS += -fstack-usage
+#EXTENDED_CFLAGS += -fstack-usage
 
 # use C11
-EXTENDED_CFLAGS += -std=c11
+#EXTENDED_CFLAGS += -std=c11 NO different in processing time in kems
+EXTENDED_CFLAGS += -std=c99
+#reduce very little (500 CLKS) and give me bigger size ram to 73.75% from 53%
+#EXTENDED_CFLAGS += -flto 
+#EXTENDED_CFLAGS += -finline-functions
+#EXTENDED_CFLAGS += -ffunction-sections
+#EXTENDED_CFLAGS += -fdata-sections
+
+
 
 #GCC warning flags
 ifeq ($(findstring cc,$(CC)),cc)
-EXTENDED_CFLAGS += -Waddress
-EXTENDED_CFLAGS += -Waggregate-return
-EXTENDED_CFLAGS += -Wformat-nonliteral
-EXTENDED_CFLAGS += -Wformat-security
-EXTENDED_CFLAGS += -Wformat
-EXTENDED_CFLAGS += -Winit-self
-EXTENDED_CFLAGS += -Wmissing-include-dirs
-EXTENDED_CFLAGS += -Wno-multichar
-EXTENDED_CFLAGS += -Wno-parentheses
-EXTENDED_CFLAGS += -Wno-type-limits
-EXTENDED_CFLAGS += -Wno-unused-parameter
-EXTENDED_CFLAGS += -Wunreachable-code
-EXTENDED_CFLAGS += -Wwrite-strings
-EXTENDED_CFLAGS += -Wpointer-arith
-EXTENDED_CFLAGS += -Wall
-EXTENDED_CFLAGS += -Wextra
-EXTENDED_CFLAGS += -Wcast-qual
+#EXTENDED_CFLAGS += -Waddress
+#EXTENDED_CFLAGS += -Waggregate-return
+#EXTENDED_CFLAGS += -Wformat-nonliteral
+#EXTENDED_CFLAGS += -Wformat-security
+#EXTENDED_CFLAGS += -Wformat
+#EXTENDED_CFLAGS += -Winit-self
+#EXTENDED_CFLAGS += -Wmissing-include-dirs
+#EXTENDED_CFLAGS += -Wno-multichar
+#EXTENDED_CFLAGS += -Wno-parentheses
+#EXTENDED_CFLAGS += -Wno-type-limits
+#EXTENDED_CFLAGS += -Wno-unused-parameter
+#EXTENDED_CFLAGS += -Wunreachable-code
+#EXTENDED_CFLAGS += -Wwrite-strings
+#EXTENDED_CFLAGS += -Wpointer-arith
+#EXTENDED_CFLAGS += -Wall
+#EXTENDED_CFLAGS += -Wextra
+#EXTENDED_CFLAGS += -Wcast-qual
 #EXTENDED_CFLAGS += -Wstack-usage=9000
-EXTENDED_CFLAGS += -Wconversion
-EXTENDED_CFLAGS += -Wpedantic
-EXTENDED_CFLAGS += -Wno-error
+#EXTENDED_CFLAGS += -Wconversion
+#EXTENDED_CFLAGS += -Wpedantic
+#EXTENDED_CFLAGS += -Wno-error
 
 #Clang warning flags
 else ifeq ($(findstring clang,$(CC)),clang)
@@ -166,6 +174,8 @@ endif
 
 ifeq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
 C_INCLUDES += -Iexternals/pqm4/common
+#C_INCLUDES += -Iexternals/pqm4/mupq/common
+#C_INCLUDES += -Iexternals/pqm4/mupq/pqclean/common
 ifeq ($(findstring KYBER_LEVEL_1,$(EXTENDED_CFLAGS)),KYBER_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber512/m4fstack
 endif
@@ -175,15 +185,45 @@ endif
 ifeq ($(findstring BIKE_LEVEL_1,$(EXTENDED_CFLAGS)),BIKE_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_kem/bikel1/m4f
 endif
+ifeq ($(findstring HQC_LEVEL_1,$(EXTENDED_CFLAGS)),HQC_LEVEL_1)
+C_INCLUDES += -Iexternals/PQClean/crypto_kem/hqc-128/clean
+endif
 #C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
 ifeq ($(findstring FALCON_LEVEL_1,$(EXTENDED_CFLAGS)),FALCON_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_sign/falcon-512/m4-ct
 endif
 ifeq ($(findstring DILITHIUM_LEVEL_2,$(EXTENDED_CFLAGS)),DILITHIUM_LEVEL_2)
-#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
-C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4f
+C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4f
 endif
+ifeq ($(findstring DHAWK_LEVEL_1,$(EXTENDED_CFLAGS)),DHAWK_LEVEL_1)
+#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+C_INCLUDES += -Iexternals/pqm4/mupq/crypto_sign/hawk512/ref
+endif
+ifeq ($(findstring DHAETAE_LEVEL_2,$(EXTENDED_CFLAGS)),DHAETAE_LEVEL_2)
+#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+C_INCLUDES += -Iexternals/pqm4/crypto_sign/haetae2/m4f
+endif
+
+ifeq ($(findstring DOV_IP_LEVEL_1,$(EXTENDED_CFLAGS)),DOV_IP_LEVEL_1)
+#C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
+C_INCLUDES += -Iexternals/pqm4/crypto_sign/ov-Ip/m4f
+endif
+
+
 C_INCLUDES += -Iexternals/pqm4/libopencm3/include
+endif
+
+ifneq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
+ifeq ($(findstring MUPQ,$(EXTENDED_CFLAGS)),MUPQ)
+C_INCLUDES += -Iexternals/pqm4/mupq/common
+ifeq ($(findstring DHAWK_LEVEL_1,$(EXTENDED_CFLAGS)),DHAWK_LEVEL_1)
+C_INCLUDES += -Iexternals/pqm4/mupq/crypto_sign/hawk512/ref
+endif
+ifeq ($(findstring DHAETAE_LEVEL_2,$(EXTENDED_CFLAGS)),DHAETAE_LEVEL_2)
+C_INCLUDES += -Iexternals/pqm4/mupq/crypto_sign/haetae2/ref
+endif
+endif
 endif
 
 #add include paths

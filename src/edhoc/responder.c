@@ -196,7 +196,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
 	
-	if((suites_i.ptr[suites_i.len -1] >= SUITE_7)&&(suites_i.ptr[suites_i.len -1] <= SUITE_13)){
+	if((suites_i.ptr[suites_i.len -1] >= SUITE_7)&&(suites_i.ptr[suites_i.len -1] <= SUITE_16)){
 		/* 	PQ Proposal 1 - key generation with KEMs
 		*	Encapsulate the ephemeral key (in g_x) enc(ephpk)->(ss,c) ( enc(g_x)->(g_xy,g_y))
 		*   Set the g_y with the ciphertex message c   
@@ -207,8 +207,9 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 		PRINTF("cc size: %d\n",c->g_y.len);
 		PRINTF("ss size: %d\n",g_xy.len);
 		TRY(kem_encapsulate(rc->suite.edhoc_ecdh,&g_x,&c->g_y,&g_xy));
+		PRINTF("Encapsulate correct\n");
 		PRINT_ARRAY("G_XY (PQ SS)", g_xy.ptr, g_xy.len);
-		PRINT_ARRAY("G_Y (PQ C)", c->g_y.ptr, c->g_y.len);
+		PRINT_ARRAY("G_Y (PQ CC)", c->g_y.ptr, c->g_y.len);
 		#else
 		PRINT_MSG("Need to select PQ crypo");
 		return -1;
@@ -366,23 +367,29 @@ enum err edhoc_responder_run_extended(
 {
 	struct runtime_context rc = { 0 };
 	runtime_context_init(&rc);
-
+    
+	//printf("----------------- PQ EDHOC HANDSHAKE ------------------\n");
 	/*receive message 1*/
-	PRINT_MSG("waiting to receive message 1...\n");
+	//printf("Waiting to receive message 1...\n");
 	TRY(rx(c->sock, &rc.msg));
-	printf("MSG 1 size: %d\n",rc.msg.len);
+	//printf("MSG 1 size: %d\n",rc.msg.len);
 
 	/*create and send message 2*/
+	//printf("-------------------------------------------------------\n");
+	//printf("Generating message 2...\n");
 	TRY(msg2_gen(c, &rc, c_i_bytes));
 	TRY(ead_process(c->params_ead_process, &rc.ead));
-	printf("MSG 2 size: %d\n",rc.msg.len);
+	//printf("MSG 2 size: %d\n",rc.msg.len);
+	//printf("Sending message 2...\n");
 	TRY(tx(c->sock, &rc.msg));
 
 	/*receive message 3*/
-	PRINT_MSG("waiting to receive message 3...\n");
+	//printf("-------------------------------------------------------\n");
+	//printf("waiting to receive message 3...\n");
 	rc.msg.len = sizeof(rc.msg_buf);
 	TRY(rx(c->sock, &rc.msg));
-	printf("MSG 3 size: %d\n",rc.msg.len);
+	//printf("MSG 3 size: %d\n",rc.msg.len);
+    //printf("-------------------------------------------------------\n");
 	TRY(msg3_process(c, &rc, cred_i_array, prk_out, initiator_pub_key));
 	TRY(ead_process(c->params_ead_process, &rc.ead));
 

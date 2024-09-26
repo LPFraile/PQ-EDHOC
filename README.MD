@@ -51,6 +51,10 @@ The PQ signature algorithms that are going to be used must be selected on the [m
 - FEATURES += -DFALCON_LEVEL_1
 ### DILITHIUM 2
 - FEATURES += -DDILITHIUM_LEVEL_1
+### HAWK 512
+- FEATURES += -DHAWK_LEVEL_1
+### HAETAE 2
+- FEATURES += -DHAETAE_LEVEL_2
 
 ## PQ credential types
 The credential type must be selected on [makefile_config.mk](makefile_config.mk)

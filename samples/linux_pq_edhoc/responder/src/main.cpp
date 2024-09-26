@@ -55,6 +55,15 @@ uint8_t TEST_VEC_NUM = 14;
 #elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 15;
 #define PQ_PROPOSAL_1
+#elif defined(HAWK_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#elif defined(HAETAE_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
+#elif defined(HAETAE_LEVEL_2) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
 #define USE_RANDOM_EPHEMERAL_DH_KEY 

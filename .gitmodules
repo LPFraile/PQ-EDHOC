@@ -31,3 +31,6 @@
 [submodule "externals/libcoap"]
 	path = externals/libcoap
 	url = https://github.com/obgm/libcoap.git
+[submodule "externals/PQClean"]
+	path = externals/PQClean
+	url = https://github.com/PQClean/PQClean

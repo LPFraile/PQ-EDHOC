@@ -67,6 +67,10 @@ The PQ signature algorithms that are going to be used must be selected on the ma
 - FEATURES += -DFALCON_LEVEL_1
 ### DILITHIUM 2
 - FEATURES += -DDILITHIUM_LEVEL_1
+### HAWK 512
+- FEATURES += -DHAWK_LEVEL_1
+### HAETAE 2
+- FEATURES += -DHAETAE_LEVEL_2
 
 ## PQ credential types
 ### x5t
@@ -136,3 +140,15 @@ The test that we want to run and compare are:
 - FEATURES += -DBIKE_LEVEL_1
 - FEATURES += -DDILITHIUM_LEVEL_2
 - CRYPTO_ENGINE += -DLIBOQS
+
+### TEST_VECTOR_16
+- FEATURES += -DKYBER_LEVEL_1
+- FEATURES += -DHAWK_LEVEL_1
+- CRYPTO_ENGINE += -DLIBOQS
+- CRYPTO_ENGINE += -DMUPQ 
+
+### TEST_VECTOR_17
+- FEATURES += -DKYBER_LEVEL_1
+- FEATURES += -DHAETAE_LEVEL_2
+- CRYPTO_ENGINE += -DLIBOQS
+- CRYPTO_ENGINE += -DMUPQ 

@@ -99,6 +99,22 @@ uint8_t TEST_VEC_NUM = 14;
 uint8_t TEST_VEC_NUM = 15;
 #define PQ_PROPOSAL_1
 #define MAX_PAYLOAD_SIZE 7000
+#elif defined(HAWK_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
+#elif defined(HAWK_LEVEL_1) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
+#elif defined(HAETAE_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
+#elif defined(HAETAE_LEVEL_2) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 3000
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
 #define USE_RANDOM_EPHEMERAL_DH_KEY
@@ -124,6 +140,37 @@ uint8_t TEST_VEC_NUM = 3;
 #define COAP_CLIENT_URI "coap://2001:db8::1/edhoc"
 #endif
 
+void printsuits(int num){
+	switch (num)
+	{
+	case KYBER_LEVEL1:
+		printf("KEM: Kyber Level 1\n");
+		break;
+	case KYBER_LEVEL3:
+		printf("Kyber Level 3");
+		break;
+	case KYBER_LEVEL5:
+		printf("Kyber Level 5");
+		break;
+	case BIKE_LEVEL1:
+		printf("Signature: BIKE Level 1\n");
+		break;
+	case HQC_LEVEL1:
+		printf("Signature: HQC Level 1\n");
+		break;			
+	case FALCON_LEVEL1:
+		printf("Signature: Falcon Level 1\n");
+		break;
+	case FALCON_LEVEL5:
+		printf("Signature: Falcon Level 5\n");
+		break;
+	case DILITHIUM_LEVEL2:
+		printf("Signature: Dilithium Level 2\n");
+		break;
+	default:
+		break;
+	}
+}
 
 /**
  * @brief	Initializes sockets for CoAP client.
@@ -145,7 +192,7 @@ message_handler(coap_session_t *session  COAP_UNUSED,
                 const coap_pdu_t *received,
                 const coap_mid_t id  COAP_UNUSED)
 {
-	PRINT_MSG("MEssage handler\n");
+	
     const uint8_t *data;
     size_t len;
     size_t offset;
@@ -155,12 +202,11 @@ message_handler(coap_session_t *session  COAP_UNUSED,
     (void)sent;
     (void)id;
     if (coap_get_data_large(received, &len, &data, &offset, &total)) {
-        PRINT_MSG("Get large data:\n");
 		//PRINT_ARRAY("MSG",data,len);
 		memcpy(my_buffer,data,len);
 		my_buffer_len = len;
         if (len + offset == total) {
-            printf("\n");
+            //printf("\n");
         }
     }
     return COAP_RESPONSE_OK;
@@ -212,6 +258,7 @@ int setup(void) {
 #ifdef USE_IPV4
 int setup(void) {
     // Initialize CoAP library
+	
     coap_startup();
 
     // Create CoAP context
@@ -225,10 +272,10 @@ int setup(void) {
                               COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY );
 	
 	if(coap_context_set_max_block_size(ctx,COAP_MAX_BLOCK_SIZE)==1){
-		printf("Block size setting to %zu\n",COAP_MAX_BLOCK_SIZE);
+		PRINTF("COAP Block Size: %zu\n",COAP_MAX_BLOCK_SIZE);
 	}
 	else{
-		printf("Erros in set max block size\n");
+		PRINT_MSG("Erros in set max block size\n");
 	}
 
 	coap_register_response_handler(ctx, message_handler);
@@ -246,8 +293,10 @@ int setup(void) {
 	#endif
 	#ifdef USE_TCP
     session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_TCP);
+	PRINT_MSG("Transport layer: TCP\n");
 	#else
 	session = coap_new_client_session(ctx, NULL, &server_addr, COAP_PROTO_UDP);
+	PRINT_MSG("Transport layer: UDP\n");
 	#endif
 	coap_session_set_mtu(session,COAP_SESSION_MTU);
 	coap_fixed_point_t value;
@@ -327,7 +376,7 @@ enum err tx(void* sock,struct byte_array *data)
         cleanup();
 		return unexpected_result_from_ext_lib;
     }
-	PRINT_MSG("Finished to send long message\n");
+	//PRINT_MSG("Finished to send long message\n");
 	return ok;
 }
 
@@ -347,6 +396,7 @@ enum err rx(void* sock, struct byte_array *data) {
 
 int main()
 {
+	PRINT_MSG("--------------- PQ EDHOC CLIENT SETUP ---------------\n");
 	coap_set_log_level(LOG_INFO);
 	int sockfd;
 	BYTE_ARRAY_NEW(prk_exporter, 32, 32);
@@ -433,19 +483,27 @@ int main()
 	struct suite suit_in;
 	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
 		      &suit_in);
-	PRINTF("Test vector: %d\n",TEST_VEC_NUM);
-	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+	PRINTF("Test vector number: %d\n", vec_num_i+1);
+	PRINTF("Ciphersuit: KEM %d, Signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign);
+	printsuits(suit_in.edhoc_ecdh);
+	printsuits(suit_in.edhoc_sign);
+	PRINTF("Client authentication pk size: %d \n", c_i.pk_i.len);
+	PRINTF("Client authentication sk size: %d \n", c_i.sk_i.len);
 	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
+	PRINT_MSG("-------------------------------------------------------\n");
+	PRINT_MSG("Generating ephemeral PQ key...\n");
 	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,&PQ_public_random));
 
 	c_i.g_x.ptr = PQ_public_random.ptr;
 	c_i.g_x.len = PQ_public_random.len;
 	c_i.x.ptr = PQ_secret_random.ptr;
 	c_i.x.len = PQ_secret_random.len;
+
 	PRINTF("public ephemeral PQ Key size: %d\n",c_i.g_x.len);
 	PRINTF("secret ephemeral PQ Key size: %d\n",c_i.x.len);
-	PRINTF("MAX MSG SIZE: %d\n",edhoc_get_max_msg_size());
+	PRINT_MSG("-------------------------------------------------------\n");
+	//PRINTF("MAX MSG SIZE: %d\n",edhoc_get_max_msg_size());
 
 
 #endif
@@ -463,6 +521,8 @@ int main()
 	TRY(edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 				ead_process));
 
+	PRINT_MSG("--------------- KEY DERIVATION RESULTS ---------------\n");
+
 	PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
 	TRY(prk_out2exporter(SHA_256, &PRK_out, &prk_exporter));
@@ -477,6 +537,7 @@ int main()
 			   &oscore_master_salt));
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
+	PRINT_MSG("-------------------------------------------------------\n");
 	int result = -1;
 	while (coap_io_pending(ctx)) {
 		uint32_t timeout_ms;

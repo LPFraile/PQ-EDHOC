@@ -55,6 +55,18 @@ uint8_t TEST_VEC_NUM = 14;
 #elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 15;
 #define PQ_PROPOSAL_1
+#elif defined(HAWK_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#elif defined(HAWK_LEVEL_1) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 16;
+#define PQ_PROPOSAL_1
+#elif defined(HAETAE_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
+#elif defined(HAETAE_LEVEL_2) && defined(KIBER_LEVEL_1) && defined(USE_X5CHAIN)
+uint8_t TEST_VEC_NUM = 17;
+#define PQ_PROPOSAL_1
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
 #define USE_RANDOM_EPHEMERAL_DH_KEY 
@@ -188,7 +200,6 @@ int main()
 	PRINT_MSG("NO DEFINED LIBOQS\n");
 	#endif
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
-
 	c_i.sock = &sockfd;
 	c_i.c_i.len = test_vectors[vec_num_i].c_i_len;
 	c_i.c_i.ptr = (uint8_t *)test_vectors[vec_num_i].c_i;

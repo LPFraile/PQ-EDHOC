@@ -30,6 +30,9 @@ enum suite_label {
 	SUITE_11 = 11,
 	SUITE_12 = 12,
 	SUITE_13 = 13,
+	SUITE_14 = 14,
+	SUITE_15 = 15,
+	SUITE_16 = 16,
 };
 
 enum aead_alg {
@@ -59,6 +62,9 @@ enum sign_alg {
 	DILITHIUM_LEVEL2 = -61,
 	DILITHIUM_LEVEL3 = -62,
 	DILITHIUM_LEVEL5 = -63,
+	HAWK_LEVEL1 = -64,
+	HAETAE_LEVEL2 = -65,
+	OV_IP_LEVEL1 = -66,
 
 	/*ML_DSA_LEVEL2 = -,
 	ML_DSA_LEVEL3 = -,
@@ -131,6 +137,24 @@ uint32_t get_aead_iv_len(enum aead_alg alg);
  */
 uint32_t get_signature_len(enum sign_alg alg);
 
+
+/**
+ * @brief 			Gets the length of the secret key for auth.
+ * 
+ * @param alg 			The used signature algorithm.
+ * @retval			The length.
+ */
+uint32_t get_sk_len(enum sign_alg alg);
+
+/**
+ * @brief 			Gets the length of the public key for auth.
+ * 
+ * @param alg 			The used signature algorithm.
+ * @retval			The length.
+ */
+uint32_t get_pk_len(enum sign_alg alg);
+
+
 /**
  * @brief 			Gets the length of the ECDH public key.
  * 
@@ -164,4 +188,14 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg);
  * @retval 			The length.
  */
 uint32_t get_kem_sk_len(enum ecdh_alg alg);
+
+
+
+/**
+ * @brief 			Gets the length of the shared secret on KEMs.
+ * 
+ * @param alg 			The used KEM algorithm. 
+ * @retval 			The length.
+ */
+uint32_t get_kem_ss_len(enum ecdh_alg alg);
 #endif

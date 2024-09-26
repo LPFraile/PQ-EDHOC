@@ -71,21 +71,43 @@ modify setting in include/psa/crypto_config.h
 
 #ifdef PQM4
 #include <api.h>
+#ifdef HAETAE_LEVEL_2
+#include <sign.h>
+#endif
+#endif
+
+#ifdef MUPQ
+#include <api.h>
+#endif
+
+#ifdef PQCLEAN
+#define crypto_kem_keypair PQCLEAN_HQC128_CLEAN_crypto_kem_keypair
+#define crypto_kem_enc PQCLEAN_HQC128_CLEAN_crypto_kem_enc
+#define crypto_kem_dec PQCLEAN_HQC128_CLEAN_crypto_kem_dec
+#define CRYPTO_SECRETKEYBYTES               2305
+#define CRYPTO_PUBLICKEYBYTES               2249
+#define CRYPTO_BYTES                        64
+#define CRYPTO_CIPHERTEXTBYTES              4433
 #endif
 
 #if defined(PQM4) || defined(LIBOQS) 
 #ifdef LIBOQS
 static const char* OQS_ID2name(int id) {
     switch (id) {
-        case KYBER_LEVEL1: return OQS_KEM_alg_ml_kem_512;
-        case KYBER_LEVEL3: return OQS_KEM_alg_ml_kem_768;
+        case KYBER_LEVEL1: 
+			//printf("KEM setting KYBER Level 1\n");
+			return OQS_KEM_alg_ml_kem_512;
+		case KYBER_LEVEL3: return OQS_KEM_alg_ml_kem_768;
         case KYBER_LEVEL5: return OQS_KEM_alg_ml_kem_1024;
 		case HQC_LEVEL1: return OQS_KEM_alg_hqc_128;
-		case FALCON_LEVEL1: return OQS_SIG_alg_falcon_512;
+		case FALCON_LEVEL1: 
+			//printf("Signature setting FALCON Level 1\n");
+			return OQS_SIG_alg_falcon_512;
 		case FALCON_LEVEL5: return OQS_SIG_alg_falcon_1024;
 		case FALCON_PADDED_LEVEL1: return OQS_SIG_alg_falcon_padded_512;
 		case FALCON_PADDED_LEVEL5: return OQS_SIG_alg_falcon_padded_1024;
-		case DILITHIUM_LEVEL2: return OQS_SIG_alg_dilithium_2;
+		//case DILITHIUM_LEVEL2: return OQS_SIG_alg_dilithium_2;
+		case DILITHIUM_LEVEL2: return OQS_SIG_alg_ml_dsa_44;
 		case BIKE_LEVEL1: return OQS_KEM_alg_bike_l1;
         default:           break;
     }
@@ -122,6 +144,7 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
 	if (ret == 0) {
         switch (alg) {
         case KYBER_LEVEL1:
+			//printf("KEM setting KYBER Level 1\n");
             pk->len = OQS_KEM_ml_kem_512_length_public_key;
 			sk->len = OQS_KEM_ml_kem_512_length_secret_key;
             break;
@@ -167,24 +190,24 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg,
 	if (ret == 0) {
         switch (alg) {
         case KYBER_LEVEL1:
-            pk->len = CRYPTO_PUBLICKEYBYTES;
-			sk->len = CRYPTO_SECRETKEYBYTES;
+            pk->len = 800;
+			sk->len = 1632;
             break;
         case KYBER_LEVEL3:
+			pk->len = 1184;
+			sk->len = 2400;
+            break;
+       /* case KYBER_LEVEL5:
 			pk->len = CRYPTO_PUBLICKEYBYTES;
 			sk->len = CRYPTO_SECRETKEYBYTES;
-            break;
-        case KYBER_LEVEL5:
-			pk->len = CRYPTO_PUBLICKEYBYTES;
-			sk->len = CRYPTO_SECRETKEYBYTES;
-            break;
+            break;*/
 		case HQC_LEVEL1:
-			pk->len = CRYPTO_PUBLICKEYBYTES;
-			sk->len = CRYPTO_SECRETKEYBYTES;
+			pk->len = 2249;
+			sk->len = 2305;
             break;
 		case BIKE_LEVEL1:
-			pk->len = CRYPTO_PUBLICKEYBYTES;
-			sk->len = CRYPTO_SECRETKEYBYTES;
+			pk->len = 1541;
+			sk->len = 5223;
             break;	
         default:
             /* No other values supported. */
@@ -274,7 +297,7 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 
 	int ret = 0;
 
-
+   // printf("On crypto kem enc\n");
 	if (ret == 0) {
 		ret = crypto_kem_enc(ct->ptr, shared_secret->ptr, pk->ptr);
 		if ( ret != 0) {
@@ -286,24 +309,24 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg,
 	if (ret == 0) {
         switch (alg) {
         case KYBER_LEVEL1:
-			ct->len = CRYPTO_CIPHERTEXTBYTES;
-            shared_secret->len = CRYPTO_BYTES;
+			ct->len = 768;
+            shared_secret->len = 32;
             break;
         case KYBER_LEVEL3:
+			ct->len = 1088;
+            shared_secret->len = 32;
+            break;
+        /*case KYBER_LEVEL5:
 			ct->len = CRYPTO_CIPHERTEXTBYTES;
             shared_secret->len = CRYPTO_BYTES;
-            break;
-        case KYBER_LEVEL5:
-			ct->len = CRYPTO_CIPHERTEXTBYTES;
-            shared_secret->len = CRYPTO_BYTES;
-            break;
+            break;*/
 		case HQC_LEVEL1:
-			ct->len =  CRYPTO_CIPHERTEXTBYTES;
-			shared_secret->len = CRYPTO_BYTES;
+			ct->len =  4433;
+			shared_secret->len = 64;
 		break;
 		case BIKE_LEVEL1:
-			ct->len =  CRYPTO_CIPHERTEXTBYTES;
-			shared_secret->len = CRYPTO_BYTES;
+			ct->len =  1573;
+			shared_secret->len = 32;
 		break;
         default:
             /* No other values supported. */
@@ -376,7 +399,15 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 				   struct byte_array *pk)
 {
 	int ret = 0;
-	#ifdef LIBOQS
+	#ifdef MUPQ
+	/*PQM4 API*/
+	if ((ret == 0) &&
+        (crypto_sign_keypair(pk->ptr, sk->ptr)!= 0)) {
+		ret = SIG_BAD_FUNC_ARG;
+    }
+
+	#endif
+	#if (defined (LIBOQS) && !defined(MUPQ))
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
 
@@ -415,8 +446,10 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 			sk->len = OQS_SIG_falcon_padded_1024_length_secret_key;
             break;
 		case DILITHIUM_LEVEL2:
-			pk->len = OQS_SIG_dilithium_2_length_public_key;
-			sk->len = OQS_SIG_dilithium_2_length_secret_key;
+			//pk->len = OQS_SIG_dilithium_2_length_public_key;
+			//sk->len = OQS_SIG_dilithium_2_length_secret_key;
+ 		    pk->len = OQS_SIG_ml_dsa_44_ipd_length_public_key;
+			sk->len = OQS_SIG_ml_dsa_44_ipd_length_secret_key;
             break;
         default:
             /* No other values supported. */
@@ -434,6 +467,18 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 	OQS_SIG_free(sig);
 	
 	#endif
+	#ifdef PQM4
+    printf("Create key pair with pqm4\n");
+	/*PQM4*/
+	if ((ret == 0) &&
+        (crypto_sign_keypair(pk->ptr, sk->ptr)!= 0)) {
+		ret = SIG_BAD_FUNC_ARG;
+    }
+	#endif
+
+
+
+
 	return ret;
 }
 
@@ -443,9 +488,19 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 		   const struct byte_array *sk,
 	       const struct byte_array *msg,
 	       uint8_t *sign,uint32_t* sign_len){
+#ifdef MUPQ
+	// This is PQM4
+    //printf("This is PQM4\n");
+	int ret = 0;
+	//print_array(msg->ptr,msg->len);
+	//print_array(sk->ptr,sk->len);
+	if ((ret == 0) &&
+        (crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len, sk->ptr)
+		!= 0)) {
+		ret = SIG_BAD_FUNC_ARG;
+    }
 
-
-#ifdef LIBOQS
+#elif (defined LIBOQS)
 
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
@@ -480,16 +535,18 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 
 #else //LIBOQS
 	// This is PQM4
-    //printf("This is PQM4\n");
+    printf("This is PQM4\n");
 	int ret = 0;
 	//print_array(msg->ptr,msg->len);
 	//print_array(sk->ptr,sk->len);
+	//printf("SIGNATURE:");
+	//print_array(sign,*sign_len);
 	if ((ret == 0) &&
         (crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len, sk->ptr)
 		!= 0)) {
 		ret = SIG_BAD_FUNC_ARG;
     }
-	
+
 	return ret;
 
 
@@ -502,8 +559,21 @@ enum err WEAK sign_verify(enum sign_alg alg,
 	       const struct byte_array *msg,
 	       const struct byte_array *signature){
 
+#ifdef MUPQ
+// This is PQM4
+	PRINT_MSG("on pqm4\n");
+	int ret = 0;
+     PRINT_ARRAY("Signature:",signature->ptr, signature->len);
+	 PRINT_ARRAY("PK:",pk->ptr, pk->len);
+	 PRINT_ARRAY("MSG:",msg->ptr, msg->len);
+	 if ((ret == 0) &&
+        (crypto_sign_verify((const uint8_t *) signature->ptr, (size_t) signature->len,(const uint8_t *) msg->ptr, (size_t) msg->len,
+		(const uint8_t *) pk->ptr)
+         != 0)) {
+        ret = SIG_BAD_FUNC_ARG;
+    }
 
-#ifdef LIBOQS
+#elif (defined LIBOQS)
 	PRINT_MSG("on liboqs");
 	const char* algName = NULL;
     OQS_SIG *sig = NULL;
@@ -886,13 +956,14 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 #endif
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
-	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
+	else if ((alg <= FALCON_LEVEL1)&&(alg >= HAETAE_LEVEL2)){	
 	#if defined(PQM4) || defined(LIBOQS) 
 	    PRINT_MSG("PQ signature\n");
 		int ret = sign_signature(alg, sk, msg,out,out_len);
+		PRINT_MSG("PQ signature correct\n");
 		if (ret == 0){
 			PRINT_MSG("sign_signature correct\n");
-			printf("create signature of alg:%d corrected\n",alg);
+			PRINTF("create signature of alg:%d corrected\n",alg);
 			return ok;
 		}
 	#endif
@@ -975,7 +1046,7 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 #endif
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
-	else if ((alg <= FALCON_LEVEL1)&&(alg >= DILITHIUM_LEVEL5 )){	
+	else if ((alg <= FALCON_LEVEL1)&&(alg >= HAETAE_LEVEL2 )){	
 	#if defined(PQM4) || defined(LIBOQS) 
 		int ret = sign_verify(alg, pk, (const struct byte_array *) msg, (const struct byte_array *) sgn);
 		if (ret == 0){

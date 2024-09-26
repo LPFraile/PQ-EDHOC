@@ -23,7 +23,7 @@ TARGET = initiator
 
 # build path
 BUILD_DIR = build
-
+EXTENDED_CFLAGS += $(FEATURES)
 # libusocore-uedhoc path
 USOCORE_UEDHOC_PATH = $(ROOT_DIR)
 USOCORE_UEDHOC_BUILD_PATH = $(USOCORE_UEDHOC_PATH)/build
@@ -129,6 +129,18 @@ COMPACT25519_INCLUDES := -I../../../externals/compact25519/src/c25519/ -I../../.
 TINYCRYPT_ALL_C_SOURCES += $(wildcard ${TINYCRYPT_DIR}/*.c)
 TINYCRYPT_INCLUDES := -I${ROOT_DIR}/externals/tinycrypt/lib/include
 TINYCRYPT_SOURCES := $(filter-out ${TINYCRYPT_DIR}/sha256.c, $(wildcard ${ROOT_DIR}/externals/tinycrypt/lib/source/*.c))
+ 
+ifeq ($(findstring DHAETAE_LEVEL_2,$(EXTENDED_CFLAGS)),DHAETAE_LEVEL_2)
+MUPQ_DIR := ${ROOT_DIR}/externals/pqm4/mupq/crypto_sign/haetae2/ref
+MUPQ_SOURCES :=  $(wildcard ${MUPQ_DIR}/*.c) ${ROOT_DIR}/externals/pqm4/mupq/common/fips202.c ${ROOT_DIR}/externals/pqm4/mupq/common/keccakf1600.c ${ROOT_DIR}/externals/pqm4/mupq/pqclean/common/randombytes.c
+MUPQ_INCLUDES := -I../../../externals/pqm4/mupq/crypto_sign/haetae2/ref -I../../../externals/pqm4/mupq/common
+endif
+
+ifeq ($(findstring DHAWK_LEVEL_1,$(EXTENDED_CFLAGS)),DHAWK_LEVEL_1)
+MUPQ_DIR := ${ROOT_DIR}/externals/pqm4/mupq/crypto_sign/hawk512/ref
+MUPQ_SOURCES :=  $(wildcard ${MUPQ_DIR}/*.c) ${ROOT_DIR}/externals/pqm4/mupq/common/fips202.c ${ROOT_DIR}/externals/pqm4/mupq/common/keccakf1600.c ${ROOT_DIR}/externals/pqm4/mupq/pqclean/common/randombytes.c
+MUPQ_INCLUDES := -I../../../externals/pqm4/mupq/crypto_sign/hawk512/ref -I../../../externals/pqm4/mupq/common
+endif
 
 CANTCOAP_DIR :=  ${ROOT_DIR}/externals/cantcoap
 CANTCOAP_SOURCES := ${CANTCOAP_DIR}/cantcoap.cpp
@@ -144,6 +156,7 @@ SOURCES += ${MBEDTLS_SOURCES}
 SOURCES += ${ZCBOR_C_SOURCES}
 SOURCES += ${COMMON_SOURCES}
 SOURCES += ${CANTCOAP_SOURCES}
+SOURCES += ${MUPQ_SOURCES}
 OBJECTS := $(patsubst ${ROOT_DIR}/%.cpp,${BUILD_DIR}/%.o,$(patsubst ${ROOT_DIR}/%.c,${BUILD_DIR}/%.o,$(SOURCES)))
 INCLUDES := ${TINYCRYPT_INCLUDES}
 INCLUDES += ${COMPACT25519_INCLUDES}
@@ -153,6 +166,7 @@ INCLUDES += ${LIBOQS_INCLUDES}
 INCLUDES += ${COMMON_INCLUDES}
 INCLUDES += ${INITIATOR_INCLUDES}
 INCLUDES += ${CANTCOAP_INCLUDES}
+INCLUDES += ${MUPQ_INCLUDES}
 
 ###########################################
 # default action: build all

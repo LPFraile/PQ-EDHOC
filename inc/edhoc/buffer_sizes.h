@@ -54,8 +54,10 @@
 
 #ifndef FALCON_LEVEL_5
 #ifdef DILITHIUM_LEVEL_2
-	#define SIGNATURE_SIZE OQS_SIG_dilithium_2_length_signature  
-	#define PK_SIZE OQS_SIG_dilithium_2_length_public_key
+	//#define SIGNATURE_SIZE OQS_SIG_dilithium_2_length_signature  
+	//#define PK_SIZE OQS_SIG_dilithium_2_length_public_key
+    #define SIGNATURE_SIZE OQS_SIG_ml_dsa_44_ipd_length_signature  
+	#define PK_SIZE OQS_SIG_ml_dsa_44_ipd_length_public_key
 #endif
 #endif
 
@@ -74,19 +76,28 @@
 	//#define CRED_R_SIZE 2000
 	#define PK_SIZE OQS_SIG_falcon_padded_512_length_public_key
 #endif
-
 #endif
-#endif
-#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
-#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
-
-#if defined (USE_X5CHAIN)
-#define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
-#define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #endif
 
 #endif
 
+#ifdef MUPQ
+
+#ifdef HAETAE_LEVEL_2
+	#define SIGNATURE_SIZE 1474   
+	//#define CRED_I_SIZE 2000
+	//#define CRED_R_SIZE 2000
+	#define PK_SIZE 992
+#endif
+#ifndef HAETAE_LEVEL_2
+#ifdef HAWK_LEVEL_1
+	#define SIGNATURE_SIZE 555   
+	//#define CRED_I_SIZE 2000
+	//#define CRED_R_SIZE 2000
+	#define PK_SIZE 1024
+#endif
+#endif
+#endif
 
 #ifdef PQM4
 #include <api.h>
@@ -149,14 +160,26 @@
 #endif
 #endif
 #endif
-#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
-#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 
-#if defined (USE_X5CHAIN)
-#define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
-#define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#ifdef HAETAE_LEVEL_2
+	#define SIGNATURE_SIZE 1474   
+	//#define CRED_I_SIZE 2000
+	//#define CRED_R_SIZE 2000
+	#define PK_SIZE 992
+#endif
+#ifndef HAETAE_LEVEL_2
+#ifdef HAWK_LEVEL_1
+	#define SIGNATURE_SIZE 555   
+	//#define CRED_I_SIZE 2000
+	//#define CRED_R_SIZE 2000
+	#define PK_SIZE 1024
+#endif
 #endif
 
+#endif
+
+#ifndef SIGNATURE_SIZE
+#define SIGNATURE_SIZE 500
 #endif
 
 #ifndef EAD_SIZE
@@ -228,6 +251,15 @@
 
 #ifndef SIGNATURE_SIZE
 #define SIGNATURE_SIZE 64
+#endif
+
+
+#define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+
+#if defined (USE_X5CHAIN)
+#define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #endif
 
 #ifndef ECDH_SECRET_SIZE

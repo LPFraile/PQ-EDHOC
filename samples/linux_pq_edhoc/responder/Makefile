@@ -77,6 +77,20 @@ ifeq ($(findstring MBEDTLS,$(CRYPTO_ENGINE)),MBEDTLS)
 C_SOURCES += $(wildcard ../../../externals/mbedtls/library/*.c)
 endif
 
+ifeq ($(findstring HAWK_LEVEL_1,$(FEATURES)),HAWK_LEVEL_1)
+C_SOURCES += $(wildcard ../../../externals/pqm4/mupq/crypto_sign/hawk512/ref/*.c)
+C_SOURCES += ../../../externals/pqm4/mupq/common/fips202.c 
+C_SOURCES += ../../../externals/pqm4/mupq/common/keccakf1600.c
+C_SOURCES += ../../../externals/pqm4/mupq/pqclean/common/randombytes.c
+endif
+
+ifeq ($(findstring HAETAE_LEVEL_2,$(FEATURES)),HAETAE_LEVEL_2)
+C_SOURCES += $(wildcard ../../../externals/pqm4/mupq/crypto_sign/haetae2/ref/*.c)
+C_SOURCES += ../../../externals/pqm4/mupq/common/fips202.c 
+C_SOURCES += ../../../externals/pqm4/mupq/common/keccakf1600.c
+C_SOURCES += ../../../externals/pqm4/mupq/pqclean/common/randombytes.c
+endif
+
 # C includes
 C_INCLUDES += -I../../../inc/ 
 C_INCLUDES += -I../../common/
@@ -105,6 +119,18 @@ endif
 ifeq ($(findstring LIBOQS,$(CRYPTO_ENGINE)),LIBOQS)
 C_INCLUDES += -I${LIBOQS_BUILD_PATH}/include 
 endif
+
+ifeq ($(findstring HAWK_LEVEL_1,$(FEATURES)),HAWK_LEVEL_1)
+C_INCLUDES += -I../../../externals/pqm4/mupq/crypto_sign/hawk512/ref
+C_INCLUDES += -I../../../externals/pqm4/mupq/common
+endif
+
+ifeq ($(findstring HAETAE_LEVEL_2,$(FEATURES)),HAETAE_LEVEL_2)
+C_INCLUDES += -I../../../externals/pqm4/mupq/crypto_sign/haetae2/ref
+C_INCLUDES += -I../../../externals/pqm4/mupq/common
+endif
+
+
 
 # C defines
 # make PRINT_ARRAY macro usable in the main file
