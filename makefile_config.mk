@@ -25,7 +25,7 @@ OPT = -Os
 ################################################################################
 # Print helpful debug messages
 ################################################################################
-#DEBUG_PRINT += -DDEBUG_PRINT
+DEBUG_PRINT += -DDEBUG_PRINT
 
 ################################################################################
 # Use Address Sanitizer, e.g. with native_posix
@@ -83,18 +83,19 @@ FEATURES += -DSUITES_I_SIZE=1
 
 ################################################################################
 # Select for use EDHOC DH algorithm
-#FEATURES += -DDH
+FEATURES += -DDH
 
 ################################################################################
 # Select the PQ KEM algorithm to be used, 
 #FEATURES += -DKYBER_LEVEL_1
 #FEATURES += -DKYBER_LEVEL_3
-FEATURES += -DHQC_LEVEL_1 
+#FEATURES += -DHQC_LEVEL_1 
 #FEATURES += -DBIKE_LEVEL_1
 
 ################################################################################
 # Select the PQ Signature algorithm to be used
 #FEATURES += -DFALCON_LEVEL_1
+
 #FEATURES += -DDILITHIUM_LEVEL_2
 #FEATURES += -DHAWK_LEVEL_1
 #FEATURES += -DHAETAE_LEVEL_2
@@ -108,7 +109,7 @@ FEATURES += -DHQC_LEVEL_1
 # Select block wise transfer block size 
 #  The maximum block size a server supports.  Can be 0
 # (reset), or must be  32, 64, 128, 256, 512 or 1024.
-FEATURES += -DUSE_COAP_BLOCK_SIZE=512 
+FEATURES += -DUSE_COAP_BLOCK_SIZE=512
 
 ##################################################################
 # Define to use TCP. By default it use UDP 
@@ -165,7 +166,6 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 #    Desc: ChaCha20/Poly1305, SHA-256, 16, X25519, EdDSA,
 #          ChaCha20/Poly1305, SHA-256
 
-
 # EDHOC methods: 
 # +-------+-------------------+-------------------+-------------------+
 # | Value | Initiator         | Responder         | Reference         |
@@ -188,15 +188,15 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | 0/1/2/3 | 0/1/2/3 | MBEDTLS and COMPACT25519
 # | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
-CRYPTO_ENGINE += -DPQM4
+#CRYPTO_ENGINE += -DPQM4
 CRYPTO_ENGINE += -DTINYCRYPT
 CRYPTO_ENGINE += -DCOMPACT25519
 ###############################################################
 # Enable only when we use HQC KEM
-CRYPTO_ENGINE += -DPQCLEAN
+#CRYPTO_ENGINE += -DPQCLEAN
 #CRYPTO_ENGINE += -DMBEDTLS
 ################################################################
-# Enable that for PQ tests
+# Enable that for PQ tests in linux
 #CRYPTO_ENGINE += -DLIBOQS
 ###############################################################
 # Enable only for HAWK and HAETAE in linux

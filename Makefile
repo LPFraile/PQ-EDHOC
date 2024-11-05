@@ -59,6 +59,7 @@ ifeq ($(findstring UNIT_TEST,$(DUNIT_TEST)),UNIT_TEST)
 EXTENDED_CFLAGS += -DOSCORE_NVM_SUPPORT
 endif
 
+#EXTENDED_CFLAGS += -g
 #generate debug symbols
 #EXTENDED_CFLAGS += -g3 -gdwarf-4
 
@@ -71,6 +72,7 @@ endif
 # use C11
 #EXTENDED_CFLAGS += -std=c11 NO different in processing time in kems
 EXTENDED_CFLAGS += -std=c99
+#EXTENDED_CFLAGS += -Wl,--wrap=uECC_make_key_with_d
 #reduce very little (500 CLKS) and give me bigger size ram to 73.75% from 53%
 #EXTENDED_CFLAGS += -flto 
 #EXTENDED_CFLAGS += -finline-functions
@@ -120,7 +122,7 @@ EXTENDED_CFLAGS += -Wextra
 EXTENDED_CFLAGS += -Wpedantic
 EXTENDED_CFLAGS += -Wstack-exhausted
 EXTENDED_CFLAGS += -Wconversion
-EXTENDED_CFLAGS += -Wno-error
+#EXTENDED_CFLAGS += -Werror
 endif
 
 ifeq ($(findstring ASAN,$(ASAN)),ASAN)

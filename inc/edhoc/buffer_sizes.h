@@ -194,21 +194,6 @@
 #define C_R_SIZE 10
 #endif
 
-#ifndef ID_CRED_I_SIZE
-#define ID_CRED_I_SIZE 400
-#endif
-
-#ifndef ID_CRED_R_SIZE
-#define ID_CRED_R_SIZE 400
-#endif
-
-#ifndef CRED_I_SIZE
-#define CRED_I_SIZE 400
-#endif
-
-#ifndef CRED_R_SIZE
-#define CRED_R_SIZE 400
-#endif
 
 #ifndef SUITES_I_SIZE
 #define SUITES_I_SIZE 6
@@ -261,6 +246,23 @@
 #define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #endif
+
+#ifndef ID_CRED_I_SIZE
+#define ID_CRED_I_SIZE 400
+#endif
+
+#ifndef ID_CRED_R_SIZE
+#define ID_CRED_R_SIZE 400
+#endif
+
+#ifndef CRED_I_SIZE
+#define CRED_I_SIZE 400
+#endif
+
+#ifndef CRED_R_SIZE
+#define CRED_R_SIZE 400
+#endif
+
 
 #ifndef ECDH_SECRET_SIZE
 #define ECDH_SECRET_SIZE 32 /*PQ shared secret has the same size than ecdh secret */

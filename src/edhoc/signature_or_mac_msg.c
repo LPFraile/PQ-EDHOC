@@ -56,11 +56,15 @@ static enum err mac(const struct byte_array *prk, const struct byte_array *c_r,
 	TRY(encode_bstr(th, &th_enc));
 
 	/**/
-	/*PRINTF("MAX ID CRED: %d\n",ID_CRED_MAX_SIZE);
+	PRINTF("MAX ID CRED: %d\n",ID_CRED_MAX_SIZE);
 	PRINTF("MAX CRED: %d\n", CRED_MAX_SIZE );
+	PRINTF("PK SIZE: %d\n", PK_SIZE );
+	PRINTF("PK SIZE: %d\n", SIGNATURE_SIZE );
+	
 	PRINTF("CONTEXT_MAC_SIZE: %d\n",CONTEXT_MAC_SIZE);
 	PRINTF("CONTEXT_MAC len: %d\n",AS_BSTR_SIZE(c_r->len) + id_cred->len + cred->len +
-			       ead->len + th_enc.len);*/
+			       ead->len + th_enc.len);
+	
 	BYTE_ARRAY_NEW(context_mac, CONTEXT_MAC_SIZE,
 		       AS_BSTR_SIZE(c_r->len) + id_cred->len + cred->len +
 			       ead->len + th_enc.len);

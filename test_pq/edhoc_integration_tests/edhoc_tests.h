@@ -57,4 +57,17 @@ void test_initiator_responder_interaction(int vec_num);
 
 void t_initiator_responder_interaction1();
 void t_initiator_responder_interaction2();
+void t_initiator_responder_100_interaction();
+void t_pq_kems();
+void t_pq_signatures();
+/**
+ * @brief       Test EDHOC initiator according to RFC9529 Section 2.
+ *              Authentication with Signatures, X.509 Identified by 'x5t'
+ */
+void test_edhoc_initiator_alone();
+/**
+ * @brief       Test EDHOC initiator according to RFC9529 Section 2.
+ *              Authentication with Signatures, X.509 Identified by 'x5t'
+ */
+void test_edhoc_responder_alone();
 #endif

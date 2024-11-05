@@ -146,7 +146,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	}
 	else{
 		/*Set Gy size to the dh key size for DH*/
-		PRINT_MSG("Set gy to the dh key size for DH");
+		PRINT_MSG("Set gy to the dh key size for DH\n");
 		g_y_size =  get_ecdh_pk_len(rc->suite.edhoc_ecdh);
 	}
 	
@@ -339,7 +339,7 @@ enum err edhoc_initiator_run_extended(
 	rc.msg.len = sizeof(rc.msg_buf);
 	TRY(rx(c->sock, &rc.msg));
 	//printf("MSG 2 size: %d\n",rc.msg.len);
-	PRINTF("Max MSG2 size %d",MSG_2_SIZE);
+	PRINTF("Max MSG2 size %d\n",MSG_2_SIZE);
 
 	/*create and send message 3*/
 	//printf("-------------------------------------------------------\n");

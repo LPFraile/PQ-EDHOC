@@ -468,7 +468,7 @@ enum err WEAK static_signature_key_gen(enum sign_alg alg,
 	
 	#endif
 	#ifdef PQM4
-    printf("Create key pair with pqm4\n");
+    //printf("Create key pair with pqm4\n");
 	/*PQM4*/
 	if ((ret == 0) &&
         (crypto_sign_keypair(pk->ptr, sk->ptr)!= 0)) {
@@ -535,12 +535,7 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 
 #else //LIBOQS
 	// This is PQM4
-    printf("This is PQM4\n");
 	int ret = 0;
-	//print_array(msg->ptr,msg->len);
-	//print_array(sk->ptr,sk->len);
-	//printf("SIGNATURE:");
-	//print_array(sign,*sign_len);
 	if ((ret == 0) &&
         (crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len, sk->ptr)
 		!= 0)) {
@@ -628,7 +623,7 @@ enum err WEAK sign_verify(enum sign_alg alg,
 
 #endif
 
-
+#ifdef DH
 #ifdef MBEDTLS
 #define TRY_EXPECT_PSA(x, expected_result, key_id, err_code)                   \
 	do {                                                                   \
@@ -827,7 +822,7 @@ aead_mock_args_match_predefined(struct edhoc_mock_aead_in_out *predefined,
 			    &(struct byte_array){ .ptr = tag, .len = tag_len });
 }
 #endif // EDHOC_MOCK_CRYPTO_WRAPPER
-
+#endif
 enum err WEAK aead(enum aes_operation op, const struct byte_array *in,
 		   const struct byte_array *key, struct byte_array *nonce,
 		   const struct byte_array *aad, struct byte_array *out,
@@ -950,9 +945,11 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 #endif // EDHOC_MOCK_CRYPTO_WRAPPER
 
 	if (alg == EdDSA) {
+#ifdef DH
 #if defined(COMPACT25519)
 		edsign_sign(out, pk->ptr, sk->ptr, msg->ptr, msg->len);
 		return ok;
+#endif
 #endif
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
@@ -969,6 +966,7 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 	#endif
 	}
 	else if (alg == ES256) {
+#ifdef DH
 #if defined(TINYCRYPT)
 
 		uECC_Curve p256 = uECC_secp256r1();
@@ -1024,6 +1022,7 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 		TRY_EXPECT(psa_destroy_key(key_id), PSA_SUCCESS);
 		return ok;
 #endif
+#endif
 	}
 	return unsupported_ecdh_curve;
 }
@@ -1034,6 +1033,7 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 {
 	
 	if (alg == EdDSA) {
+#ifdef DH
 #ifdef COMPACT25519
 		int verified =
 			edsign_verify(sgn->ptr, pk->ptr, msg->ptr, msg->len);
@@ -1043,6 +1043,7 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 			*result = false;
 		}
 		return ok;
+#endif
 #endif
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
@@ -1059,6 +1060,7 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 	#endif
 	}
 	if (alg == ES256) {
+#ifdef DH
 #if defined(MBEDTLS)
 		psa_status_t status;
 		psa_algorithm_t psa_alg;
@@ -1111,6 +1113,7 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 			   1);
 		*result = true;
 		return ok;
+#endif
 #endif
 	}
 	return crypto_operation_not_implemented;
@@ -1272,6 +1275,7 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 				   const struct byte_array *pk,
 				   uint8_t *shared_secret)
 {
+	#ifdef DH
 	PRINT_MSG("SHARED SECRET DERIVE\n");
 	if (alg == X25519) {
 #ifdef COMPACT25519
@@ -1379,13 +1383,16 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 		mbedtls_pk_free(&ctx_verify);
 		return result;
 #endif
+
 	}
+	#endif
 	return crypto_operation_not_implemented;
 }
 
 enum err WEAK ephemeral_dh_key_gen(enum ecdh_alg alg, uint32_t seed,
 				   struct byte_array *sk, struct byte_array *pk)
 {
+	#ifdef DH
 	if (alg == X25519) {
 #ifdef COMPACT25519
 		uint8_t extended_seed[32];
@@ -1476,6 +1483,7 @@ enum err WEAK ephemeral_dh_key_gen(enum ecdh_alg alg, uint32_t seed,
 	} else {
 		return unsupported_ecdh_curve;
 	}
+	#endif
 	return ok;
 }
 

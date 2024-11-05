@@ -17,11 +17,42 @@
 #include "txrx_wrapper.h"
 #include "edhoc_test_vectors_rfc9529.h"
 
-volatile uint8_t msg_cnt = 1;
+/*Define for testing external trigger*/
+#ifdef POWER_MEASUREMENTS
+	#include <zephyr/drivers/gpio.h>
+	#define LED0_NODE DT_ALIAS(led0)
+	static const struct gpio_dt_spec led_i = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+#endif
 
-enum err tx_fkt(void *sock, struct byte_array *data)
+#ifdef USE_INTE_NUM
+#define INTERACTION_NUM USE_INTE_NUM
+#else
+#define INTERACTION_NUM 1
+#endif
+volatile uint64_t times3 = INTERACTION_NUM;
+
+volatile uint8_t msg_cnt2 = 1;
+
+#ifdef POWER_MEASUREMENTS   
+void configure_triggers3(){
+	int ret;
+
+	if (!gpio_is_ready_dt(&led_i)) {
+		return 0;
+	}
+
+	ret = gpio_pin_configure_dt(&led_i, GPIO_OUTPUT_ACTIVE);
+	if (ret < 0) {
+		return 0;
+	}
+
+	gpio_pin_set_dt(&led_i, 1);	
+}
+#endif
+
+enum err tx_fkt2(void *sock, struct byte_array *data)
 {
-	switch (msg_cnt) {
+	switch (msg_cnt2) {
 	case 1:
 		zassert_mem_equal__(data->ptr, T1_RFC9529__MESSAGE_1, data->len,
 				    "wrong message1");
@@ -51,13 +82,13 @@ enum err tx_fkt(void *sock, struct byte_array *data)
 		break;
 	}
 
-	msg_cnt++;
+	msg_cnt2++;
 	return ok;
 }
 
-enum err rx_fkt(void *sock, struct byte_array *data)
+enum err rx_fkt2(void *sock, struct byte_array *data)
 {
-	switch (msg_cnt) {
+	switch (msg_cnt2) {
 	case 1:
 
 		TRY(_memcpy_s(data->ptr, data->len, T1_RFC9529__MESSAGE_1,
@@ -84,17 +115,18 @@ enum err rx_fkt(void *sock, struct byte_array *data)
 		break;
 	}
 
-	msg_cnt++;
+	msg_cnt2++;
 	return ok;
 }
 
-enum err ead_fkt(void *params, struct byte_array *ead13)
+enum err ead_fkt2(void *params, struct byte_array *ead13)
 {
 	return ok;
 }
 
 void test_edhoc_initiator_x509_x5t_rfc9529(void)
 {
+	configure_triggers3();
 	enum err r;
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
@@ -148,18 +180,29 @@ void test_edhoc_initiator_x509_x5t_rfc9529(void)
 	cred_r.ca_pk.ptr = NULL;
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
+    #ifdef POWER_MEASUREMENTS
+	PRINTF("Start Initiator\n");
+	gpio_pin_set_dt(&led_i, 0);
+	#endif
 
+	while(times3>0){	
 	r = edhoc_initiator_run(&c_i, &cred_r_array, &I_err_msg, &I_PRK_out,
-				tx_fkt, rx_fkt, ead_fkt);
-
+				tx_fkt2, rx_fkt2, ead_fkt2);
+     times3--;
+	}
+	#ifdef POWER_MEASUREMENTS
+	PRINTF("Stopt Initiator\n");
+	gpio_pin_set_dt(&led_i, 1);
+	#endif
 	zassert_mem_equal__(I_PRK_out.ptr, T1_RFC9529__PRK_out, I_PRK_out.len,
 			    "wrong PRK_out");
 
-	msg_cnt = 1;
+	msg_cnt2 = 1;
 }
 
 void test_edhoc_responder_x509_x5t_rfc9529(void)
 {
+	configure_triggers3();
 	enum err r;
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
@@ -213,11 +256,20 @@ void test_edhoc_responder_x509_x5t_rfc9529(void)
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
 
+	#ifdef POWER_MEASUREMENTS
+	PRINTF("Start Responder\n");
+	gpio_pin_set_dt(&led_i, 0);
+	#endif 
 	r = edhoc_responder_run(&c_r, &cred_i_array, &R_err_msg, &R_PRK_out,
-				tx_fkt, rx_fkt, ead_fkt);
+				tx_fkt2, rx_fkt2, ead_fkt2);
 
+
+	#ifdef POWER_MEASUREMENTS
+	PRINTF("Stop Responder\n");
+	gpio_pin_set_dt(&led_i, 1);
+	#endif 
 	zassert_mem_equal__(R_PRK_out.ptr, T1_RFC9529__PRK_out, R_PRK_out.len,
 			    "wrong PRK_out");
 
-	msg_cnt = 1;
+	msg_cnt2 = 1;
 }

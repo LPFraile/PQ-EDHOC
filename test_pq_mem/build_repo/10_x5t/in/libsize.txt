@@ -1,0 +1,5 @@
+Total Text: 27118
+Total Data: 8
+Total BSS: 14
+Total DEC: 27140
+Total HEX: 0x6a04

@@ -69,10 +69,10 @@ uint8_t TEST_VEC_NUM = 17;
 #define PQ_PROPOSAL_1
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
-#define USE_RANDOM_EPHEMERAL_DH_KEY 
+//#define USE_RANDOM_EPHEMERAL_DH_KEY 
 #elif defined(DH) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 3;
-#define USE_RANDOM_EPHEMERAL_DH_KEY 
+//#define USE_RANDOM_EPHEMERAL_DH_KEY 
 #else
 #error "you must select a correct test combination in makefile_config.mk file"
 #endif
@@ -214,14 +214,14 @@ int main()
 	c_i.id_cred_i.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_i;
 	c_i.cred_i.len = test_vectors[vec_num_i].cred_i_len;
 	c_i.cred_i.ptr = (uint8_t *)test_vectors[vec_num_i].cred_i;
-	/*c_i.g_x.len = test_vectors[vec_num_i].g_x_raw_len;
+	c_i.g_x.len = test_vectors[vec_num_i].g_x_raw_len;
 	c_i.g_x.ptr = (uint8_t *)test_vectors[vec_num_i].g_x_raw;
 	c_i.x.len = test_vectors[vec_num_i].x_raw_len;
 	c_i.x.ptr = (uint8_t *)test_vectors[vec_num_i].x_raw;
 	c_i.g_i.len = test_vectors[vec_num_i].g_i_raw_len;
 	c_i.g_i.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;
 	c_i.i.len = test_vectors[vec_num_i].i_raw_len;
-	c_i.i.ptr = (uint8_t *)test_vectors[vec_num_i].i_raw;*/
+	c_i.i.ptr = (uint8_t *)test_vectors[vec_num_i].i_raw;
 	c_i.sk_i.len = test_vectors[vec_num_i].sk_i_raw_len;
 	c_i.sk_i.ptr = (uint8_t *)test_vectors[vec_num_i].sk_i_raw;
 	c_i.pk_i.len = test_vectors[vec_num_i].pk_i_raw_len;
@@ -265,14 +265,14 @@ int main()
 	c_i.g_x.len = G_X_random.len;
 	c_i.x.ptr = X_random.ptr;
 	c_i.x.len = X_random.len;
+#endif
 	PRINT_ARRAY("secret ephemeral DH key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("public ephemeral DH key", c_i.x.ptr, c_i.x.len);
 
 	#ifdef TINYCRYPT
 	/* Register RNG function */
 	uECC_set_rng(default_CSPRNG);
-#endif
-#endif
+	#endif
 
 #ifdef PQ_PROPOSAL_1
     /*Ephemeral Key generation for KEMs*/

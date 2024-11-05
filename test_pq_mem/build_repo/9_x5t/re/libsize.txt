@@ -1,0 +1,5 @@
+Total Text: 26904
+Total Data: 8
+Total BSS: 14
+Total DEC: 26926
+Total HEX: 0x692e

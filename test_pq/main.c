@@ -86,8 +86,48 @@ static void skip(int test_name_macro, void (*test_function)())
 }
 
 ZTEST_SUITE(uoscore_uedhoc, NULL, NULL, NULL, NULL, NULL);
+#ifdef USE_TEST_SIG
+ZTEST(uoscore_uedhoc, t_pq_signatures)
+{
+	skip(TEST_INITIATOR_RESPONDER_INTERACTION1,
+	     t_pq_signatures);
+};
+#endif
+#ifdef USE_TEST_KEM
+ZTEST(uoscore_uedhoc, t_pq_kems)
+{
+	skip(TEST_INITIATOR_RESPONDER_INTERACTION1,
+	     t_pq_kems);
+};
+#endif
 
-ZTEST(uoscore_uedhoc, test_edhoc_exporter)
+#ifdef USE_TEST_EDHOC
+ZTEST(uoscore_uedhoc, test_initiator_responder_100_interaction)
+{
+	skip(TEST_INITIATOR_RESPONDER_INTERACTION1,
+	     t_initiator_responder_100_interaction);
+};
+#endif
+
+#ifdef USE_TEST_INITIATOR
+ZTEST(uoscore_uedhoc, test_edhoc_initiator_x509_x5t_rfc9529)
+{
+	skip(TEST_EDHOC_INITIATOR_X509_X5T_RFC9529,
+	     test_edhoc_initiator_x509_x5t_rfc9529);
+}
+#endif
+
+#ifdef USE_TEST_RESPONDER
+ZTEST(uoscore_uedhoc, test_edhoc_responder_x509_x5t_rfc9529)
+{
+	skip(TEST_EDHOC_RESPONDER_X509_X5T_RFC9529,
+	     test_edhoc_responder_x509_x5t_rfc9529);
+}
+#endif
+#if ( !defined(USE_TEST_SIG) && !defined(USE_TEST_KEM) && !defined(USE_TEST_EDHOC) &&  !defined(USE_TEST_INITIATOR) &&  !defined(USE_TEST_RESPONDER))
+#error "Need to define the test to be use"
+#endif
+/*ZTEST(uoscore_uedhoc, test_edhoc_exporter)
 {
 	skip(TEST_EDHOC_EXPORTER, test_exporter);
 };
@@ -102,4 +142,4 @@ ZTEST(uoscore_uedhoc, test_initiator_responder_interaction2)
 {
 	skip(TEST_INITIATOR_RESPONDER_INTERACTION2,
 	     t_initiator_responder_interaction2);
-};
+};*/

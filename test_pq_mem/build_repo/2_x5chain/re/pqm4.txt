@@ -1,0 +1,17 @@
+Non-Matching Files (files excluding 'main, cbor, utils, _sha512.c.obj, c25519.c.obj, ed25519, edsign, f25519, fprime, compact_ed25519, compact_wipe, compact_x25519, aes_decrypt.c, aes_encrypt, cbc_mode, cmac_mode, ctr_mode, ctr_prng, ecc.c, ecc_dh, ecc_dsa, ecc_platform, hmac, tc_sha256'):
+nontext: 876
+nondata: 0
+nonbss: 0
+nondec: 876
+
+All Files:
+text: 197654
+data: 13688
+bss: 13916
+dec: 225258
+
+Percentage of totals from non-matching files:
+text: 0.44%
+data: 0.00%
+bss: 0.00%
+dec: 0.39%

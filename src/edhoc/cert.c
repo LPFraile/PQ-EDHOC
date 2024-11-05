@@ -422,13 +422,13 @@ enum err cert_x509_verify(struct const_byte_array *cert,
 	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(HAETAE_LEVEL2));
 #else
     PRINTF("Non signature selected\n");
-	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, 0);
+	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(ES256));
 #endif
 
 	enum err rv = certificate_authentication_failed;
 
 #if  !defined(LIBOQS) && !defined(PQM4)
-	BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(ES256));
+	//BYTE_ARRAY_NEW(sig, SIGNATURE_SIZE, get_signature_len(ES256));
 //#ifndef LIBOQS
 	/* Crude way to get TBSCertificate address, public key and signature */
 	do {

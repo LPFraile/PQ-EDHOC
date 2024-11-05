@@ -95,6 +95,8 @@ msg1_parse(struct byte_array *msg1, enum method_type *method,
 	PRINT_ARRAY("msg1 SUITES_I", suites_i->ptr, suites_i->len);
 
 	/*G_X*/
+	PRINTF("g_x len %d\n",g_x->len);
+	PRINTF("g_x len message 1 %d\n",(uint32_t)m.message_1_G_X.len);
 	TRY(_memcpy_s(g_x->ptr, g_x->len, m.message_1_G_X.value,
 		      (uint32_t)m.message_1_G_X.len));
 	g_x->len = (uint32_t)m.message_1_G_X.len;

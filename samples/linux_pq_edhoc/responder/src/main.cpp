@@ -241,14 +241,14 @@ int main()
 	c_r.id_cred_r.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_r;
 	c_r.cred_r.len = test_vectors[vec_num_i].cred_r_len;
 	c_r.cred_r.ptr = (uint8_t *)test_vectors[vec_num_i].cred_r;
-	/*c_r.g_y.len = test_vectors[vec_num_i].g_y_raw_len;
+	c_r.g_y.len = test_vectors[vec_num_i].g_y_raw_len;
 	c_r.g_y.ptr = (uint8_t *)test_vectors[vec_num_i].g_y_raw;
 	c_r.y.len = test_vectors[vec_num_i].y_raw_len;
 	c_r.y.ptr = (uint8_t *)test_vectors[vec_num_i].y_raw;
 	c_r.g_r.len = test_vectors[vec_num_i].g_r_raw_len;
 	c_r.g_r.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;
 	c_r.r.len = test_vectors[vec_num_i].r_raw_len;
-	c_r.r.ptr = (uint8_t *)test_vectors[vec_num_i].r_raw;*/
+	c_r.r.ptr = (uint8_t *)test_vectors[vec_num_i].r_raw;
 	c_r.sk_r.len = test_vectors[vec_num_i].sk_r_raw_len;
 	c_r.sk_r.ptr = (uint8_t *)test_vectors[vec_num_i].sk_r_raw;
 	c_r.pk_r.len = test_vectors[vec_num_i].pk_r_raw_len;
@@ -309,11 +309,12 @@ int main()
         c_r.g_y.len = G_Y_random.len;
 		c_r.y.len = Y_random.len;
 		TRY(ephemeral_dh_key_gen(P256, seed, &Y_random, &G_Y_random));
-		PRINT_ARRAY("public ephemeral DH key", c_r.g_y.ptr,
-			    c_r.g_y.len);
-		PRINT_ARRAY("secret ephemeral DH key", c_r.y.ptr, c_r.y.len);
+	
 #endif
 
+	PRINT_ARRAY("public ephemeral DH key", c_r.g_y.ptr,
+			    c_r.g_y.len);
+	PRINT_ARRAY("secret ephemeral DH key", c_r.y.ptr, c_r.y.len);
 #ifdef TINYCRYPT
 		/* Register RNG function */
 		uECC_set_rng(default_CSPRNG);
