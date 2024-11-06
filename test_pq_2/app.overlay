@@ -1,0 +1,4 @@
+&timer0 {
+	status = "okay";
+};
+
