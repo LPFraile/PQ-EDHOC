@@ -21,8 +21,7 @@ FILE(GLOB app_sources
   ../externals/compact25519/src/*.c
   ../externals/mbedtls/library/*.c
   ../externals/tinycrypt/lib/source/*.c
-  ../test_vectors/*.c
-  ../externals/PQClean/crypto_kem/kyber512/clean/*.c)
+  ../test_vectors/*.c)
 target_sources(app PRIVATE ${app_sources})
 target_compile_options(app PRIVATE -Wno-error=implicit-int)
 zephyr_compile_options(-Wno-error=implicit-int)
