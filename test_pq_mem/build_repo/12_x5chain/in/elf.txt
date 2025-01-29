@@ -1,2 +1,0 @@
-   text	   data	    bss	    dec	    hex	filename
- 251500	  14252	  81483	 347235	  54c63	build/zephyr/zephyr.elf

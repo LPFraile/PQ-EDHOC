@@ -1,4 +1,0 @@
-config BT_LONG_WQ_STACK_SIZE
-	int "Long workqueue stack size"
-	default 3000
-source "Kconfig.zephyr"

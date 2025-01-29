@@ -1,5 +1,0 @@
-Total Text: 26932
-Total Data: 8
-Total BSS: 14
-Total DEC: 26954
-Total HEX: 0x694a
