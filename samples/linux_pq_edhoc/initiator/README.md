@@ -3,7 +3,7 @@ This folder contains
 * initiator - PQ EDHOC initiator running on top of a CoAP client without Block Wise Transfer 
 
 ## Build and Run
-Once has been already run a reponder in another terminal
+Before running this example, you should have already run the responder in another terminal.
 ```
 make clean
 make -j

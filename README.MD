@@ -131,11 +131,11 @@ For more details on each example, check the corresponding **README** file.
 ### PQ EDHOC over COAP
 
 **Path:** `PQ-uEDHOC/samples/linux_pq_edhoc`
-This folder contains two examples designed to run on a **Linux** host. See the [README](samples/linux_pq_edhoc/README.MD) for details.
+This folder contains two examples designed to run on a **Linux** host. See the [README](samples/linux_edhoc_block_pq/README.MD) for details.
 
-- **Initiator:** PQ-EDHOC initiator running on top of a **CoAP client** without **Block-Wise Transfer**.
+- **Initiator:** PQ-EDHOC initiator running on top of a **CoAP client without Block-Wise Transfer**.
 
-- **Responder:** PQ-EDHOC responder running on top of a **CoAP server** without **Block-Wise Transfer**.
+- **Responder:** PQ-EDHOC responder running on top of a **CoAP server without Block-Wise Transfer**.
 
 These examples use the **cantcoap** library, which is the default CoAP library used in **uEDHOC** examples. However, **cantcoap** does not handle **CoAP packet loss** or **retransmissions**.
 
@@ -144,8 +144,8 @@ These examples use the **cantcoap** library, which is the default CoAP library u
 
 This folder contains two examples designed to run on a **Linux** host. See the [README](samples/linux_pq_edhoc/README.MD) for details.
 
-- **Initiator:** PQ-EDHOC initiator running on top of a **CoAP client** with **Block-Wise Transfer**.
-- **Responder:** PQ-EDHOC responder running on top of a **CoAP server** with **Block-Wise Transfer**.
+- **Initiator:** PQ-EDHOC initiator running on top of a **CoAP client with Block-Wise Transfer**.
+- **Responder:** PQ-EDHOC responder running on top of a **CoAP server with Block-Wise Transfer**.
 
 
 ## Tested Platforms
