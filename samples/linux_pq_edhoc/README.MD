@@ -25,11 +25,7 @@ Choose the transport layer: **TCP** or **UDP**. By default, **UDP** is selected.
 ```
 FEATURES += -DUSE_TCP 
 ```
-### CoAP Block-Wise Transfer 
-For examples with Block-Wise Transfer, the block size must be chosen at compile time. The supported sizes are: **0 (reset)**, **32**, **64**, **128**, **256**, **512**, or **1024**. Configure it at compile time by defining the following macro:
-```
-FEATURES += -DUSE_COAP_BLOCK_SIZE=512 
-```
+
 ### PQ KEMs algortithms
 The **PQ KEMs** must be selected in order to allocate the smaller necessary buffer sizes. Below is a list of supported KEMs:
 
