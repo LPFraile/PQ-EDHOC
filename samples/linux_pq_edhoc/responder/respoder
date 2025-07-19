@@ -1,0 +1,314 @@
+IPv4 server with address 0.0.0.0 started!
+test vector number: 18
+INITIATOR SUIT kem: -48, signature -57
+responder pk size: 501 
+responder sk size: 495 
+static PQ Key public (size 501):
+	0A C4 AE 59 D9 04 EC AA 45 F9 CA 63 3B E4 5A D5 
+	C5 5A F9 84 A5 73 FC 9B 57 31 6E DF 7C C5 C5 9C 
+	AA A7 11 67 57 08 2C 4E 60 98 A0 D1 8D 61 B8 67 
+	57 9B CB 04 25 A4 DD D9 8B 53 21 3E 86 52 CC 1F 
+	65 53 D8 93 13 ED 18 60 2C F2 7E 9B 95 8C 7A 8C 
+	C0 47 52 62 3A F7 8B 09 F7 A6 B6 9A 2E A3 CB A4 
+	FD 70 B1 D6 70 55 3F A0 41 1C 0A A1 D3 29 42 20 
+	59 B9 27 E4 5A 09 6C 81 9F 7A 41 56 C0 B1 09 7C 
+	48 4E 8A BE 32 C5 A9 1E F4 79 92 C2 53 89 18 65 
+	F0 2A 50 97 A6 74 BF F1 46 24 60 25 4C 06 1B 6F 
+	17 6C 72 91 B1 5F F6 54 E8 3A 16 DC 38 86 03 D6 
+	27 B4 BB 45 93 BB 71 8F 04 C2 9C F0 72 AF 95 44 
+	81 5C 9D F4 12 0A 26 8A 26 4C B3 8D BF 28 29 87 
+	80 C0 74 AA C3 91 D7 7F 83 AC 2A A4 60 58 B4 D6 
+	80 A7 8B 73 F8 20 3A 67 91 52 E9 41 4D 91 AA 83 
+	66 A8 B5 9B 8C 60 E8 75 4E F2 27 69 FE 03 87 2C 
+	79 71 66 77 4C 28 F5 19 83 BA 07 A5 5C 36 BA E4 
+	8A 76 BB A9 02 39 26 C8 69 CC A2 2A 89 BC 23 A9 
+	41 1B 7D E6 2B 55 B0 F1 74 A2 33 27 43 60 07 88 
+	4B 79 9F C9 14 EA F2 A8 38 A6 12 1C D9 35 9D A9 
+	66 F6 0B 64 94 9A 6A D8 6C 29 40 9A 40 0E 7B A2 
+	93 F6 1A 7C 68 6E E4 43 66 09 8A 21 A7 4C 47 02 
+	E4 A2 41 8C 5B 32 30 BC 89 B7 6F B4 A0 AA 1A EC 
+	18 EB CA 0E A3 96 3E 5C 64 8F B2 D9 19 FC F5 17 
+	7D 54 63 F7 47 7C 2F D7 30 A3 E6 C2 4B 72 8C B5 
+	7B 93 38 E2 61 EE DA 12 5D B0 C6 2E D7 44 E0 F1 
+	56 50 E7 98 FF 36 4C 8A A6 38 7A D3 43 D6 10 02 
+	84 27 49 9C D9 25 9E 38 02 DA 11 39 55 75 4D F8 
+	41 4D 52 A0 CC 9A BB 13 49 4C 0D E0 E6 02 71 90 
+	C4 17 72 0D 5E C3 80 A7 D1 C2 A6 26 5D 63 74 3E 
+	DD 36 06 36 C9 76 AB 3A C8 53 CA 2F F9 BB B1 02 
+	8B 86 43 CB 58 
+static PQ Key private (size 495):
+	FE C0 90 4F 33 7C EC C6 16 B4 A9 39 07 B9 A8 01 
+	48 7F 6E A7 59 CA B4 0B 95 15 14 17 D0 9A 50 F7 
+	CD F6 F6 28 BB EC 61 F6 91 1B 49 68 4A 1B 16 69 
+	0A B7 CC 89 60 30 95 24 48 D9 CC 58 CA 77 B5 A7 
+	D8 68 31 D6 07 2A A7 30 81 03 97 1D 2C 56 36 A4 
+	92 5D 65 89 9B 55 49 8D 69 A3 FA B8 2A ED A2 5C 
+	84 D7 0C 35 90 C0 1E 40 C4 B6 81 A4 A8 FB AE C7 
+	D9 A0 F7 45 39 6A D5 22 77 6B 09 B6 1B CF 1A 38 
+	15 8D 22 61 67 05 A7 EF B6 14 43 D1 A1 D3 C5 0B 
+	BC BC 54 B2 8A 36 87 30 A7 AC AA 67 B4 E8 99 D5 
+	55 A8 A7 69 87 66 75 5B E8 D2 B2 E6 87 9C 26 80 
+	B7 85 10 07 48 28 40 0B E9 54 B5 84 8F 87 C9 47 
+	B0 E2 0F 1A D8 2B A0 D5 CD 5B F7 6C 4F 38 B9 C0 
+	E1 3D 94 F5 36 5D 33 04 00 FC 2C DD B2 B8 99 35 
+	01 CB 99 61 11 D7 1B F1 A6 8E E4 44 19 7B 85 32 
+	82 30 1D EE DC 5D 8C E4 3F 7C E2 7F B9 32 9F 36 
+	B4 9B 4E 25 9C 7C 40 01 98 C4 40 3A 8B A4 22 C0 
+	76 E2 24 7D 73 24 B1 00 62 52 2C 88 7E 8F 94 0D 
+	3A 0B 8A 3F 8B B4 52 53 C5 87 23 AC 2A EB 07 8A 
+	61 17 FB 18 32 D8 42 06 3A 08 20 26 50 82 34 17 
+	73 5B 3C 9E 63 2C 96 73 02 1D 72 70 39 DC 1A 9B 
+	E3 D0 A1 3D A6 06 1A 03 23 12 E6 91 54 22 BA 5C 
+	D7 57 78 6A 95 1D E3 69 78 4A C4 62 20 31 16 F9 
+	34 72 DC 84 15 78 45 68 98 96 5B A5 B8 4D 1B 0E 
+	F6 75 40 1B 2A 51 EA 88 4F 91 01 CE 3D B3 BF 9A 
+	7B A1 62 20 C4 00 4C 73 C4 9C 6D 0A 90 9B E4 31 
+	00 26 77 1C 57 90 60 0C FA 7F 61 67 85 38 B4 59 
+	08 C1 3A 40 D5 2F EE 13 6C 72 00 6C DD 8A 4D 37 
+	A3 52 2E 90 AD 47 B1 45 EF 63 6C AF C2 41 13 B7 
+	4D 49 74 05 93 74 41 3D F9 A0 A8 EA 1A D9 97 CF 
+	C9 2A 14 B6 BA 4D 12 F6 B3 A0 8C 59 E3 53 6A 
+static SS KEM I: (size 32):
+	44 DF 7D 8F 2D A4 D6 23 56 C8 8C 52 09 07 1B 70 
+	94 CF 2A 88 93 A5 4E 6E EA C9 53 E0 90 CB 33 6B 
+static SS KEM I 2: (size 32):
+	44 DF 7D 8F 2D A4 D6 23 56 C8 8C 52 09 07 1B 70 
+	94 CF 2A 88 93 A5 4E 6E EA C9 53 E0 90 CB 33 6B 
+public ephemeral DH key (size 768):
+	50 66 21 4E DF 73 00 00 5F 9A 7F 67 00 00 00 00 
+	68 E7 8C B2 FC 7F 00 00 A8 9B 95 4E DF 73 00 00 
+	50 46 99 4E DF 73 00 00 40 E6 8C B2 FC 7F 00 00 
+	50 E6 8C B2 FC 7F 00 00 11 52 96 4E DF 73 00 00 
+	03 00 00 00 00 00 00 00 E8 AC 83 4E DF 73 00 00 
+	09 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	01 00 00 00 00 00 00 00 F0 3A 99 4E DF 73 00 00 
+	E8 AC 83 4E DF 73 00 00 F0 3A 99 4E DF 73 00 00 
+	00 83 90 B2 01 00 00 00 50 46 99 4E DF 73 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	08 00 00 00 FC 7F 00 00 00 00 00 00 DF 73 00 00 
+	FF FF FF FF 00 00 00 00 D0 E6 8C B2 FC 7F 00 00 
+	60 7E 20 4E DF 73 00 00 10 7F 95 4E DF 73 00 00 
+	03 00 00 00 00 00 00 00 A0 E7 8C B2 FC 7F 00 00 
+	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 E0 42 99 4E DF 73 00 00 
+	A0 E7 8C B2 FC 7F 00 00 38 AB 95 4E DF 73 00 00 
+	E0 E7 8C B2 FC 7F 00 00 07 00 00 00 00 00 00 00 
+	D8 98 95 4E DF 73 00 00 07 00 00 00 23 00 00 00 
+	F0 3A 99 4E DF 73 00 00 E8 A4 96 4E DF 73 00 00 
+	09 00 00 00 00 00 00 00 E9 AD 96 4E DF 73 00 00 
+	98 00 21 4E DF 73 00 00 10 7F 95 4E DF 73 00 00 
+	00 00 00 00 00 00 00 00 00 99 27 85 7D 48 F0 7D 
+	F0 1E 92 4E DF 73 00 00 60 E8 8C B2 FC 7F 00 00 
+	10 00 00 00 00 00 00 00 9C E8 8C B2 FC 7F 00 00 
+	70 E8 8C B2 FC 7F 00 00 01 00 00 00 00 00 00 00 
+	40 30 99 4E DF 73 00 00 4B 4C 33 4E DF 73 00 00 
+	18 00 00 00 30 00 00 00 20 E8 8C B2 FC 7F 00 00 
+	60 E7 8C B2 FC 7F 00 00 00 99 27 85 7D 48 F0 7D 
+	76 E8 8C B2 FC 34 39 35 00 99 27 85 7D 48 F0 7D 
+	70 E8 8C B2 FC 7F 00 00 20 68 00 00 00 00 00 00 
+	10 EB 8C B2 FC 7F 00 00 28 EC 8C B2 FC 7F 00 00 
+	40 08 FB B2 36 57 00 00 58 F6 48 B3 36 57 00 00 
+	40 30 99 4E DF 73 00 00 4B 4C 33 4E DF 73 00 00 
+	18 00 00 00 30 00 00 00 90 E8 8C B2 FC 7F 00 00 
+	D0 E7 8C B2 FC 7F 00 00 00 99 27 85 7D 48 F0 7D 
+	70 E8 8C B2 FC 7F 00 00 01 00 00 00 00 00 00 00 
+	EF 01 00 00 00 00 00 00 01 00 00 00 00 00 00 00 
+	00 00 00 00 00 00 00 00 65 E7 8C B2 FC 7F 00 00 
+	77 E8 8C B2 FC 7F 00 00 00 99 27 85 7D 48 F0 7D 
+	69 6E 2F 62 61 73 68 00 EA 54 FA B2 36 57 00 00 
+	11 00 00 00 00 00 00 00 10 EB 8C B2 FC 7F 00 00 
+	28 EC 8C B2 FC 7F 00 00 40 08 FB B2 36 57 00 00 
+	58 F6 48 B3 36 57 00 00 06 54 FA B2 36 57 00 00 
+	00 00 00 00 00 00 00 00 FE 07 FB B2 36 57 00 00 
+	02 00 16 33 00 00 00 00 00 00 00 00 00 00 00 00 
+	30 2E 30 2E 30 2E 30 00 00 99 27 85 7D 48 F0 7D 
+	00 00 00 00 00 00 00 00 28 0C FB B2 36 57 00 00 
+secret ephemeral DH key (size 0):
+Responder ready to Receive EDHOC PQ request 
+__________________
+PDU was constructed from buffer of 833 bytes
+PDU is 833 bytes long
+CoAP Version: 1
+Message Type: Confirmable
+Token length: 4
+Code: 0.02 POST
+Message ID: 0
+Token of 4 bytes.
+   Value: 0x01000000 
+2 options:
+OPTION (1/2)
+   Option number (delta): 11 (11)
+   Name: URI_PATH
+   Value length: 11
+   Value: ".well-known"
+OPTION (2/2)
+   Option number (delta): 11 (0)
+   Name: URI_PATH
+   Value length: 5
+   Value: "edhoc"
+Payload of 806 bytes
+   Value: "\04\07Y\03 S\03\ffffffc3t\ffffffb9\ffffffa8{k\02\068\1a\ffffffaa\ffffffa8\ffffff8eS\ffffffc2\ffffffbd\ffffff993\ffffff8b\ffffffcc\ffffff96\05\ffffffa2\ffffffe4(\ffffffb2\ffffffd1\07\ffffffa8A+.\0cuh\ffffffa7_1k%+\ffffffe4P\ffffff8f\ffffff84\ffffffc5\ffffffb5\ffffff932\fffffff5Hxl\ffffff87\ffffff89yc\04\fffffff3\ffffffe1\ffffff8d\1euv{\0aOI;\ffffffc3\02\08,\fffffff3\fffffff3\ffffff9e\ffffffe3\ffffffc7j\ffffffa2\ffffffdb\ffffffb8!\ffffffc8 \ffffffb9\ffffffa6G\ffffffe7\ffffffd9-\ffffffa88\ffffffae\ffffffa6\ffffffb0\ffffffa69$s\ffffffe5\ffffffc7Z\ffffffa9\ffffffe2\14\ffffffe9\ffffff928}T\10Y6#\1b*D-\ffffffc1\ffffffa4\ffffffe0\ffffff8a}\ffffffd1\ffffffc1\02\ffffffa7T6&\ffffff8b\ffffff82\ffffffffap/\ffffffea\18\0c\ffffff84\ffffff9a\ffffffee\fffffff5\ffffff85\fffffff9\ffffffd8bk\00\ffffffa3\00\ffffff9c\ffffff9e\ffffffde\ffffff83n,\ffffffc1\7f\16W4%G\ffffffb3\ffffff96\ffffffd4~\0a\ffffffa6s\ffffff9a\ffffffd8\ffffffb6\ffffffb9EZ\ffffffbd\ffffffa1\ffffff81M\ffffffc1Q0zK\ffffffb5\05\ffffffca\ffffff9d\ffffffb2\ffffffc0\4c\ffffff94E\ffffffcb^\ffffffd5\ffffffa71\0b\17y\0a~\ffffffe9\fffffff5\ffffff85\ffffffc5T|.\ffffffac\0c6\0a\ffffffba\ffffffb2\1a\ffffffad\ffffffc7+wvQ\ffffff91)\fffffff6;\ffffff97g5\ffffffceL\03b\ffffffd8\ffffffc9\ffffffe1\ffffffc6\ffffffc5\ffffffd8\ffffffc8\ffffff8f\ffffffd8\ffffff8c\ffffff9e5\ffffff86%4x\ffffffceQP"O;d\ffffff85\fffffff3\ffffffb2\ffffffef\ffffffa8R\ffffffbe\ffffffbb\18\ffffff8a \ffffff92\ffffffaevh\ffffffda$D\ffffffaa\ffffffd3ADF^\ffffff9ce/g\ffffffb0gk\ffffffbc\ffffff93i\ffffff95\0d\ffffffa4hW\ffffff86\ffffffa9\0d\ffffffd4\ffffffc2W\fffffff3s\ffffffa7"9\ffffff99\ffffff90q\ffffffa4\059\01\13iN>\ffffffb6\13\ffffffce\ffffffe8\1cPE\18\ffffffd0\ffffff95/\ffffffb6y\0aU|\ffffffb8\ffffffa7\fffffff4|\12K|^\ffffffe6\1e\ffffffe5C'Xq+\0d\fffffff5\0f\7f\ffffff85\ffffff8c\ffffffb3k\ffffff80y\ffffffb5\ffffffacP\fffffff0E\ffffffea\ffffff85e\1a\ffffffe8_\ffffffec) QE\0dp\ffffff8a\ffffffbc\ffffffeff'W%*c5o\ffffffb6\fffffff6\1b\01\03|v6\ffffffaf\ffffffb0\ffffff98F\ffffffdd\ffffffac\ffffff92Jp\0d\ffffffba\fffffff8P \ffffffb1\ffffffa9\fffffff8\ffffff9aZ\0b\ffffffa4W\fffffff2Xu\fffffffe\ffffff9c\16f\ffffffcazP\ffffff86\ffffff9bn\ffffffe7\1d\ffffff85\ffffffd8Y\ffffffb4\15w\fffffff1\ffffffd0\ffffff95*\ffffffd8Y\ffffffbaV\ffffffcf\ffffff92\ffffffb6\ffffffc2\10A\ffffffb1g1l\ffffffdc\ffffffa2\ffffffc2(\1c\ffffffaf\ffffffa3\ffffff84\0e\ffffffb7U\ffffff9a\fffffff3\ffffff95qrG\ffffff96\06@h\ffffffcd\ffffffb9l\ffffff97Ee\ffffff97"$\ffffffafU\ffffffc7)\ffffff8bM\ffffffdf4\0c\fffffffc\ffffffbc\ffffff98\1e\ffffffe0\033*\ffffff93\ffffffc1\ffffffa7T\ffffffa6\ffffffa1\1e\ffffff85\wM\ffffffa5\ffffffa8G\15\ffffffcf\ffffffd7\ffffffba\1d\ffffffdc\ffffffba}i\ffffffc9\ffffff8b\ffffffae'\00\1a1\ffffffb1\189\ffffff86|F\0f\08\ffffffa6\ffffffa46\00>\ffffffec\07\ffffffa9\ffffffc2\ffffffb59\ffffffaa\0a<&\ffffff99-\ffffff8c\ffffffb2\ffffffb8gx\ffffffc3\fffffff3)\ffffffbf`\08y\06\ffffffa2\ffffff85\ffffffacEY_\ffffffa5#\ffffffa8'-\ffffffa7[B\ffffffb9\ffffff82\ffffff8a\ffffffbb\ffffffda\ffffff87\ffffffff\ffffff82%0\ffffffd9CE\ffffff9b\ffffff94\ffffffc8\07\07\ffffffff\053 \ffffffc109\fffffff7&\ffffff97\fffffff7\ffffffc6?V\ffffff9f\08e\ffffff84U\12\ffffff84j\ffffffdbW\1e\ffffffb1\ffffff8a.\ffffffb3X\0fJ\04\ffffff91\ffffffc9\ffffff9c*\13\ffffff84@\ffffffe5Y\ffffffbe;\19\ffffffce\ffffff81j\ffffffe31k\fffffff25\0cO\ffffffc3\ffffffaacd\1eI\ffffff9a\ffffff83\ffffff9d1{\ffffffe4T*\ffffffa7\ffffffb4\ffffffbf#7k\07`@\ffffffa5\ffffff8b\06\05\ffffff92&\ffffffaf\01\ffffffad\fffffffb\ffffffb7\ffffff86\0f\ffffffa9R\19\ffffff94b\\ffffffb1\ffffff9e\ffffff90\ffffffb5\ffffffaanYi\ffffffd1\1b|i\09\ffffff85\ffffffc1Q9\ffffffea\17\17\fffffff8\fffffff9\ffffff89\14\ffffffb9\ffffff87N{\ffffffadC\ffffffe8'd\fffffff5\ffffffc0\ffffff8a4\ffffff80*\ffffffea\ffffff87\ffffff85u\ffffff97\ffffff941\ffffff82t\07\0ag\ffffffec\ffffff80\ffffff8b\ffffff85g\fffffff7x\ffffffa1\15\ffffffb35\ffffffa5\ffffffa5\fffffff4\fffffff7\0csp\ffffff9b\ffffffff\ffffffd7\ffffffc2\18\ffffffbf\ffffffa9\ffffffd1)\1f\ffffffea\ffffffd1\ffffffddv\ffffffa4.\ffffffe0\ffffff8e\ffffffea\ffffffbb\1f+7"
+__________________
+CoAP message (size 806):
+	04 07 59 03 20 53 03 C3 74 B9 A8 7B 6B 02 06 38 
+	1A AA A8 8E 53 C2 BD 99 33 8B CC 96 05 A2 E4 28 
+	B2 D1 07 A8 41 2B 2E 0C 75 68 A7 5F 31 6B 25 2B 
+	E4 50 8F 84 C5 B5 93 32 F5 48 78 6C 87 89 79 63 
+	04 F3 E1 8D 1E 75 76 7B 0A 4F 49 3B C3 02 08 2C 
+	F3 F3 9E E3 C7 6A A2 DB B8 21 C8 20 B9 A6 47 E7 
+	D9 2D A8 38 AE A6 B0 A6 39 24 73 E5 C7 5A A9 E2 
+	14 E9 92 38 7D 54 10 59 36 23 1B 2A 44 2D C1 A4 
+	E0 8A 7D D1 C1 02 A7 54 36 26 8B 82 FF 61 70 2F 
+	EA 18 0C 84 9A EE F5 85 F9 D8 62 6B 00 A3 00 9C 
+	9E DE 83 6E 2C C1 7F 16 57 34 25 47 B3 96 D4 7E 
+	0A A6 73 9A D8 B6 B9 45 5A BD A1 81 4D C1 51 30 
+	7A 4B B5 05 CA 9D B2 C0 5C 34 63 94 45 CB 5E D5 
+	A7 31 0B 17 79 0A 7E E9 F5 85 C5 54 7C 2E AC 0C 
+	36 0A BA B2 1A AD C7 2B 77 76 51 91 29 F6 3B 97 
+	67 35 CE 4C 03 62 D8 C9 E1 C6 C5 D8 C8 8F D8 8C 
+	9E 35 86 25 34 78 CE 51 50 22 4F 3B 64 85 F3 B2 
+	EF A8 52 BE BB 18 8A 20 92 AE 76 68 DA 24 44 AA 
+	D3 41 44 46 5E 9C 65 2F 67 B0 67 6B BC 93 69 95 
+	0D A4 68 57 86 A9 0D D4 C2 57 F3 73 A7 22 39 99 
+	90 71 A4 05 39 01 13 69 4E 3E B6 13 CE E8 1C 50 
+	45 18 D0 95 2F B6 79 0A 55 7C B8 A7 F4 7C 12 4B 
+	7C 5E E6 1E E5 43 27 58 71 2B 0D F5 0F 7F 85 8C 
+	B3 6B 80 79 B5 AC 50 F0 45 EA 85 65 1A E8 5F EC 
+	29 20 51 45 0D 70 8A BC EF 66 27 57 25 2A 63 35 
+	6F B6 F6 1B 01 03 7C 76 36 AF B0 98 46 DD AC 92 
+	4A 70 0D BA F8 50 20 B1 A9 F8 9A 5A 0B A4 57 F2 
+	58 75 FE 9C 16 66 CA 7A 50 86 9B 6E E7 1D 85 D8 
+	59 B4 15 77 F1 D0 95 2A D8 59 BA 56 CF 92 B6 C2 
+	10 41 B1 67 31 6C DC A2 C2 28 1C AF A3 84 0E B7 
+	55 9A F3 95 71 72 47 96 06 40 68 CD B9 6C 97 45 
+	65 97 22 24 AF 55 C7 29 8B 4D DF 34 0C FC BC 98 
+	1E E0 03 33 2A 93 C1 A7 54 A6 A1 1E 85 5C 77 4D 
+	A5 A8 47 15 CF D7 BA 1D DC BA 7D 69 C9 8B AE 27 
+	00 1A 31 B1 18 39 86 7C 46 0F 08 A6 A4 36 00 3E 
+	EC 07 A9 C2 B5 39 AA 0A 3C 26 99 2D 8C B2 B8 67 
+	78 C3 F3 29 BF 60 08 79 06 A2 85 AC 45 59 5F A5 
+	23 A8 27 2D A7 5B 42 B9 82 8A BB DA 87 FF 82 25 
+	30 D9 43 45 9B 94 C8 07 07 FF 05 33 20 C1 30 39 
+	F7 26 97 F7 C6 3F 56 9F 08 65 84 55 12 84 6A DB 
+	57 1E B1 8A 2E B3 58 0F 4A 04 91 C9 9C 2A 13 84 
+	40 E5 59 BE 3B 19 CE 81 6A E3 31 6B F2 35 0C 4F 
+	C3 AA 63 64 1E 49 9A 83 9D 31 7B E4 54 2A A7 B4 
+	BF 23 37 6B 07 60 40 A5 8B 06 05 92 26 AF 01 AD 
+	FB B7 86 0F A9 52 19 94 62 5C B1 9E 90 B5 AA 6E 
+	59 69 D1 1B 7C 69 09 85 C1 51 39 EA 17 17 F8 F9 
+	89 14 B9 87 4E 7B AD 43 E8 27 64 F5 C0 8A 34 80 
+	2A EA 87 85 75 97 94 31 82 74 07 0A 67 EC 80 8B 
+	85 67 F7 78 A1 15 B3 35 A5 A5 F4 F7 0C 73 70 9B 
+	FF D7 C2 18 BF A9 D1 29 1F EA D1 DD 76 A4 2E E0 
+	8E EA BB 1F 2B 37 
+message_1 (CBOR Sequence) (size 806):
+	04 07 59 03 20 53 03 C3 74 B9 A8 7B 6B 02 06 38 
+	1A AA A8 8E 53 C2 BD 99 33 8B CC 96 05 A2 E4 28 
+	B2 D1 07 A8 41 2B 2E 0C 75 68 A7 5F 31 6B 25 2B 
+	E4 50 8F 84 C5 B5 93 32 F5 48 78 6C 87 89 79 63 
+	04 F3 E1 8D 1E 75 76 7B 0A 4F 49 3B C3 02 08 2C 
+	F3 F3 9E E3 C7 6A A2 DB B8 21 C8 20 B9 A6 47 E7 
+	D9 2D A8 38 AE A6 B0 A6 39 24 73 E5 C7 5A A9 E2 
+	14 E9 92 38 7D 54 10 59 36 23 1B 2A 44 2D C1 A4 
+	E0 8A 7D D1 C1 02 A7 54 36 26 8B 82 FF 61 70 2F 
+	EA 18 0C 84 9A EE F5 85 F9 D8 62 6B 00 A3 00 9C 
+	9E DE 83 6E 2C C1 7F 16 57 34 25 47 B3 96 D4 7E 
+	0A A6 73 9A D8 B6 B9 45 5A BD A1 81 4D C1 51 30 
+	7A 4B B5 05 CA 9D B2 C0 5C 34 63 94 45 CB 5E D5 
+	A7 31 0B 17 79 0A 7E E9 F5 85 C5 54 7C 2E AC 0C 
+	36 0A BA B2 1A AD C7 2B 77 76 51 91 29 F6 3B 97 
+	67 35 CE 4C 03 62 D8 C9 E1 C6 C5 D8 C8 8F D8 8C 
+	9E 35 86 25 34 78 CE 51 50 22 4F 3B 64 85 F3 B2 
+	EF A8 52 BE BB 18 8A 20 92 AE 76 68 DA 24 44 AA 
+	D3 41 44 46 5E 9C 65 2F 67 B0 67 6B BC 93 69 95 
+	0D A4 68 57 86 A9 0D D4 C2 57 F3 73 A7 22 39 99 
+	90 71 A4 05 39 01 13 69 4E 3E B6 13 CE E8 1C 50 
+	45 18 D0 95 2F B6 79 0A 55 7C B8 A7 F4 7C 12 4B 
+	7C 5E E6 1E E5 43 27 58 71 2B 0D F5 0F 7F 85 8C 
+	B3 6B 80 79 B5 AC 50 F0 45 EA 85 65 1A E8 5F EC 
+	29 20 51 45 0D 70 8A BC EF 66 27 57 25 2A 63 35 
+	6F B6 F6 1B 01 03 7C 76 36 AF B0 98 46 DD AC 92 
+	4A 70 0D BA F8 50 20 B1 A9 F8 9A 5A 0B A4 57 F2 
+	58 75 FE 9C 16 66 CA 7A 50 86 9B 6E E7 1D 85 D8 
+	59 B4 15 77 F1 D0 95 2A D8 59 BA 56 CF 92 B6 C2 
+	10 41 B1 67 31 6C DC A2 C2 28 1C AF A3 84 0E B7 
+	55 9A F3 95 71 72 47 96 06 40 68 CD B9 6C 97 45 
+	65 97 22 24 AF 55 C7 29 8B 4D DF 34 0C FC BC 98 
+	1E E0 03 33 2A 93 C1 A7 54 A6 A1 1E 85 5C 77 4D 
+	A5 A8 47 15 CF D7 BA 1D DC BA 7D 69 C9 8B AE 27 
+	00 1A 31 B1 18 39 86 7C 46 0F 08 A6 A4 36 00 3E 
+	EC 07 A9 C2 B5 39 AA 0A 3C 26 99 2D 8C B2 B8 67 
+	78 C3 F3 29 BF 60 08 79 06 A2 85 AC 45 59 5F A5 
+	23 A8 27 2D A7 5B 42 B9 82 8A BB DA 87 FF 82 25 
+	30 D9 43 45 9B 94 C8 07 07 FF 05 33 20 C1 30 39 
+	F7 26 97 F7 C6 3F 56 9F 08 65 84 55 12 84 6A DB 
+	57 1E B1 8A 2E B3 58 0F 4A 04 91 C9 9C 2A 13 84 
+	40 E5 59 BE 3B 19 CE 81 6A E3 31 6B F2 35 0C 4F 
+	C3 AA 63 64 1E 49 9A 83 9D 31 7B E4 54 2A A7 B4 
+	BF 23 37 6B 07 60 40 A5 8B 06 05 92 26 AF 01 AD 
+	FB B7 86 0F A9 52 19 94 62 5C B1 9E 90 B5 AA 6E 
+	59 69 D1 1B 7C 69 09 85 C1 51 39 EA 17 17 F8 F9 
+	89 14 B9 87 4E 7B AD 43 E8 27 64 F5 C0 8A 34 80 
+	2A EA 87 85 75 97 94 31 82 74 07 0A 67 EC 80 8B 
+	85 67 F7 78 A1 15 B3 35 A5 A5 F4 F7 0C 73 70 9B 
+	FF D7 C2 18 BF A9 D1 29 1F EA D1 DD 76 A4 2E E0 
+	8E EA BB 1F 2B 37 
+msg1  (size 806):
+	04 07 59 03 20 53 03 C3 74 B9 A8 7B 6B 02 06 38 
+	1A AA A8 8E 53 C2 BD 99 33 8B CC 96 05 A2 E4 28 
+	B2 D1 07 A8 41 2B 2E 0C 75 68 A7 5F 31 6B 25 2B 
+	E4 50 8F 84 C5 B5 93 32 F5 48 78 6C 87 89 79 63 
+	04 F3 E1 8D 1E 75 76 7B 0A 4F 49 3B C3 02 08 2C 
+	F3 F3 9E E3 C7 6A A2 DB B8 21 C8 20 B9 A6 47 E7 
+	D9 2D A8 38 AE A6 B0 A6 39 24 73 E5 C7 5A A9 E2 
+	14 E9 92 38 7D 54 10 59 36 23 1B 2A 44 2D C1 A4 
+	E0 8A 7D D1 C1 02 A7 54 36 26 8B 82 FF 61 70 2F 
+	EA 18 0C 84 9A EE F5 85 F9 D8 62 6B 00 A3 00 9C 
+	9E DE 83 6E 2C C1 7F 16 57 34 25 47 B3 96 D4 7E 
+	0A A6 73 9A D8 B6 B9 45 5A BD A1 81 4D C1 51 30 
+	7A 4B B5 05 CA 9D B2 C0 5C 34 63 94 45 CB 5E D5 
+	A7 31 0B 17 79 0A 7E E9 F5 85 C5 54 7C 2E AC 0C 
+	36 0A BA B2 1A AD C7 2B 77 76 51 91 29 F6 3B 97 
+	67 35 CE 4C 03 62 D8 C9 E1 C6 C5 D8 C8 8F D8 8C 
+	9E 35 86 25 34 78 CE 51 50 22 4F 3B 64 85 F3 B2 
+	EF A8 52 BE BB 18 8A 20 92 AE 76 68 DA 24 44 AA 
+	D3 41 44 46 5E 9C 65 2F 67 B0 67 6B BC 93 69 95 
+	0D A4 68 57 86 A9 0D D4 C2 57 F3 73 A7 22 39 99 
+	90 71 A4 05 39 01 13 69 4E 3E B6 13 CE E8 1C 50 
+	45 18 D0 95 2F B6 79 0A 55 7C B8 A7 F4 7C 12 4B 
+	7C 5E E6 1E E5 43 27 58 71 2B 0D F5 0F 7F 85 8C 
+	B3 6B 80 79 B5 AC 50 F0 45 EA 85 65 1A E8 5F EC 
+	29 20 51 45 0D 70 8A BC EF 66 27 57 25 2A 63 35 
+	6F B6 F6 1B 01 03 7C 76 36 AF B0 98 46 DD AC 92 
+	4A 70 0D BA F8 50 20 B1 A9 F8 9A 5A 0B A4 57 F2 
+	58 75 FE 9C 16 66 CA 7A 50 86 9B 6E E7 1D 85 D8 
+	59 B4 15 77 F1 D0 95 2A D8 59 BA 56 CF 92 B6 C2 
+	10 41 B1 67 31 6C DC A2 C2 28 1C AF A3 84 0E B7 
+	55 9A F3 95 71 72 47 96 06 40 68 CD B9 6C 97 45 
+	65 97 22 24 AF 55 C7 29 8B 4D DF 34 0C FC BC 98 
+	1E E0 03 33 2A 93 C1 A7 54 A6 A1 1E 85 5C 77 4D 
+	A5 A8 47 15 CF D7 BA 1D DC BA 7D 69 C9 8B AE 27 
+	00 1A 31 B1 18 39 86 7C 46 0F 08 A6 A4 36 00 3E 
+	EC 07 A9 C2 B5 39 AA 0A 3C 26 99 2D 8C B2 B8 67 
+	78 C3 F3 29 BF 60 08 79 06 A2 85 AC 45 59 5F A5 
+	23 A8 27 2D A7 5B 42 B9 82 8A BB DA 87 FF 82 25 
+	30 D9 43 45 9B 94 C8 07 07 FF 05 33 20 C1 30 39 
+	F7 26 97 F7 C6 3F 56 9F 08 65 84 55 12 84 6A DB 
+	57 1E B1 8A 2E B3 58 0F 4A 04 91 C9 9C 2A 13 84 
+	40 E5 59 BE 3B 19 CE 81 6A E3 31 6B F2 35 0C 4F 
+	C3 AA 63 64 1E 49 9A 83 9D 31 7B E4 54 2A A7 B4 
+	BF 23 37 6B 07 60 40 A5 8B 06 05 92 26 AF 01 AD 
+	FB B7 86 0F A9 52 19 94 62 5C B1 9E 90 B5 AA 6E 
+	59 69 D1 1B 7C 69 09 85 C1 51 39 EA 17 17 F8 F9 
+	89 14 B9 87 4E 7B AD 43 E8 27 64 F5 C0 8A 34 80 
+	2A EA 87 85 75 97 94 31 82 74 07 0A 67 EC 80 8B 
+	85 67 F7 78 A1 15 B3 35 A5 A5 F4 F7 0C 73 70 9B 
+	FF D7 C2 18 BF A9 D1 29 1F EA D1 DD 76 A4 2E E0 
+	8E EA BB 1F 2B 37 
+[31mRuntime error: code 4 at src/edhoc/responder.c:191
+
+[0m[31mRuntime error: code 4 at src/edhoc/responder.c:397
+
+[0m[31mRuntime error: code 4 at src/main.cpp:350
+
+[0m

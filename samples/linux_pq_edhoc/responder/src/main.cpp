@@ -27,8 +27,10 @@ extern "C" {
 #include "cantcoap.h"
 
 #define USE_IPV4
-
-#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#if defined(KEM_AUTH) && defined(KYBER_LEVEL_1)
+uint8_t TEST_VEC_NUM = 18;
+#define PQ_PROPOSAL_1
+#elif(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
 #define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
@@ -293,6 +295,31 @@ int main()
 	c_r.g_y.len = G_Y_ENC.len;
 	c_r.y.ptr = NULL;
 	c_r.y.len = 0;
+		#ifdef KEM_AUTH
+	PRINT_ARRAY("static PQ Key public", c_r.pk_r.ptr,
+		    c_r.pk_r.len);
+	PRINT_ARRAY("static PQ Key private", c_r.sk_r.ptr,
+		    c_r.sk_r.len);	
+	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh), get_kem_cc_len(suit_in.edhoc_ecdh));			
+	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
+	struct byte_array cc_kem_b;
+	struct byte_array ss_kem_b;
+	cc_kem_b.len = get_kem_cc_len(suit_in.edhoc_ecdh);
+	cc_kem_b.ptr = CC_KEM.ptr;
+	ss_kem_b.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b.ptr = SS_KEM.ptr;
+	struct byte_array ss_kem_b_2;
+	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b_2.ptr = SS_KEM.ptr;
+	TRY(kem_encapsulate(suit_in.edhoc_ecdh,&c_r.pk_r,&cc_kem_b,&ss_kem_b));
+	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.sk_r, &ss_kem_b_2));
+	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr,
+		    ss_kem_b.len);
+	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr,
+		    ss_kem_b_2.len);
+	#endif
+
 #endif
 
 	while (1) {
@@ -309,8 +336,8 @@ int main()
         c_r.g_y.len = G_Y_random.len;
 		c_r.y.len = Y_random.len;
 		TRY(ephemeral_dh_key_gen(P256, seed, &Y_random, &G_Y_random));
-	
-#endif
+
+	#endif
 
 	PRINT_ARRAY("public ephemeral DH key", c_r.g_y.ptr,
 			    c_r.g_y.len);
