@@ -39,7 +39,7 @@ static bool encode_message_3_kem(
 
 int cbor_encode_message_3_kem(
 		uint8_t *payload, size_t payload_len,
-		const struct zcbor_string *input,
+		const struct message_3_kem *input,
 		size_t *payload_len_out)
 {
 	zcbor_state_t states[2];
