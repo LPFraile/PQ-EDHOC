@@ -24,7 +24,7 @@ extern "C" {
 
 int cbor_encode_message_1_kem(
 		uint8_t *payload, size_t payload_len,
-		const struct message_1 *input,
+		const struct message_1_kem *input,
 		size_t *payload_len_out);
 
 

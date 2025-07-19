@@ -34,9 +34,17 @@
 #include "edhoc/bstr_encode_decode.h"
 #include "edhoc/int_encode_decode.h"
 
+#ifdef KEM-auth
+#include "cbor/edhoc_encode_message_1_kem.h"
+#include "cbor/edhoc_encode_message_2_kem.h"
+#include "cbor/edhoc_encode_message_3_kem.h"
+#include "cbor/edhoc_encode_message_4_kem.h"
+#include "cbor/edhoc_encode_message_5_kem.h"
+#else
 #include "cbor/edhoc_encode_message_1.h"
 #include "cbor/edhoc_decode_message_2.h"
 #include "cbor/edhoc_encode_message_3.h"
+#endif
 
 /** 
  * @brief   			Parses message 2.

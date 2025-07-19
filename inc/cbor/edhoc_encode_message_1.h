@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 
-int cbor_encode_message_1(
+int cbor_encode_message_1_kem(
 		uint8_t *payload, size_t payload_len,
 		const struct message_1 *input,
 		size_t *payload_len_out);

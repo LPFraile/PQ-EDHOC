@@ -25,7 +25,7 @@ extern "C" {
  */
 #define DEFAULT_MAX_QTY 3
 
-struct message_1 {
+struct message_1_kem {
 	int32_t message_1_METHOD;
 	union {
 		struct {
