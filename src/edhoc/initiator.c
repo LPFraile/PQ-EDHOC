@@ -34,7 +34,7 @@
 #include "edhoc/bstr_encode_decode.h"
 #include "edhoc/int_encode_decode.h"
 
-#ifdef KEM-auth
+#ifdef KEM_AUTH
 #include "cbor/edhoc_encode_message_1_kem.h"
 #include "cbor/edhoc_encode_message_2_kem.h"
 #include "cbor/edhoc_encode_message_3_kem.h"
