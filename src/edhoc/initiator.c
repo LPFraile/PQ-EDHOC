@@ -232,7 +232,13 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 
 	TRY(retrieve_cred(static_dh_r, cred_r_array, &id_cred_r, &cred_r, &pk,
 			  &g_r));
+    PRINT_ARRAY("static pk responder", pk.ptr,pk.len);
 
+	#ifdef KEM_AUTH
+	BYTE_ARRAY_NEW(cc_kem, get_kem_cc_len(rc->suite), get_kem_cc_len(rc->suite));
+	BYTE_ARRAY_NEW(ss_kem, get_kem_ss_len(rc->suite), get_kem_ss_len(rc->suite));
+	TRY(kem_encapsulate(rc->suite,&pk,&cc_kem,&ss_kem));
+	#endif
 	/*derive prk_3e2m*/
 	TRY(prk_derive(static_dh_r, rc->suite, SALT_3e2m, &th2, &PRK_2e, &g_r,
 		       &c->x, PRK_3e2m->ptr));

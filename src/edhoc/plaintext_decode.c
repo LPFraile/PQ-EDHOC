@@ -83,10 +83,14 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 {
 	size_t decode_len = 0;
 	struct plaintext p;
-
+    
+	#ifndef KEM_AUTH
 	TRY_EXPECT(cbor_decode_plaintext(ptxt->ptr, ptxt->len, &p, &decode_len),
 		   0);
-
+    #else
+	TRY_EXPECT(cbor_decode_plaintext_KEM(ptxt->ptr, ptxt->len, &p, &decode_len),
+		   0);
+	#endif
 	/*C_R is present only in plaintext 2*/
 	if (c_r != NULL && p.plaintext_C_R_present == true) {
 		if (p.plaintext_C_R.plaintext_C_R_choice ==
@@ -145,11 +149,12 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 			TRY(id_cred_x_encode(kid, 0, &_kid, 1, id_cred_x));
 		}
 	}
+	#ifndef KEM_AUTH
 	TRY(_memcpy_s(sign_or_mac->ptr, sign_or_mac->len,
 		      p.plaintext_SGN_or_MAC_x.value,
 		      (uint32_t)p.plaintext_SGN_or_MAC_x.len));
 	sign_or_mac->len = (uint32_t)p.plaintext_SGN_or_MAC_x.len;
-
+    #endif
 	if (p.plaintext_AD_x_present == true) {
 		TRY(_memcpy_s(ad->ptr, ad->len, p.plaintext_AD_x.value,
 			      (uint32_t)p.plaintext_AD_x.len));

@@ -267,6 +267,28 @@ static bool decode_plaintext(
 	return tmp_result;
 }
 
+static bool decode_plaintext_KEM(
+		zcbor_state_t *state, struct plaintext *result)
+{
+	zcbor_log("%s\r\n", __func__);
+	bool int_res;
+
+	bool tmp_result = (((zcbor_present_decode(&((*result).plaintext_C_R_present), (zcbor_decoder_t *)decode_repeated_plaintext_C_R, state, (&(*result).plaintext_C_R))
+	&& ((zcbor_union_start_code(state) && (int_res = ((((decode_map(state, (&(*result).plaintext_ID_CRED_x_map_m)))) && (((*result).plaintext_ID_CRED_x_choice = plaintext_ID_CRED_x_map_m_c), true))
+	|| (zcbor_union_elem_code(state) && (((zcbor_bstr_decode(state, (&(*result).plaintext_ID_CRED_x_bstr)))) && (((*result).plaintext_ID_CRED_x_choice = plaintext_ID_CRED_x_bstr_c), true)))
+	|| (((zcbor_int32_decode(state, (&(*result).plaintext_ID_CRED_x_int)))) && (((*result).plaintext_ID_CRED_x_choice = plaintext_ID_CRED_x_int_c), true))), zcbor_union_end_code(state), int_res)))
+	&& ((*result).plaintext_AD_x_present = ((zcbor_bstr_decode(state, (&(*result).plaintext_AD_x)))), 1))));
+
+	if (!tmp_result) {
+		zcbor_trace_file(state);
+		zcbor_log("%s error: %s\r\n", __func__, zcbor_error_str(zcbor_peek_error(state)));
+	} else {
+		zcbor_log("%s success\r\n", __func__);
+	}
+
+	return tmp_result;
+}
+
 
 
 int cbor_decode_plaintext(
@@ -278,4 +300,14 @@ int cbor_decode_plaintext(
 
 	return zcbor_entry_function(payload, payload_len, (void *)result, payload_len_out, states,
 		(zcbor_decoder_t *)decode_plaintext, sizeof(states) / sizeof(zcbor_state_t), 4);
+}
+int cbor_decode_plaintext_KEM(
+		const uint8_t *payload, size_t payload_len,
+		struct plaintext *result,
+		size_t *payload_len_out)
+{
+	zcbor_state_t states[6];
+
+	return zcbor_entry_function(payload, payload_len, (void *)result, payload_len_out, states,
+		(zcbor_decoder_t *)decode_plaintext_KEM, sizeof(states) / sizeof(zcbor_state_t), 4);
 }
