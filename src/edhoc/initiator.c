@@ -36,9 +36,9 @@
 
 #ifdef KEM_AUTH
 #include "cbor/edhoc_encode_message_1_kem.h"
-#include "cbor/edhoc_encode_message_2_kem.h"
+#include "cbor/edhoc_decode_message_2_kem.h"
 #include "cbor/edhoc_encode_message_3_kem.h"
-#include "cbor/edhoc_encode_message_4_kem.h"
+#include "cbor/edhoc_decode_message_4_kem.h"
 #include "cbor/edhoc_encode_message_5_kem.h"
 #else
 #include "cbor/edhoc_encode_message_1.h"
