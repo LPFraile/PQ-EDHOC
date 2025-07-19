@@ -88,6 +88,7 @@ static enum err key_gen(enum ciphertext ctxt, enum hash_alg edhoc_hash,
 			struct byte_array *prk, struct byte_array *th,
 			struct byte_array *key, struct byte_array *iv)
 {
+	PRINT_MSG("Key gen\n");
 	switch (ctxt) {
 	case CIPHERTEXT2:
 		TRY(edhoc_kdf(edhoc_hash, prk, KEYSTREAM_2, th, key));
@@ -111,6 +112,11 @@ static enum err key_gen(enum ciphertext ctxt, enum hash_alg edhoc_hash,
 		TRY(edhoc_kdf(edhoc_hash, prk, IV_4, th, iv));
 		PRINT_ARRAY("IV_4", iv->ptr, iv->len);
 		break;
+	
+	case CIPHERTEXT2_KEM:
+		TRY(edhoc_kdf(edhoc_hash, prk, KEYSTREAM_2, th, key));
+		PRINT_ARRAY("KEYSTREAM_2", key->ptr, key->len);
+		break;
 	}
 	return ok;
 }
@@ -123,7 +129,7 @@ enum err ciphertext_decrypt_split(
 {
 	/*generate key and iv (no iv in for ciphertext 2)*/
 	uint32_t key_len;
-	if (ctxt == CIPHERTEXT2) {
+	if (ctxt == CIPHERTEXT2 || ctxt == CIPHERTEXT2_KEM ) {
 		key_len = ciphertext->len;
 	} else {
 		key_len = get_aead_key_len(suite->edhoc_aead);
@@ -142,7 +148,7 @@ enum err ciphertext_decrypt_split(
 		    associated_data.len);
 
 	uint32_t tag_len = get_aead_mac_len(suite->edhoc_aead);
-	if (ctxt != CIPHERTEXT2) {
+	if (ctxt != CIPHERTEXT2 || ctxt == CIPHERTEXT2_KEM ) {
 		if (plaintext->len < tag_len) {
 			return error_message_received;
 		}
@@ -166,7 +172,12 @@ enum err ciphertext_decrypt_split(
 			TRY(plaintext_split(plaintext, c_r, id_cred, sig_or_mac,
 					    ead));
 			PRINT_ARRAY("C_R (raw)", c_r->ptr, c_r->len);
-		} else {
+		}else if(ctxt == CIPHERTEXT2_KEM) {
+		    TRY(plaintext_split(plaintext, c_r, id_cred, NULL,
+					    ead));
+			PRINT_ARRAY("C_R (raw)", c_r->ptr, c_r->len);
+		}	
+		else {
 			TRY(plaintext_split(plaintext, NULL, id_cred,
 					    sig_or_mac, ead));
 		}
@@ -188,6 +199,8 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 			struct byte_array *th, struct byte_array *ciphertext,
 			struct byte_array *plaintext)
 {
+	PRINT_MSG("ciphertext gen\n"); 
+	#ifndef KEM_AUTH
 	BYTE_ARRAY_NEW(signature_or_mac_enc, AS_BSTR_SIZE(SIG_OR_MAC_SIZE),
 		       AS_BSTR_SIZE(signature_or_mac->len));
 
@@ -227,21 +240,54 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 	} else {
 		plaintext->len = 0;
 	}
+    #else
+	uint32_t ptxt_buf_capacity = plaintext->len;
+	plaintext->len = 0;
+	if (ctxt == CIPHERTEXT2_KEM) {
+		if (c_x_is_encoded_int(c_r)) {
+			TRY(byte_array_append(plaintext, c_r,
+					      ptxt_buf_capacity));
+		} else {
+			BYTE_ARRAY_NEW(c_r_enc, AS_BSTR_SIZE(C_I_SIZE),
+				       AS_BSTR_SIZE(c_r->len));
+			TRY(encode_bstr(c_r, &c_r_enc));
+			TRY(byte_array_append(plaintext, &c_r_enc,
+					      ptxt_buf_capacity));
+		}
+		BYTE_ARRAY_NEW(kid, KID_SIZE, KID_SIZE);
+		TRY(id_cred2kid(id_cred, &kid));
+
+		PRINT_ARRAY("kid", kid.ptr, kid.len);
+
+		if (kid.len != 0) {
+			/*id_cred_x is a KID*/
+			TRY(byte_array_append(plaintext, &kid,
+					      ptxt_buf_capacity));
+		} else {
+			/*id_cred_x is NOT a KID*/
+			TRY(byte_array_append(plaintext, id_cred,
+					      ptxt_buf_capacity));
+		}
+	}
+	#endif
+
+
+
 	if (ead->len > 0) {
 		TRY(byte_array_append(plaintext, ead, ptxt_buf_capacity));
 	}
 
 	/*generate key and iv (no iv in for ciphertext 2)*/
 	uint32_t key_len;
-	if (ctxt == CIPHERTEXT2) {
+	if (ctxt == CIPHERTEXT2 || ctxt == CIPHERTEXT2_KEM) {
 		key_len = plaintext->len;
 	} else {
 		key_len = get_aead_key_len(suite->edhoc_aead);
 	}
-
+    PRINTF("key len %d\n",key_len);
 	BYTE_ARRAY_NEW(key, CIPHERTEXT2_SIZE, key_len);
 	BYTE_ARRAY_NEW(iv, AEAD_IV_SIZE, get_aead_iv_len(suite->edhoc_aead));
-
+    PRINT_MSG("before Key gen\n");
 	TRY(key_gen(ctxt, suite->edhoc_hash, prk, th, &key, &iv));
 
 	/*encrypt*/

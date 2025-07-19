@@ -23350,7 +23350,7 @@ static const uint8_t test_vector_17_oscore_salt_key_update_raw[] = {
 /***************** test_vector_18 (PQ proposal 1) ************/
 /*CIPHER SUIT 7 (KYBER_LEVEL_1, FALCON_LEVEL1)  CRED - x5t*/
 static const uint8_t test_vector_18_method[] = {
-	0x00};
+	0x04};
 static const uint8_t test_vector_18_SUITES_I[] = {
 	SUITE_7};
 static const uint8_t test_vector_18_SUITES_R[] = {

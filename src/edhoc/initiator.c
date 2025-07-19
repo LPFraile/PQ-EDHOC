@@ -205,18 +205,26 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	BYTE_ARRAY_NEW(PRK_2e, PRK_SIZE, PRK_SIZE);
 	TRY(hkdf_extract(rc->suite.edhoc_hash, &th2, &g_xy, PRK_2e.ptr));
 	PRINT_ARRAY("PRK_2e", PRK_2e.ptr, PRK_2e.len);
-
+    
+	#ifndef MAC_AUTH
 	BYTE_ARRAY_NEW(sign_or_mac, SIG_OR_MAC_SIZE, SIG_OR_MAC_SIZE);
+	#endif
 	BYTE_ARRAY_NEW(id_cred_r, ID_CRED_R_SIZE, ID_CRED_R_SIZE);
 
 	plaintext.len = ciphertext.len;
 	//PRINT_MSG("Arrive here1");
 	TRY(check_buffer_size(PLAINTEXT2_SIZE, plaintext.len));
     //PRINT_MSG("Arrive here2"); 
+	#ifndef KEM_AUTH
 	TRY(ciphertext_decrypt_split(CIPHERTEXT2, &rc->suite, c_r, &id_cred_r,
 				     &sign_or_mac, &rc->ead, &PRK_2e, &th2,
 				     &ciphertext, &plaintext));
-    //PRINT_MSG("Arrive here3");
+    #else
+	TRY(ciphertext_decrypt_split(CIPHERTEXT2_KEM, &rc->suite, c_r, &id_cred_r,
+				     NULL, &rc->ead, &PRK_2e, &th2,
+				     &ciphertext, &plaintext));
+	#endif
+	//PRINT_MSG("Arrive here3");
 	/*check the authenticity of the responder*/
 	BYTE_ARRAY_NEW(cred_r, CRED_R_SIZE, CRED_R_SIZE);
 	BYTE_ARRAY_NEW(pk, PK_SIZE, PK_SIZE);

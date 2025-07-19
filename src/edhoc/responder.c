@@ -73,12 +73,15 @@ msg1_parse(struct byte_array *msg1, enum method_type *method,
     PRINT_ARRAY("msg1 ", msg1->ptr, msg1->len);
 	TRY_EXPECT(cbor_decode_message_1(msg1->ptr, msg1->len, &m, &decode_len),
 		   0);
-
+	PRINT_MSG("decoded msg1\n");
 	/*METHOD*/
-	if ((m.message_1_METHOD > INITIATOR_SDHK_RESPONDER_SDHK) ||
+	if ((m.message_1_METHOD > INITIATOR_KEM_RESPONDER_KEM) ||
 	    (m.message_1_METHOD < INITIATOR_SK_RESPONDER_SK)) {
+		PRINT_MSG("wrong parameters\n");
 		return wrong_parameter;
+
 	}
+
 	*method = (enum method_type)m.message_1_METHOD;
 	PRINTF("msg1 METHOD: %d\n", (int)*method);
 
@@ -203,7 +206,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 
 	bool static_dh_r;
 	authentication_type_get(method, &rc->static_dh_i, &static_dh_r);
-
+    PRINTF("method: %d", method);
 	/******************* create and send message 2*************************/
 	
 	BYTE_ARRAY_NEW(g_xy, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
@@ -243,11 +246,12 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	TRY(hkdf_extract(rc->suite.edhoc_hash, &th2, &g_xy, PRK_2e.ptr));
 	PRINT_ARRAY("PRK_2e", PRK_2e.ptr, PRK_2e.len);
 
+    #ifndef KEM_AUTH
 	/*derive prk_3e2m*/
 	TRY(prk_derive(static_dh_r, rc->suite, SALT_3e2m, &th2, &PRK_2e, &g_x,
 		       &c->r, rc->prk_3e2m.ptr));
 	PRINT_ARRAY("prk_3e2m", rc->prk_3e2m.ptr, rc->prk_3e2m.len);
-
+    
 	/*compute signature_or_MAC_2*/
 	PRINTF("Signature len %d - %d\n", SIGNATURE_SIZE, get_signature_len(rc->suite.edhoc_sign));
     if(get_signature_len(rc->suite.edhoc_sign) > SIGNATURE_SIZE){
@@ -260,8 +264,8 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 			     &c->pk_r, &rc->prk_3e2m, &c->c_r, &th2,
 			     &c->id_cred_r, &c->cred_r, &c->ead_2, MAC_2,
 			     &sign_or_mac_2));
-
 	/*compute ciphertext_2*/
+
 	BYTE_ARRAY_NEW(plaintext_2, PLAINTEXT2_SIZE,
 		       AS_BSTR_SIZE(c->c_r.len) + c->id_cred_r.len +
 			       AS_BSTR_SIZE(sign_or_mac_2.len) + c->ead_2.len);
@@ -270,7 +274,16 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	TRY(ciphertext_gen(CIPHERTEXT2, &rc->suite, &c->c_r, &c->id_cred_r,
 			   &sign_or_mac_2, &c->ead_2, &PRK_2e, &th2,
 			   &ciphertext_2, &plaintext_2));
+    #else
+	BYTE_ARRAY_NEW(plaintext_2, PLAINTEXT2_SIZE,
+		       AS_BSTR_SIZE(c->c_r.len) + c->id_cred_r.len + c->ead_2.len);
+	BYTE_ARRAY_NEW(ciphertext_2, CIPHERTEXT2_SIZE, plaintext_2.len);
 
+
+	TRY(ciphertext_gen(CIPHERTEXT2_KEM, &rc->suite, &c->c_r, &c->id_cred_r,
+			   NULL, &c->ead_2, &PRK_2e, &th2,
+			   &ciphertext_2, &plaintext_2));
+	#endif 
 	/* Clear the message buffer. */
 	memset(rc->msg.ptr, 0, rc->msg.len);
 	rc->msg.len = sizeof(rc->msg_buf);

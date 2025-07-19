@@ -11,7 +11,7 @@
 
 #ifndef CIPHERTEXT_H
 #define CIPHERTEXT_H
-enum ciphertext { CIPHERTEXT2, CIPHERTEXT3, CIPHERTEXT4 };
+enum ciphertext { CIPHERTEXT2, CIPHERTEXT3, CIPHERTEXT4, CIPHERTEXT2_KEM, CIPHERTEXT3_KEM, CIPHERTEXT4_KEM };
 
 /**
  * @brief 			Generates a ciphertext.
