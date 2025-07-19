@@ -502,6 +502,13 @@ int main()
 
 	PRINTF("public ephemeral PQ Key size: %d\n",c_i.g_x.len);
 	PRINTF("secret ephemeral PQ Key size: %d\n",c_i.x.len);
+	//PRINTF("public ephemeral PQ Key: %d\n",c_i.g_x.len);
+	//PRINTF("secret ephemeral PQ Key: %d\n",c_i.x.len);
+	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr,
+		    c_i.g_x.len);
+	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr,
+		    c_i.x.len);		
+
 	PRINT_MSG("-------------------------------------------------------\n");
 	//PRINTF("MAX MSG SIZE: %d\n",edhoc_get_max_msg_size());
 

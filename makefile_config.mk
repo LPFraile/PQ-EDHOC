@@ -82,19 +82,24 @@ FEATURES += -DC_R_SIZE=1
 FEATURES += -DSUITES_I_SIZE=1 
 
 ################################################################################
+# Select for use KEM-based EDHOC
+FEATURES += -DKEM_AUTH
+
+
+################################################################################
 # Select for use EDHOC DH algorithm
-FEATURES += -DDH
+#FEATURES += -DDH
 
 ################################################################################
 # Select the PQ KEM algorithm to be used, 
-#FEATURES += -DKYBER_LEVEL_1
+FEATURES += -DKYBER_LEVEL_1
 #FEATURES += -DKYBER_LEVEL_3
 #FEATURES += -DHQC_LEVEL_1 
 #FEATURES += -DBIKE_LEVEL_1
 
 ################################################################################
 # Select the PQ Signature algorithm to be used
-#FEATURES += -DFALCON_LEVEL_1
+FEATURES += -DFALCON_LEVEL_1
 
 #FEATURES += -DDILITHIUM_LEVEL_2
 #FEATURES += -DHAWK_LEVEL_1
@@ -197,7 +202,7 @@ CRYPTO_ENGINE += -DCOMPACT25519
 #CRYPTO_ENGINE += -DMBEDTLS
 ################################################################
 # Enable that for PQ tests in linux
-#CRYPTO_ENGINE += -DLIBOQS
+CRYPTO_ENGINE += -DLIBOQS
 ###############################################################
 # Enable only for HAWK and HAETAE in linux
 

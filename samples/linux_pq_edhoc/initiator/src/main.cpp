@@ -27,8 +27,10 @@ extern "C" {
 
 #define USE_IPV4
 //#define USE_IPV6
-
-#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#if defined(KEM_AUTH) && defined(KYBER_LEVEL_1)
+uint8_t TEST_VEC_NUM = 18;
+#define PQ_PROPOSAL_1
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
 #define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
@@ -294,6 +296,37 @@ int main()
 	//PRINT_ARRAY("PK eph:",c_i.g_x.ptr,c_i.g_x.len);
 	//PRINT_ARRAY("SK eph:",c_i.x.ptr,c_i.x.len);
 	PRINTF("secret ephemeral PQ Key size %d\n", c_i.x.len);
+	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr,
+		    c_i.g_x.len);
+	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr,
+		    c_i.x.len);		
+
+	#ifdef KEM_AUTH
+	PRINT_ARRAY("static PQ Key public", c_i.pk_i.ptr,
+		    c_i.pk_i.len);
+	PRINT_ARRAY("static PQ Key private", c_i.sk_i.ptr,
+		    c_i.sk_i.len);	
+	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh), get_kem_cc_len(suit_in.edhoc_ecdh));			
+	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
+	struct byte_array cc_kem_b;
+	struct byte_array ss_kem_b;
+	cc_kem_b.len = get_kem_cc_len(suit_in.edhoc_ecdh);
+	cc_kem_b.ptr = CC_KEM.ptr;
+	ss_kem_b.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b.ptr = SS_KEM.ptr;
+	struct byte_array ss_kem_b_2;
+	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b_2.ptr = SS_KEM.ptr;
+	TRY(kem_encapsulate(suit_in.edhoc_ecdh,&c_i.pk_i,&cc_kem_b,&ss_kem_b));
+	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_i.sk_i, &ss_kem_b_2));
+	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr,
+		    ss_kem_b.len);
+	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr,
+		    ss_kem_b_2.len);
+	#endif
+			
+			
 
 #endif
 
