@@ -233,27 +233,30 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	TRY(retrieve_cred(static_dh_r, cred_r_array, &id_cred_r, &cred_r, &pk,
 			  &g_r));
     PRINT_ARRAY("static pk responder", pk.ptr,pk.len);
-
+  /*derive prk_3e2m*/
 	#ifdef KEM_AUTH
-	BYTE_ARRAY_NEW(cc_kem, get_kem_cc_len(rc->suite), get_kem_cc_len(rc->suite));
-	BYTE_ARRAY_NEW(ss_kem, get_kem_ss_len(rc->suite), get_kem_ss_len(rc->suite));
-	TRY(kem_encapsulate(rc->suite,&pk,&cc_kem,&ss_kem));
-	#endif
-	/*derive prk_3e2m*/
+	BYTE_ARRAY_NEW(cc_kem, get_kem_cc_len(rc->suite.edhoc_ecdh), get_kem_cc_len(rc->suite.edhoc_ecdh));
+	BYTE_ARRAY_NEW(ss_kem, get_kem_ss_len(rc->suite.edhoc_ecdh), get_kem_ss_len(rc->suite.edhoc_ecdh));
+	TRY(kem_encapsulate(rc->suite.edhoc_ecdh,&pk,&cc_kem,&ss_kem));
+	TRY(prk_derive_KEM(1,rc->suite, SALT_3e2m, &th2, &PRK_2e, &ss_kem, PRK_3e2m->ptr));
+	#else
 	TRY(prk_derive(static_dh_r, rc->suite, SALT_3e2m, &th2, &PRK_2e, &g_r,
 		       &c->x, PRK_3e2m->ptr));
+	#endif		   
 	PRINT_ARRAY("prk_3e2m", PRK_3e2m->ptr, PRK_3e2m->len);
-
+    #ifndef KEM_AUTH
 	TRY(signature_or_mac(VERIFY, static_dh_r, &rc->suite, NULL, &pk,
 			     PRK_3e2m, c_r, &th2, &id_cred_r, &cred_r, &rc->ead,
 			     MAC_2, &sign_or_mac));
-
+	#endif
 	TRY(th34_calculate(rc->suite.edhoc_hash, &th2, &plaintext, &cred_r,
 			   th3));
 
 	/*derive prk_4e3m*/
+	#ifndef KEM_AUTH
 	TRY(prk_derive(static_dh_i, rc->suite, SALT_4e3m, th3, PRK_3e2m, &g_y,
 		       &c->i, rc->prk_4e3m.ptr));
+	#endif
 	PRINT_ARRAY("prk_4e3m", rc->prk_4e3m.ptr, rc->prk_4e3m.len);
 
 	return ok;

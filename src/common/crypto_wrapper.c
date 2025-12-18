@@ -1133,6 +1133,7 @@ enum err WEAK hkdf_extract(enum hash_alg alg, const struct byte_array *salt,
 		return crypto_operation_not_implemented;
 	}
 #ifdef TINYCRYPT
+    //PRINT_MSG("tynicript");
 	struct tc_hmac_state_struct h;
 	memset(&h, 0x00, sizeof(h));
 	if (salt->ptr == NULL || salt->len == 0) {

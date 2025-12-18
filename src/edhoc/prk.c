@@ -48,21 +48,16 @@ enum err prk_derive(bool static_dh_auth, struct suite suite, uint8_t label,
 
 enum err prk_derive_KEM( bool roll,struct suite suite, uint8_t label,
 		    struct byte_array *context, const struct byte_array *prk_in,
-		    const struct byte_array *ss_kem,
-		    const struct byte_array *stat_sk, uint8_t *prk_out)
+		    const struct byte_array *ss_kem, uint8_t *prk_out)
 {
 	if (roll) {
-		BYTE_ARRAY_NEW(ss_kem, ECDH_SECRET_SIZE, ECDH_SECRET_SIZE);
-
-		TRY(shared_secret_derive(suite.edhoc_ecdh, stat_sk, stat_pk,
-					 dh_secret.ptr));
-		PRINT_ARRAY("dh_secret", dh_secret.ptr, dh_secret.len);
+	
 
 		BYTE_ARRAY_NEW(salt, HASH_SIZE, get_hash_len(suite.edhoc_hash));
 		TRY(edhoc_kdf(suite.edhoc_hash, prk_in, label, context, &salt));
-		PRINT_ARRAY("SALT_3e2m or SALT4e3m", salt.ptr, salt.len);
-
-		TRY(hkdf_extract(suite.edhoc_hash, &salt, &dh_secret, prk_out));
+		PRINT_ARRAY("SALT 3e2m for KEM", salt.ptr, salt.len);
+		PRINT_MSG("ok writing SALT\n");
+		TRY(hkdf_extract(suite.edhoc_hash, &salt, ss_kem, prk_out));
 	} else {
 		/*it is save to do that since prks have the same size*/
 		memcpy(prk_out, prk_in->ptr, prk_in->len);
