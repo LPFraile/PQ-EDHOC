@@ -42,10 +42,12 @@ uint8_t TEST_VEC_NUM = 9;
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 10;
 #define PQ_PROPOSAL_1
-#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) &&                  \
+	!defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 11;
 #define PQ_PROPOSAL_1
-#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) &&                  \
+	defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 12;
 #define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && !defined(USE_X5CHAIN)
@@ -54,7 +56,8 @@ uint8_t TEST_VEC_NUM = 13;
 #elif defined(FALCON_LEVEL_1) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 14;
 #define PQ_PROPOSAL_1
-#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) &&                   \
+	!defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 15;
 #define PQ_PROPOSAL_1
 #elif defined(HAWK_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
@@ -71,14 +74,13 @@ uint8_t TEST_VEC_NUM = 17;
 #define PQ_PROPOSAL_1
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
-//#define USE_RANDOM_EPHEMERAL_DH_KEY 
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
 #elif defined(DH) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 3;
-//#define USE_RANDOM_EPHEMERAL_DH_KEY 
+//#define USE_RANDOM_EPHEMERAL_DH_KEY
 #else
 #error "you must select a correct test combination in makefile_config.mk file"
 #endif
-
 
 /**
  * @brief	Initializes sockets for CoAP client.
@@ -196,11 +198,11 @@ int main()
 	struct other_party_cred cred_r;
 	struct edhoc_initiator_context c_i;
 
-    #ifdef LIBOQS
+#ifdef LIBOQS
 	PRINT_MSG("DEFINED LIBOQS\n");
-	#else
+#else
 	PRINT_MSG("NO DEFINED LIBOQS\n");
-	#endif
+#endif
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 	c_i.sock = &sockfd;
 	c_i.c_i.len = test_vectors[vec_num_i].c_i_len;
@@ -220,6 +222,7 @@ int main()
 	c_i.g_x.ptr = (uint8_t *)test_vectors[vec_num_i].g_x_raw;
 	c_i.x.len = test_vectors[vec_num_i].x_raw_len;
 	c_i.x.ptr = (uint8_t *)test_vectors[vec_num_i].x_raw;
+	/*static DH or static KEM keys*/
 	c_i.g_i.len = test_vectors[vec_num_i].g_i_raw_len;
 	c_i.g_i.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;
 	c_i.i.len = test_vectors[vec_num_i].i_raw_len;
@@ -233,8 +236,8 @@ int main()
 	cred_r.id_cred.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_r;
 	cred_r.cred.len = test_vectors[vec_num_i].cred_r_len;
 	cred_r.cred.ptr = (uint8_t *)test_vectors[vec_num_i].cred_r;
-	/*cred_r.g.len = test_vectors[vec_num_i].g_r_raw_len;
-	cred_r.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;*/
+	cred_r.g.len = test_vectors[vec_num_i].g_r_raw_len;
+	cred_r.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;
 	cred_r.pk.len = test_vectors[vec_num_i].pk_r_raw_len;
 	cred_r.pk.ptr = (uint8_t *)test_vectors[vec_num_i].pk_r_raw;
 	cred_r.ca.len = test_vectors[vec_num_i].ca_r_len;
@@ -243,14 +246,20 @@ int main()
 	cred_r.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r_pk;
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
-    PRINTF("initiator test vector number %d:", vec_num_i+1);
-	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,c_i.suites_i.len);
-	PRINTF("initiator sk size:%d \n",c_i.sk_i.len);
-	PRINTF("initiator pk size:%d \n",c_i.pk_i.len);
-	
-
+	PRINTF("initiator test vector number %d:", vec_num_i + 1);
+#ifndef KEM_AUTH
+	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,
+		    c_i.suites_i.len);
+	PRINTF("initiator sk size:%d \n", c_i.sk_i.len);
+	PRINTF("initiator pk size:%d \n", c_i.pk_i.len);
+#else
+	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,
+		    c_i.suites_i.len);
+	PRINTF("initiator KEM sk size:%d \n", c_i.i.len);
+	PRINTF("initiator KEM pk size:%d \n", c_i.g_i.len);
+#endif
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
-    uint32_t seed;
+	uint32_t seed;
 	BYTE_ARRAY_NEW(X_random, 32, 32);
 	BYTE_ARRAY_NEW(G_X_random, 32, 32);
 
@@ -267,27 +276,33 @@ int main()
 	c_i.g_x.len = G_X_random.len;
 	c_i.x.ptr = X_random.ptr;
 	c_i.x.len = X_random.len;
-#endif
 	PRINT_ARRAY("secret ephemeral DH key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("public ephemeral DH key", c_i.x.ptr, c_i.x.len);
+#endif
 
-	#ifdef TINYCRYPT
+#ifdef TINYCRYPT
 	/* Register RNG function */
 	uECC_set_rng(default_CSPRNG);
-	#endif
+#endif
 
 #ifdef PQ_PROPOSAL_1
-    /*Ephemeral Key generation for KEMs*/
-	PRINTF("test vector number: %d\n", vec_num_i+1);
+	/*Ephemeral Key generation for KEMs*/
+	PRINTF("test vector number: %d\n", vec_num_i + 1);
 	struct suite suit_in;
 	get_suite((enum suite_label)c_i.suites_i.ptr[c_i.suites_i.len - 1],
-		      &suit_in);
-	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
-	PRINTF("PQ_public buffer size %d\n",get_kem_pk_len(suit_in.edhoc_ecdh));
-	PRINTF("PQ_secret buffer size %d\n",get_kem_pk_len(suit_in.edhoc_ecdh));
-	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh), get_kem_pk_len(suit_in.edhoc_ecdh));
-	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
-	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,&PQ_public_random));
+		  &suit_in);
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n", suit_in.edhoc_ecdh,
+	       suit_in.edhoc_sign)
+	PRINTF("PQ_public buffer size %d\n",
+	       get_kem_pk_len(suit_in.edhoc_ecdh));
+	PRINTF("PQ_secret buffer size %d\n",
+	       get_kem_pk_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(PQ_public_random, get_kem_pk_len(suit_in.edhoc_ecdh),
+		       get_kem_pk_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh),
+		       get_kem_sk_len(suit_in.edhoc_ecdh));
+	TRY(ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &PQ_secret_random,
+				  &PQ_public_random));
 	c_i.g_x.ptr = PQ_public_random.ptr;
 	c_i.g_x.len = PQ_public_random.len;
 	c_i.x.ptr = PQ_secret_random.ptr;
@@ -296,19 +311,19 @@ int main()
 	//PRINT_ARRAY("PK eph:",c_i.g_x.ptr,c_i.g_x.len);
 	//PRINT_ARRAY("SK eph:",c_i.x.ptr,c_i.x.len);
 	PRINTF("secret ephemeral PQ Key size %d\n", c_i.x.len);
-	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr,
-		    c_i.g_x.len);
-	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr,
-		    c_i.x.len);		
+	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr, c_i.g_x.len);
+	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr, c_i.x.len);
 
-	#ifdef KEM_AUTH
-	PRINT_ARRAY("static PQ Key public", c_i.pk_i.ptr,
-		    c_i.pk_i.len);
-	PRINT_ARRAY("static PQ Key private", c_i.sk_i.ptr,
-		    c_i.sk_i.len);	
-	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh), get_kem_cc_len(suit_in.edhoc_ecdh));			
-	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
-	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
+#ifdef KEM_AUTH
+	PRINT_ARRAY("static KEM PQ Key public", c_i.g_i.ptr, c_i.g_i.len);
+	PRINT_ARRAY("static KEM PQ Key private", c_i.i.ptr, c_i.i.len);
+	/*Just for TEST*/
+	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+		       get_kem_cc_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
 	struct byte_array cc_kem_b;
 	struct byte_array ss_kem_b;
 	cc_kem_b.len = get_kem_cc_len(suit_in.edhoc_ecdh);
@@ -318,15 +333,14 @@ int main()
 	struct byte_array ss_kem_b_2;
 	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
 	ss_kem_b_2.ptr = SS_KEM.ptr;
-	TRY(kem_encapsulate(suit_in.edhoc_ecdh,&c_i.pk_i,&cc_kem_b,&ss_kem_b));
-	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_i.sk_i, &ss_kem_b_2));
-	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr,
-		    ss_kem_b.len);
-	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr,
-		    ss_kem_b_2.len);
-	#endif
-			
-			
+	TRY(kem_encapsulate(suit_in.edhoc_ecdh, &c_i.g_i, &cc_kem_b,
+			    &ss_kem_b));
+	PRINT_ARRAY("static CC KEM I :", cc_kem_b.ptr, cc_kem_b.len);
+	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_i.i,
+			    &ss_kem_b_2));
+	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr, ss_kem_b.len);
+	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
+#endif
 
 #endif
 

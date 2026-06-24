@@ -86,7 +86,7 @@ static enum err th34_input_encode(struct byte_array *th23,
 		      plaintext_23->len));
 
 	tmp_len += plaintext_23->len;
-
+    PRINTF("tmp_len: %d, th34_input->len: %d, cred->len: %d\n", tmp_len, th34_input->len, cred->len);
 	TRY(_memcpy_s(th34_input->ptr + tmp_len, th34_input->len - tmp_len,
 		      cred->ptr, cred->len));
 

@@ -46,13 +46,13 @@ enum err prk_derive(bool static_dh_auth, struct suite suite, uint8_t label,
 	return ok;
 }
 
-enum err prk_derive_KEM( bool roll,struct suite suite, uint8_t label,
-		    struct byte_array *context, const struct byte_array *prk_in,
-		    const struct byte_array *ss_kem, uint8_t *prk_out)
+enum err prk_derive_KEM(bool roll, struct suite suite, uint8_t label,
+			struct byte_array *context,
+			const struct byte_array *prk_in,
+			const struct byte_array *ss_kem, uint8_t *prk_out)
 {
 	if (roll) {
-	
-
+		PRINT_ARRAY("SS", ss_kem->ptr, ss_kem->len);
 		BYTE_ARRAY_NEW(salt, HASH_SIZE, get_hash_len(suite.edhoc_hash));
 		TRY(edhoc_kdf(suite.edhoc_hash, prk_in, label, context, &salt));
 		PRINT_ARRAY("SALT 3e2m for KEM", salt.ptr, salt.len);

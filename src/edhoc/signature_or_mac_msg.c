@@ -156,6 +156,7 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 		 const struct byte_array *cred, const struct byte_array *ead,
 		 enum info_label mac_label, struct byte_array *signature_or_mac)
 {
+ PRINT_ARRAY("signarray_or_mac is sign or mac func", signature_or_mac->ptr, signature_or_mac->len);	
 	if (op == GENERATE) {
 		/*we always calculate the mac*/
 		TRY(mac(prk, c_r, th, id_cred, cred, ead, mac_label, static_dh,
@@ -194,14 +195,19 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 			suite, &_mac));
 
 		if (static_dh) {
+			PRINT_ARRAY("MAC 2/3", _mac.ptr, _mac.len);
+			PRINT_ARRAY("signature_or_mac (is mac)", signature_or_mac->ptr,
+				    signature_or_mac->len);
 			/*signature_or_mac is mac when the caller of this function authenticates with static DH keys*/
-
+			PRINT_MSG("static DH or KEM, verify mac\n");
 			if (0 != memcmp(_mac.ptr, signature_or_mac->ptr,
 					signature_or_mac->len)) {
+				PRINT_MSG("MAC verification failed!\n");
 				return mac_authentication_failed;
 			}
 
 		} else {
+			PRINT_MSG("verify signature\n");
 			uint32_t sig_struct_size = SIG_STRUCT_SIZE_CALC(
 				COSE_SIGN1_STR_LEN, id_cred->len,
 				(AS_BSTR_SIZE(th->len) + cred->len + ead->len),

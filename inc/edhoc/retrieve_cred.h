@@ -59,4 +59,23 @@ enum err retrieve_cred(bool static_dh_auth, struct cred_array *cred_array,
 		       struct byte_array *id_cred, struct byte_array *cred,
 		       struct byte_array *pk, struct byte_array *g);
 
+
+/**
+ * @brief			Retrieves the credential of the other party and 
+ * 				its static KEM key when static KEM 
+ * 				authentication is used or public signature key 
+ *				when digital signatures are used. 
+ *				Just retrieve not verify that has been already be done in the previous step.
+ *
+ * @param static_dh_auth 	True if static KEM authentication is used. 
+ * @param cred_array 		An array containing credentials. 
+ * @param[in] id_cred 		ID_CRED_x.
+ * @param[out] cred 		CRED_x.
+ * @param[out] pk 		Public key.
+ * @param[out] g 		Static KEM public key.
+ * @retval			Ok or error.
+ */
+enum err retrieve_authenticated_cred(bool static_dh_auth, struct cred_array *cred_array,
+		       struct byte_array *id_cred, struct byte_array *cred,
+		       struct byte_array *pk, struct byte_array *g);			   
 #endif

@@ -167,3 +167,30 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 
 	return ok;
 }
+
+enum err plaintext_split_m45(struct byte_array *ptxt,
+			 struct byte_array *sign_or_mac, struct byte_array *ad)
+{
+	size_t decode_len = 0;
+	struct plaintext p;
+    
+	TRY_EXPECT(cbor_decode_plaintext_KEM_45(ptxt->ptr, ptxt->len, &p, &decode_len),
+		   0);
+	PRINT_ARRAY("plaintext", ptxt->ptr, ptxt->len);
+	PRINT_ARRAY("sign_or_mac", p.plaintext_SGN_or_MAC_x.value, p.plaintext_SGN_or_MAC_x.len);
+	TRY(_memcpy_s(sign_or_mac->ptr, sign_or_mac->len,
+		      p.plaintext_SGN_or_MAC_x.value,
+		      (uint32_t)p.plaintext_SGN_or_MAC_x.len));
+	sign_or_mac->len = (uint32_t)p.plaintext_SGN_or_MAC_x.len;
+	if (p.plaintext_AD_x_present == true) {
+		TRY(_memcpy_s(ad->ptr, ad->len, p.plaintext_AD_x.value,
+			      (uint32_t)p.plaintext_AD_x.len));
+		ad->len = (uint32_t)p.plaintext_AD_x.len;
+	} else {
+		if (ad->len) {
+			ad->len = 0;
+		}
+	}
+
+	return ok;
+}

@@ -34,5 +34,8 @@ void authentication_type_get(enum method_type m, volatile bool *static_dh_i,
 	case INITIATOR_SDHK_RESPONDER_SDHK:
 		*static_dh_i = true;
 		*static_dh_r = true;
+	case INITIATOR_KEM_RESPONDER_KEM:
+		*static_dh_i = true;
+		*static_dh_r = true;
 	}
 }

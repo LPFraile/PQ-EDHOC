@@ -231,7 +231,6 @@ int cbor_decode_id_cred_x_map(
 		size_t *payload_len_out)
 {
 	zcbor_state_t states[5];
-
 	return zcbor_entry_function(payload, payload_len, (void *)result, payload_len_out, states,
 		(zcbor_decoder_t *)decode_id_cred_x_map, sizeof(states) / sizeof(zcbor_state_t), 1);
 }

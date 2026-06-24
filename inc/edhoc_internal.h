@@ -74,6 +74,26 @@ enum err msg3_gen(const struct edhoc_initiator_context *c,
  */
 enum err msg4_process(struct runtime_context *rc);
 
+
+/**
+ * @brief Processes message 4. This function should by used by on the initiator 
+ *        side. 
+ * 
+ * @param c initiator context
+ * @param rc runtime context
+ * @param cred_r_array array of CRED_Rs
+ * @param num_cred_r Number of elements in CRED_R
+ * @param ead_2 EAD_2 contained in message 2
+ * @param ead_2_len length of EAD_2
+ * @param prk_out the derived secret (output)
+ * @param prk_out_len length of prk_4x3m
+ * @return enum err 
+ */
+enum err KEM_msg4_process(const struct edhoc_initiator_context *c,
+		  struct runtime_context *rc, struct cred_array *cred_r_array,
+		  struct byte_array *c_r, struct byte_array *prk_out);
+
+
 /**
  * @brief 		Generates message 2. This function should by used by on the 
  * 				responder side.
@@ -108,6 +128,7 @@ enum err msg3_process(struct edhoc_responder_context *c,
 		      struct byte_array *prk_out,
 		      struct byte_array *initiator_pk);
 
+			  
 /**
  * @brief Generates message 4. This function should by used by on the responder 
  *        side.

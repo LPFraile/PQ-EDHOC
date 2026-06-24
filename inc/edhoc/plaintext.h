@@ -39,4 +39,17 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 			 struct byte_array *id_cred_x,
 			 struct byte_array *sign_or_mac, struct byte_array *ad);
 
+
+
+/**
+ * @brief                       Splits the plaintext of message 2. 
+ *
+ * @param[in] ptxt              Pointer to the plaintext.
+ * @param[out] sign_or_mac      Signature or mac.
+ * @param[out] ead              External Authorization Data.
+ * @retval                      Ok or error code.
+ */
+enum err plaintext_split_m45(struct byte_array *ptxt,
+			 struct byte_array *sign_or_mac, struct byte_array *ad);
 #endif
+

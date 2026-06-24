@@ -33,6 +33,9 @@ struct runtime_context {
 	struct byte_array th4;
 	uint8_t prk_4e3m_buf[PRK_SIZE];
 	struct byte_array prk_4e3m;
+	uint8_t id_cred_r_buf[ID_CRED_R_SIZE];
+	struct byte_array id_cred_r;
+	
 
 	/*responder specific*/
 	bool static_dh_i;
@@ -40,6 +43,26 @@ struct runtime_context {
 	struct byte_array th3;
 	uint8_t prk_3e2m_buf[PRK_SIZE];
 	struct byte_array prk_3e2m;
+	/*Add it by PQ*/
+	int32_t method;
+	uint8_t id_cred_i_buf[ID_CRED_I_SIZE];
+	struct byte_array id_cred_i;
+	
+#ifdef KEM_AUTH
+	/*responder specific*/
+	uint8_t th2_buf[HASH_SIZE];
+	struct byte_array th2;
+	uint8_t prk_2e_buf[PRK_SIZE];
+	struct byte_array prk_2e;
+	uint8_t cc_R_buf[G_Y_SIZE];
+	struct byte_array cc_R;
+	uint8_t cc_I_buf[G_Y_SIZE];
+	struct byte_array cc_I;
+	uint8_t ss_R_buf[ECDH_SECRET_SIZE];
+	struct byte_array ss_R;
+	uint8_t ss_I_buf[ECDH_SECRET_SIZE];
+	struct byte_array ss_I;
+#endif
 };
 
 #endif

@@ -20,6 +20,8 @@ enum err encode_bstr(const struct byte_array *in, struct byte_array *out)
 	tmp.value = in->ptr;
 	tmp.len = in->len;
 	PRINTF("TMP size: %d\n",tmp.len);
+	PRINT_ARRAY("TMP", tmp.value, tmp.len);
+	PRINTF("OUT size: %d\n",out->len);
 	int ret = cbor_encode_bstr_type_b_str(out->ptr, out->len, &tmp,
 					       &payload_len_out);
     PRINTF("CBOR ENCODE ERROR: %d\n",ret);

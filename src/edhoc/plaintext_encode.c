@@ -28,11 +28,14 @@ enum err id_cred2kid(const struct byte_array *id_cred, struct byte_array *kid)
 	struct id_cred_x_map map = { 0 };
 	size_t payload_len_out;
 	size_t decode_len = 0;
+	PRINT_MSG("id_cred2kid\n");
+	PRINT_ARRAY("id_cred", id_cred->ptr, id_cred->len);	
 	TRY_EXPECT(cbor_decode_id_cred_x_map(id_cred->ptr, id_cred->len, &map,
 					     &decode_len),
 		   0);
 
 	if (map.id_cred_x_map_kid_present) {
+		PRINT_MSG("id_cred_x_map_kid_present\n");
 		TRY_EXPECT(
 			cbor_encode_int_type_i(
 				kid->ptr, kid->len,
@@ -41,6 +44,7 @@ enum err id_cred2kid(const struct byte_array *id_cred, struct byte_array *kid)
 			ZCBOR_SUCCESS);
 		kid->len = (uint32_t)payload_len_out;
 	} else {
+		PRINT_MSG("id_cred_x_map_kid_not_present\n");
 		kid->len = 0;
 	}
 

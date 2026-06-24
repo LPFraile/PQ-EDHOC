@@ -105,6 +105,7 @@ static enum err get_local_cred(bool static_dh_auth,
 		if ((cred_array->ptr[i].id_cred.len == ID_cred->len) &&
 		    (0 == memcmp(cred_array->ptr[i].id_cred.ptr, ID_cred->ptr,
 				 ID_cred->len))) {
+			PRINT_MSG("ID_CRED_x matches a local credential\n");
 			/*retrieve CRED_x*/
 
 			TRY(_memcpy_s(cred->ptr, cred->len,
@@ -112,8 +113,11 @@ static enum err get_local_cred(bool static_dh_auth,
 				      cred_array->ptr[i].cred.len));
 			cred->len = cred_array->ptr[i].cred.len;
 			/*retrieve PK*/
+			PRINT_ARRAY("CRED_X", cred->ptr, cred->len);
 			if (static_dh_auth) {
+#ifndef KEM_AUTH
 				pk->len = 0;
+
 				if (cred_array->ptr[i].g.len == 65) {
 					/*decompressed P256 DH pk*/
 					g->ptr[0] = 0x2;
@@ -129,6 +133,16 @@ static enum err get_local_cred(bool static_dh_auth,
 						      cred_array->ptr[i].g.len));
 					g->len = cred_array->ptr[i].g.len;
 				}
+#else
+				PRINT_ARRAY("static PQ KEM Key public",
+					    cred_array->ptr[i].g.ptr,
+					    cred_array->ptr[i].g.len);
+				g->len = cred_array->ptr[i].g.len;
+				TRY(_memcpy_s(g->ptr, g->len,
+					      cred_array->ptr[i].g.ptr,
+					      cred_array->ptr[i].g.len));
+
+#endif
 
 			} else {
 				g->len = 0;
@@ -150,7 +164,7 @@ enum err retrieve_cred(bool static_dh_auth, struct cred_array *cred_array,
 {
 	size_t decode_len = 0;
 	struct id_cred_x_map map = { 0 };
-
+    PRINT_ARRAY("ID_CRED_x", id_cred->ptr, id_cred->len);
 	TRY_EXPECT(cbor_decode_id_cred_x_map(id_cred->ptr, id_cred->len, &map,
 					     &decode_len),
 		   0);
@@ -159,9 +173,16 @@ enum err retrieve_cred(bool static_dh_auth, struct cred_array *cred_array,
 	if (map.id_cred_x_map_kid_present || map.id_cred_x_map_x5u_present ||
 	    map.id_cred_x_map_x5t_present || map.id_cred_x_map_c5u_present ||
 	    map.id_cred_x_map_c5t_present) {
+		PRINT_MSG(
+			"ID_CRED_x contains a reference to the credential, retrieve it from local storage\n");
+
+		PRINT_ARRAY("ID_CRED_x", id_cred->ptr, id_cred->len);
 
 		TRY(get_local_cred(static_dh_auth, cred_array, id_cred, cred,
 				   pk, g));
+
+		PRINT_ARRAY("PK", pk->ptr, pk->len);
+		PRINT_ARRAY("G", g->ptr, g->len);
 		return ok;
 	}
 	/*x5chain*/
@@ -204,5 +225,59 @@ enum err retrieve_cred(bool static_dh_auth, struct cred_array *cred_array,
 		return ok;
 	}
 
+	return credential_not_found;
+}
+
+
+enum err retrieve_authenticated_cred(bool static_dh_auth, struct cred_array *cred_array,
+		       struct byte_array *id_cred, struct byte_array *cred,
+		       struct byte_array *pk, struct byte_array *g)
+{
+	size_t decode_len = 0;
+	struct id_cred_x_map map = { 0 };
+    PRINT_ARRAY("ID_CRED_x", id_cred->ptr, id_cred->len);
+	TRY_EXPECT(cbor_decode_id_cred_x_map(id_cred->ptr, id_cred->len, &map,
+					     &decode_len),
+		   0);
+	/*the cred should be locally available on the device if 
+	kid, x5u, x5t, c5u, c5t is used*/
+	if (map.id_cred_x_map_kid_present || map.id_cred_x_map_x5u_present ||
+	    map.id_cred_x_map_x5t_present || map.id_cred_x_map_c5u_present ||
+	    map.id_cred_x_map_c5t_present) {
+		PRINT_MSG(
+			"ID_CRED_x contains a reference to the credential, retrieve it from local storage\n");
+
+		PRINT_ARRAY("ID_CRED_x", id_cred->ptr, id_cred->len);
+
+		for (uint32_t i = 0; i < cred_array->len; i++) {
+		if ((cred_array->ptr[i].id_cred.len == id_cred->len) &&
+		    (0 == memcmp(cred_array->ptr[i].id_cred.ptr, id_cred->ptr,
+				 id_cred->len))) {
+			PRINT_MSG("ID_CRED_x matches a local credential\n");
+			/*retrieve CRED_x*/
+            cred->len = cred_array->ptr[i].cred.len;
+			cred->ptr = cred_array->ptr[i].cred.ptr;
+			/*retrieve PK*/
+			PRINT_ARRAY("CRED_X", cred->ptr, cred->len);
+			if (static_dh_auth) {
+				PRINT_ARRAY("static PQ KEM Key public",
+					    cred_array->ptr[i].g.ptr,
+					    cred_array->ptr[i].g.len);
+				g->len = cred_array->ptr[i].g.len;
+				g->ptr = cred_array->ptr[i].g.ptr;
+			} else {
+				g->len = 0;
+				pk->len = cred_array->ptr[i].pk.len;
+				pk->ptr = cred_array->ptr[i].pk.ptr;
+			}
+			return ok;
+		}
+	}
+		PRINT_ARRAY("PK", pk->ptr, pk->len);
+		PRINT_ARRAY("G", g->ptr, g->len);
+	}
+	else{
+		PRINT_MSG("TO DO: ID_CRED_x contains a certificate\n");
+	}
 	return credential_not_found;
 }

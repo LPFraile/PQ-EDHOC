@@ -26,8 +26,10 @@ struct byte_array NULL_ARRAY = {
 
 enum err byte_array_append(struct byte_array *dest,
 			   const struct byte_array *source, uint32_t capacity)
-{
+{ 
+
 	if (source->len + dest->len > capacity) {
+		PRINT_MSG("Buffer too small for appending the byte array.\n");
 		return buffer_to_small;
 	}
 	TRY(_memcpy_s(dest->ptr + dest->len, capacity - dest->len, source->ptr,

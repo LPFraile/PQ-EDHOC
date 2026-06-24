@@ -10,71 +10,71 @@
 #include <oqs/kem.h>
 
 #ifdef HQC_LEVEL_1
-	#define PQ_KEM HQC_LEVEL1
-	#define G_Y_SIZE OQS_KEM_hqc_128_length_ciphertext
-	#define G_X_SIZE OQS_KEM_hqc_128_length_public_key
-	#define G_I_SIZE OQS_KEM_hqc_128_length_secret_key
-	#define ECDH_SECRET_SIZE 64
+#define PQ_KEM HQC_LEVEL1
+#define G_Y_SIZE OQS_KEM_hqc_128_length_ciphertext
+#define G_X_SIZE OQS_KEM_hqc_128_length_public_key
+#define G_I_SIZE OQS_KEM_hqc_128_length_secret_key
+#define ECDH_SECRET_SIZE 64
 #endif
 
 #ifdef BIKE_LEVEL_1
 #ifndef HQC_LEVEL_1
-	#define PQ_KEM BIKE_LEVEL1
-	#define G_Y_SIZE OQS_KEM_bike_l1_length_ciphertext
-	#define G_X_SIZE OQS_KEM_bike_l1_length_public_key
-	#define G_I_SIZE OQS_KEM_bike_l1_length_secret_key
-	#define ECDH_SECRET_SIZE 32
+#define PQ_KEM BIKE_LEVEL1
+#define G_Y_SIZE OQS_KEM_bike_l1_length_ciphertext
+#define G_X_SIZE OQS_KEM_bike_l1_length_public_key
+#define G_I_SIZE OQS_KEM_bike_l1_length_secret_key
+#define ECDH_SECRET_SIZE 32
 #endif
 #endif
-#ifdef KYBER_LEVEL_3 
+#ifdef KYBER_LEVEL_3
 #ifndef HQC_LEVEL_1
-	#define PQ_KEM KYBER_LEVEL3
-	#define G_Y_SIZE OQS_KEM_kyber_768_length_ciphertext
-	#define G_X_SIZE OQS_KEM_kyber_768_length_public_key
-	#define G_I_SIZE OQS_KEM_kyber_768_length_secret_key
+#define PQ_KEM KYBER_LEVEL3
+#define G_Y_SIZE OQS_KEM_kyber_768_length_ciphertext
+#define G_X_SIZE OQS_KEM_kyber_768_length_public_key
+#define G_I_SIZE OQS_KEM_kyber_768_length_secret_key
 #endif
 #endif
 
 #ifdef KYBER_LEVEL_1
 #ifndef HQC_LEVEL_1
 #ifndef KYBER_LEVEL_3
-	#define PQ_KEM KYBER_LEVEL1
-	#define G_Y_SIZE OQS_KEM_kyber_512_length_ciphertext
-	#define G_X_SIZE OQS_KEM_kyber_512_length_public_key
-	#define G_I_SIZE OQS_KEM_kyber_512_length_secret_key
+#define PQ_KEM KYBER_LEVEL1
+#define G_Y_SIZE OQS_KEM_kyber_512_length_ciphertext
+#define G_X_SIZE OQS_KEM_kyber_512_length_public_key
+#define G_I_SIZE OQS_KEM_kyber_512_length_secret_key
 
 #endif
 #endif
 #endif
 
 #ifdef FALCON_LEVEL_5
-	#define SIGNATURE_SIZE OQS_SIG_falcon_1024_length_signature  
-	#define PK_SIZE OQS_SIG_falcon_1024_length_public_key
+#define SIGNATURE_SIZE OQS_SIG_falcon_1024_length_signature
+#define PK_SIZE OQS_SIG_falcon_1024_length_public_key
 #endif
 
 #ifndef FALCON_LEVEL_5
 #ifdef DILITHIUM_LEVEL_2
-	//#define SIGNATURE_SIZE OQS_SIG_dilithium_2_length_signature  
-	//#define PK_SIZE OQS_SIG_dilithium_2_length_public_key
-    #define SIGNATURE_SIZE OQS_SIG_ml_dsa_44_ipd_length_signature  
-	#define PK_SIZE OQS_SIG_ml_dsa_44_ipd_length_public_key
+//#define SIGNATURE_SIZE OQS_SIG_dilithium_2_length_signature
+//#define PK_SIZE OQS_SIG_dilithium_2_length_public_key
+#define SIGNATURE_SIZE OQS_SIG_ml_dsa_44_ipd_length_signature
+#define PK_SIZE OQS_SIG_ml_dsa_44_ipd_length_public_key
 #endif
 #endif
 
 #ifndef FALCON_LEVEL_5
 #ifndef DILITHIUM_LEVEL_2
 #ifdef FALCON_LEVEL_1
-	#define SIGNATURE_SIZE OQS_SIG_falcon_512_length_signature  
-	//#define CRED_I_SIZE 2000
-	//#define CRED_R_SIZE 2000
-	#define PK_SIZE OQS_SIG_falcon_512_length_public_key
+#define SIGNATURE_SIZE OQS_SIG_falcon_512_length_signature
+//#define CRED_I_SIZE 2000
+//#define CRED_R_SIZE 2000
+#define PK_SIZE OQS_SIG_falcon_512_length_public_key
 #endif
 #ifdef FALCON_PADDED_LEVEL_1
-	#define SIGNATURE_SIZE OQS_SIG_falcon_padded_512_length_signature 
- 
-	//#define CRED_I_SIZE 2000
-	//#define CRED_R_SIZE 2000
-	#define PK_SIZE OQS_SIG_falcon_padded_512_length_public_key
+#define SIGNATURE_SIZE OQS_SIG_falcon_padded_512_length_signature
+
+//#define CRED_I_SIZE 2000
+//#define CRED_R_SIZE 2000
+#define PK_SIZE OQS_SIG_falcon_padded_512_length_public_key
 #endif
 #endif
 #endif
@@ -84,17 +84,17 @@
 #ifdef MUPQ
 
 #ifdef HAETAE_LEVEL_2
-	#define SIGNATURE_SIZE 1474   
-	//#define CRED_I_SIZE 2000
-	//#define CRED_R_SIZE 2000
-	#define PK_SIZE 992
+#define SIGNATURE_SIZE 1474
+//#define CRED_I_SIZE 2000
+//#define CRED_R_SIZE 2000
+#define PK_SIZE 992
 #endif
 #ifndef HAETAE_LEVEL_2
 #ifdef HAWK_LEVEL_1
-	#define SIGNATURE_SIZE 555   
-	//#define CRED_I_SIZE 2000
-	//#define CRED_R_SIZE 2000
-	#define PK_SIZE 1024
+#define SIGNATURE_SIZE 555
+//#define CRED_I_SIZE 2000
+//#define CRED_R_SIZE 2000
+#define PK_SIZE 1024
 #endif
 #endif
 #endif
@@ -103,76 +103,76 @@
 #include <api.h>
 
 #ifdef HQC_LEVEL_1
-	#define PQ_KEM HQC_LEVEL1
-	#define G_Y_SIZE 4433
-	#define G_X_SIZE 2249
-	#define G_I_SIZE 2305 
-	#define ECDH_SECRET_SIZE 64
+#define PQ_KEM HQC_LEVEL1
+#define G_Y_SIZE 4433
+#define G_X_SIZE 2249
+#define G_I_SIZE 2305
+#define ECDH_SECRET_SIZE 64
 #endif
 #ifdef BIKE_LEVEL_1
 #ifndef HQC_LEVEL_1
-	#define PQ_KEM BIKE_LEVEL1
-	#define G_Y_SIZE 1573
-	#define G_X_SIZE 1541
-	#define G_I_SIZE 5223
-	#define ECDH_SECRET_SIZE 32
+#define PQ_KEM BIKE_LEVEL1
+#define G_Y_SIZE 1573
+#define G_X_SIZE 1541
+#define G_I_SIZE 5223
+#define ECDH_SECRET_SIZE 32
 #endif
 #endif
 
-#ifdef KYBER_LEVEL_3 
+#ifdef KYBER_LEVEL_3
 #ifndef HQC_LEVEL_1
-	#define PQ_KEM KYBER_LEVEL3
-	#define G_Y_SIZE 1088 
-	#define G_X_SIZE 1184
-	#define G_I_SIZE 2400 
+#define PQ_KEM KYBER_LEVEL3
+#define G_Y_SIZE 1088
+#define G_X_SIZE 1184
+#define G_I_SIZE 2400
 #endif
 #endif
 
 #ifdef KYBER_LEVEL_1
 #ifndef HQC_LEVEL_1
 #ifndef KYBER_LEVEL_3
-	#define PQ_KEM KYBER_LEVEL1
-	#define G_Y_SIZE 768 
-	#define G_X_SIZE 800
-	#define G_I_SIZE 1632 
+#define PQ_KEM KYBER_LEVEL1
+#define G_Y_SIZE 768
+#define G_X_SIZE 800
+#define G_I_SIZE 1632
 
 #endif
 #endif
 #endif
 
 #ifdef FALCON_LEVEL_5
-	#define SIGNATURE_SIZE CRYPTO_BYTES  
-	#define PK_SIZE CRYPTO_PUBLICKEYBYTES
+#define SIGNATURE_SIZE CRYPTO_BYTES
+#define PK_SIZE CRYPTO_PUBLICKEYBYTES
 #endif
 
 #ifndef FALCON_LEVEL_5
 #ifdef DILITHIUM_LEVEL_2
-	#define SIGNATURE_SIZE 2420 
-	#define PK_SIZE 1312
+#define SIGNATURE_SIZE 2420
+#define PK_SIZE 1312
 #endif
 #endif
 
 #ifndef FALCON_LEVEL_5
 #ifndef DILITHIUM_LEVEL_2
 #ifdef FALCON_LEVEL_1
-	#define SIGNATURE_SIZE 690
-	#define PK_SIZE 897
+#define SIGNATURE_SIZE 690
+#define PK_SIZE 897
 #endif
 #endif
 #endif
 
 #ifdef HAETAE_LEVEL_2
-	#define SIGNATURE_SIZE 1474   
-	//#define CRED_I_SIZE 2000
-	//#define CRED_R_SIZE 2000
-	#define PK_SIZE 992
+#define SIGNATURE_SIZE 1474
+//#define CRED_I_SIZE 2000
+//#define CRED_R_SIZE 2000
+#define PK_SIZE 992
 #endif
 #ifndef HAETAE_LEVEL_2
 #ifdef HAWK_LEVEL_1
-	#define SIGNATURE_SIZE 555   
-	//#define CRED_I_SIZE 2000
-	//#define CRED_R_SIZE 2000
-	#define PK_SIZE 1024
+#define SIGNATURE_SIZE 555
+//#define CRED_I_SIZE 2000
+//#define CRED_R_SIZE 2000
+#define PK_SIZE 1024
 #endif
 #endif
 
@@ -194,12 +194,9 @@
 #define C_R_SIZE 10
 #endif
 
-
 #ifndef SUITES_I_SIZE
 #define SUITES_I_SIZE 6
 #endif
-
-
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
@@ -233,16 +230,14 @@
 #define G_I_SIZE P_256_PUB_KEY_UNCOMPRESSED_SIZE
 #endif
 
-
 #ifndef SIGNATURE_SIZE
 #define SIGNATURE_SIZE 64
 #endif
 
-
 #define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 
-#if defined (USE_X5CHAIN)
+#if defined(USE_X5CHAIN)
 #define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #define ID_CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #endif
@@ -263,9 +258,9 @@
 #define CRED_R_SIZE 400
 #endif
 
-
 #ifndef ECDH_SECRET_SIZE
-#define ECDH_SECRET_SIZE 32 /*PQ shared secret has the same size than ecdh secret */
+#define ECDH_SECRET_SIZE                                                       \
+	32 /*PQ shared secret has the same size than ecdh secret */
 #endif
 
 #define PRK_SIZE 32
@@ -281,7 +276,8 @@
 #define COSE_ENC0_STR_LEN 8 /* The length of the string "Encrypt0"   */
 #define CBOR_ENCODED_UINT 2
 #define CBOR_ARRAY_4_ELEMENTS_OVERHEAD 1
-#define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD 3 /*we need 3 bbytes to encode PQ signatures*/
+#define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD                                      \
+	3 /*we need 3 bbytes to encode PQ signatures*/
 #define PLAINTEXT3_SIZE_ENCODING_OVERHEAD 4
 
 #define PLAINTEXT2_SIZE                                                        \
@@ -295,9 +291,15 @@
 
 #define CIPHERTEXT3_SIZE PLAINTEXT3_SIZE + MAC_SIZE
 
+#ifndef KEM_AUTH
 #define PLAINTEXT4_SIZE EAD_SIZE + COSE_ENC0_STR_LEN
 #define CIPHERTEXT4_SIZE PLAINTEXT4_SIZE
-
+#define PLAINTEXT5_SIZE EAD_SIZE + COSE_ENC0_STR_LEN
+#define CIPHERTEXT5_SIZE PLAINTEXT5_SIZE
+#else
+#define PLAINTEXT4_SIZE EAD_SIZE + MAC_SIZE + COSE_ENC0_STR_LEN
+#define CIPHERTEXT4_SIZE PLAINTEXT4_SIZE + MAC_SIZE	
+#endif
 #define MSG_1_SIZE                                                             \
 	(1 + SUITES_I_SIZE + G_X_SIZE + AS_BSTR_SIZE(C_I_SIZE) + EAD_SIZE)
 #define MSG_2_SIZE (G_Y_SIZE + CIPHERTEXT2_SIZE + AS_BSTR_SIZE(C_R_SIZE))
@@ -323,7 +325,6 @@
 		(AS_BSTR_SIZE(HASH_SIZE) + CRED_MAX_SIZE + EAD_SIZE),          \
 		MAC23_SIZE)
 
-
 #define CONTEXT_MAC_SIZE                                                       \
 	AS_BSTR_SIZE(AS_BSTR_SIZE(C_R_SIZE) + AS_BSTR_SIZE(HASH_SIZE) +        \
 		     ID_CRED_MAX_SIZE + CRED_MAX_SIZE + EAD_SIZE)
@@ -334,5 +335,10 @@
 	(AS_BSTR_SIZE(HASH_SIZE) + PLAINTEXT23_MAX_SIZE + CRED_MAX_SIZE)
 
 #define TH2_INPUT_SIZE (AS_BSTR_SIZE(G_Y_SIZE) + AS_BSTR_SIZE(HASH_SIZE))
+
+#ifdef KEM_AUTH
+#define CC_CIPHERTEXT (G_Y_SIZE + CIPHERTEXT3_SIZE)
+#define CC_CIPHERTEXT_4 (G_Y_SIZE + CIPHERTEXT4_SIZE)
+#endif
 
 #endif

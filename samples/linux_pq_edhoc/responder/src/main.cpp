@@ -30,7 +30,7 @@ extern "C" {
 #if defined(KEM_AUTH) && defined(KYBER_LEVEL_1)
 uint8_t TEST_VEC_NUM = 18;
 #define PQ_PROPOSAL_1
-#elif(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#elif (FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
 #define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
@@ -42,10 +42,12 @@ uint8_t TEST_VEC_NUM = 9;
 #elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_3) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 10;
 #define PQ_PROPOSAL_1
-#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) &&                  \
+	!defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 11;
 #define PQ_PROPOSAL_1
-#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) && defined(USE_X5CHAIN)
+#elif defined(DILITHIUM_LEVEL_2) && defined(KYBER_LEVEL_1) &&                  \
+	defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 12;
 #define PQ_PROPOSAL_1
 #elif defined(FALCON_LEVEL_1) && defined(HQC_LEVEL_1) && !defined(USE_X5CHAIN)
@@ -54,7 +56,8 @@ uint8_t TEST_VEC_NUM = 13;
 #elif defined(FALCON_LEVEL_1) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 14;
 #define PQ_PROPOSAL_1
-#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) && !defined(USE_X5CHAIN)
+#elif defined(DILITHIUM_LEVEL_2) && defined(BIKE_LEVEL_1) &&                   \
+	!defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 15;
 #define PQ_PROPOSAL_1
 #elif defined(HAWK_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
@@ -68,14 +71,13 @@ uint8_t TEST_VEC_NUM = 17;
 #define PQ_PROPOSAL_1
 #elif defined(DH) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 2;
-#define USE_RANDOM_EPHEMERAL_DH_KEY 
+#define USE_RANDOM_EPHEMERAL_DH_KEY
 #elif defined(DH) && defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 3;
-#define USE_RANDOM_EPHEMERAL_DH_KEY 
+#define USE_RANDOM_EPHEMERAL_DH_KEY
 #else
 #error "you must select a correct test combination in makefile_config.mk file"
 #endif
-
 
 CoapPDU *txPDU = new CoapPDU();
 
@@ -225,7 +227,6 @@ int main()
 	struct other_party_cred cred_i;
 	struct edhoc_responder_context c_r;
 
-	
 	uint8_t vec_num_i = TEST_VEC_NUM - 1;
 
 	TRY_EXPECT(start_coap_server(&sockfd), 0);
@@ -247,6 +248,7 @@ int main()
 	c_r.g_y.ptr = (uint8_t *)test_vectors[vec_num_i].g_y_raw;
 	c_r.y.len = test_vectors[vec_num_i].y_raw_len;
 	c_r.y.ptr = (uint8_t *)test_vectors[vec_num_i].y_raw;
+	/*Static DH or KEM keys	*/
 	c_r.g_r.len = test_vectors[vec_num_i].g_r_raw_len;
 	c_r.g_r.ptr = (uint8_t *)test_vectors[vec_num_i].g_r_raw;
 	c_r.r.len = test_vectors[vec_num_i].r_raw_len;
@@ -260,8 +262,8 @@ int main()
 	cred_i.id_cred.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_i;
 	cred_i.cred.len = test_vectors[vec_num_i].cred_i_len;
 	cred_i.cred.ptr = (uint8_t *)test_vectors[vec_num_i].cred_i;
-	/*cred_i.g.len = test_vectors[vec_num_i].g_i_raw_len;
-	cred_i.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;*/
+	cred_i.g.len = test_vectors[vec_num_i].g_i_raw_len;
+	cred_i.g.ptr = (uint8_t *)test_vectors[vec_num_i].g_i_raw;
 	cred_i.pk.len = test_vectors[vec_num_i].pk_i_raw_len;
 	cred_i.pk.ptr = (uint8_t *)test_vectors[vec_num_i].pk_i_raw;
 	cred_i.ca.len = test_vectors[vec_num_i].ca_i_len;
@@ -271,14 +273,21 @@ int main()
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
 	//get_suite(enum suite_label label, struct suite *suite)
-    PRINTF("test vector number: %d\n", vec_num_i+1);
+	PRINTF("test vector number: %d\n", vec_num_i + 1);
 	struct suite suit_in;
 	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
-		      &suit_in);
-	//PRINT_ARRAY("cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
-	PRINTF("INITIATOR SUIT kem: %d, signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign)
+		  &suit_in);
+//PRINT_ARRAY("cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
+#ifdef KEM_AUTH
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n", suit_in.edhoc_ecdh,
+	       suit_in.edhoc_sign)
 	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
 	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
+#elif
+	PRINTF("INITIATOR SUIT kem: %d\n", suit_in.edhoc_ecdh)
+	PRINTF("responder KEM pk size: %d \n", c_r.r.len);
+	PRINTF("responder KEM sk size: %d \n", c_r.g_r.len);
+#endif
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
 	BYTE_ARRAY_NEW(Y_random, 32, 32);
@@ -289,20 +298,24 @@ int main()
 	c_r.y.len = Y_random.len;
 #endif
 #ifdef PQ_PROPOSAL_1
-	BYTE_ARRAY_NEW(G_Y_ENC, get_kem_cc_len(suit_in.edhoc_ecdh), get_kem_cc_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(G_Y_ENC, get_kem_cc_len(suit_in.edhoc_ecdh),
+		       get_kem_cc_len(suit_in.edhoc_ecdh));
 	//BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
 	c_r.g_y.ptr = G_Y_ENC.ptr;
 	c_r.g_y.len = G_Y_ENC.len;
 	c_r.y.ptr = NULL;
 	c_r.y.len = 0;
-		#ifdef KEM_AUTH
-	PRINT_ARRAY("static PQ Key public", c_r.pk_r.ptr,
-		    c_r.pk_r.len);
-	PRINT_ARRAY("static PQ Key private", c_r.sk_r.ptr,
-		    c_r.sk_r.len);	
-	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh), get_kem_cc_len(suit_in.edhoc_ecdh));			
-	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
-	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh), get_kem_ss_len(suit_in.edhoc_ecdh));
+#ifdef KEM_AUTH
+	PRINT_ARRAY("static PQ KEM Key public", c_r.g_r.ptr, c_r.g_r.len);
+	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
+	/*Only for test i should delete*/
+
+	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+		       get_kem_cc_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
 	struct byte_array cc_kem_b;
 	struct byte_array ss_kem_b;
 	cc_kem_b.len = get_kem_cc_len(suit_in.edhoc_ecdh);
@@ -312,13 +325,14 @@ int main()
 	struct byte_array ss_kem_b_2;
 	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
 	ss_kem_b_2.ptr = SS_KEM.ptr;
-	TRY(kem_encapsulate(suit_in.edhoc_ecdh,&c_r.pk_r,&cc_kem_b,&ss_kem_b));
-	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.sk_r, &ss_kem_b_2));
-	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr,
-		    ss_kem_b.len);
-	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr,
-		    ss_kem_b_2.len);
-	#endif
+	TRY(kem_encapsulate(suit_in.edhoc_ecdh, &c_r.g_r, &cc_kem_b,
+			    &ss_kem_b));
+	PRINT_ARRAY("static SS KEM R:", ss_kem_b.ptr, ss_kem_b.len);
+	PRINT_ARRAY("static CC KEM R :", cc_kem_b.ptr, cc_kem_b.len);
+	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.r,
+			    &ss_kem_b_2));
+	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
+#endif
 
 #endif
 
@@ -333,15 +347,15 @@ int main()
 		fclose(fp);
 		PRINT_MSG("Responder ready to receive EDHOC DH request\n")
 		PRINT_ARRAY("seed", (uint8_t *)&seed, seed_len);
-        c_r.g_y.len = G_Y_random.len;
+		c_r.g_y.len = G_Y_random.len;
 		c_r.y.len = Y_random.len;
 		TRY(ephemeral_dh_key_gen(P256, seed, &Y_random, &G_Y_random));
-
-	#endif
-
-	PRINT_ARRAY("public ephemeral DH key", c_r.g_y.ptr,
+		PRINT_ARRAY("public ephemeral DH key", c_r.g_y.ptr,
 			    c_r.g_y.len);
-	PRINT_ARRAY("secret ephemeral DH key", c_r.y.ptr, c_r.y.len);
+		PRINT_ARRAY("secret ephemeral DH key", c_r.y.ptr, c_r.y.len);
+
+#endif
+
 #ifdef TINYCRYPT
 		/* Register RNG function */
 		uECC_set_rng(default_CSPRNG);
