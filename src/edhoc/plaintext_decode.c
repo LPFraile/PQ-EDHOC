@@ -57,6 +57,7 @@ static enum err id_cred_x_encode(enum id_cred_x_label label, int algo,
 		map.id_cred_x_map_x5chain.id_cred_x_map_x5chain.len = id_len;
 		break;
 	case x5t:
+		PRINT_MSG("ID_CRED_x contains a hash used to identify a pre established cert\n");
 		map.id_cred_x_map_x5t_present = true;
 		map.id_cred_x_map_x5t.id_cred_x_map_x5t_alg_choice =
 			id_cred_x_map_x5t_alg_int_c;
@@ -85,6 +86,8 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 	struct plaintext p;
     
 	#ifndef KEM_AUTH
+	PRINT_MSG("plaintext_split without KEMs\n");
+	PRINT_ARRAY("plaintext", ptxt->ptr, ptxt->len);
 	TRY_EXPECT(cbor_decode_plaintext(ptxt->ptr, ptxt->len, &p, &decode_len),
 		   0);
     #else
@@ -95,6 +98,7 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 	if (c_r != NULL && p.plaintext_C_R_present == true) {
 		if (p.plaintext_C_R.plaintext_C_R_choice ==
 		    plaintext_C_R_bstr_c) {
+			PRINT_MSG("C_R is a bstr\n");	
 			TRY(_memcpy_s(c_r->ptr, c_r->len,
 				      p.plaintext_C_R.plaintext_C_R_bstr.value,
 				      (uint32_t)p.plaintext_C_R
@@ -104,6 +108,7 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 		} else {
 			/*provide C_R in encoded form if it was an int*/
 			/*this is how it C_R was chosen by the responder*/
+			PRINT_MSG("C_R is an int\n");
 			TRY(encode_int(&p.plaintext_C_R.plaintext_C_R_int, 1,
 				       c_r));
 		}
@@ -112,7 +117,7 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 	/*ID_CRED_x*/
 	if (p.plaintext_ID_CRED_x_choice == plaintext_ID_CRED_x_map_m_c) {
 		if (p.plaintext_ID_CRED_x_map_m.map_x5chain_present) {
-			//printf("ID_CRED of x5chain type\n");
+			PRINT_MSG("ID_CRED of x5chain type\n");
 			TRY(id_cred_x_encode(
 				x5chain, 0,
 				p.plaintext_ID_CRED_x_map_m.map_x5chain
@@ -122,7 +127,7 @@ enum err plaintext_split(struct byte_array *ptxt, struct byte_array *c_r,
 				id_cred_x));
 		}
 		if (p.plaintext_ID_CRED_x_map_m.map_x5t_present) {
-			//printf("ID_CRED of x5t type\n");
+			PRINT_MSG("ID_CRED of x5t type\n");
 			TRY(id_cred_x_encode(
 				x5t,
 				p.plaintext_ID_CRED_x_map_m.map_x5t

@@ -214,6 +214,8 @@ int main()
 	c_i.ead_1.ptr = (uint8_t *)test_vectors[vec_num_i].ead_1;
 	c_i.ead_3.len = test_vectors[vec_num_i].ead_3_len;
 	c_i.ead_3.ptr = (uint8_t *)test_vectors[vec_num_i].ead_3;
+	c_i.ead_5.len = 0;
+	//c_i.ead_5.ptr = (uint8_t *)test_vectors[vec_num_i].ead_5;
 	c_i.id_cred_i.len = test_vectors[vec_num_i].id_cred_i_len;
 	c_i.id_cred_i.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_i;
 	c_i.cred_i.len = test_vectors[vec_num_i].cred_i_len;

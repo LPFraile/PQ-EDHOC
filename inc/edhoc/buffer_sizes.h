@@ -279,10 +279,18 @@
 #define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD                                      \
 	3 /*we need 3 bbytes to encode PQ signatures*/
 #define PLAINTEXT3_SIZE_ENCODING_OVERHEAD 4
-
+#ifndef KEM_AUTHN
 #define PLAINTEXT2_SIZE                                                        \
 	(AS_BSTR_SIZE(C_R_SIZE) + ID_CRED_I_SIZE +                             \
 	 AS_BSTR_SIZE(SIG_OR_MAC_SIZE) + EAD_SIZE)
+#else
+#define PLAINTEXT2_SIZE                                                        \
+	(AS_BSTR_SIZE(C_R_SIZE) + ID_CRED_R_SIZE + EAD_SIZE)
+#define PLAINTEXT3_SIZE                                                        \
+	(ID_CRED_I_SIZE + EAD_SIZE)
+#define PLAINTEXT4_SIZE                                                        \
+	(EAD_SIZE + AS_BSTR_SIZE(SIG_OR_MAC_SIZE))
+#endif
 #define CIPHERTEXT2_SIZE PLAINTEXT2_SIZE
 #define G_Y_CIPHERTEXT_2 (G_Y_SIZE + CIPHERTEXT2_SIZE)
 
@@ -294,11 +302,11 @@
 #ifndef KEM_AUTH
 #define PLAINTEXT4_SIZE EAD_SIZE + COSE_ENC0_STR_LEN
 #define CIPHERTEXT4_SIZE PLAINTEXT4_SIZE
-#define PLAINTEXT5_SIZE EAD_SIZE + COSE_ENC0_STR_LEN
-#define CIPHERTEXT5_SIZE PLAINTEXT5_SIZE
 #else
 #define PLAINTEXT4_SIZE EAD_SIZE + MAC_SIZE + COSE_ENC0_STR_LEN
-#define CIPHERTEXT4_SIZE PLAINTEXT4_SIZE + MAC_SIZE	
+#define CIPHERTEXT4_SIZE PLAINTEXT4_SIZE 	
+#define PLAINTEXT5_SIZE EAD_SIZE + MAC_SIZE+ COSE_ENC0_STR_LEN
+#define CIPHERTEXT5_SIZE PLAINTEXT5_SIZE
 #endif
 #define MSG_1_SIZE                                                             \
 	(1 + SUITES_I_SIZE + G_X_SIZE + AS_BSTR_SIZE(C_I_SIZE) + EAD_SIZE)
@@ -331,14 +339,21 @@
 
 #define INFO_MAX_SIZE CONTEXT_MAC_SIZE + 2 * CBOR_ENCODED_UINT
 
+#ifndef KEM_AUTH
 #define TH34_INPUT_SIZE                                                        \
 	(AS_BSTR_SIZE(HASH_SIZE) + PLAINTEXT23_MAX_SIZE + CRED_MAX_SIZE)
+#endif
 
 #define TH2_INPUT_SIZE (AS_BSTR_SIZE(G_Y_SIZE) + AS_BSTR_SIZE(HASH_SIZE))
+#define TH5_INPUT_SIZE (2*MAC_SIZE + 2*EAD_SIZE+ AS_BSTR_SIZE(HASH_SIZE))
 
 #ifdef KEM_AUTH
 #define CC_CIPHERTEXT (G_Y_SIZE + CIPHERTEXT3_SIZE)
 #define CC_CIPHERTEXT_4 (G_Y_SIZE + CIPHERTEXT4_SIZE)
+
+#define TH34_INPUT_SIZE                                                        \
+	(AS_BSTR_SIZE(HASH_SIZE) + PLAINTEXT23_MAX_SIZE + CRED_MAX_SIZE +      \
+	 G_I_SIZE)
 #endif
 
 #endif

@@ -156,7 +156,7 @@ signature_or_mac(enum sgn_or_mac_op op, bool static_dh, struct suite *suite,
 		 const struct byte_array *cred, const struct byte_array *ead,
 		 enum info_label mac_label, struct byte_array *signature_or_mac)
 {
- PRINT_ARRAY("signarray_or_mac is sign or mac func", signature_or_mac->ptr, signature_or_mac->len);	
+ //PRINT_ARRAY("signarray_or_mac is sign or mac func", signature_or_mac->ptr, signature_or_mac->len);	
 	if (op == GENERATE) {
 		/*we always calculate the mac*/
 		TRY(mac(prk, c_r, th, id_cred, cred, ead, mac_label, static_dh,

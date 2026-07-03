@@ -15,6 +15,7 @@
 
 #include "common/byte_array.h"
 #include "common/oscore_edhoc_error.h"
+#include "edhoc/edhoc_method_type.h"
 
 /**
  * @brief                       Calculates transcript hash TH2
@@ -34,15 +35,28 @@ enum err th2_calculate(enum hash_alg alg, struct byte_array *msg1_hash,
  * @brief                       Calculates transcript hash th3/th4 
  *                              TH_3 = H(TH_2, PLAINTEXT_2) 
  *                              TH_4 = H(TH_3, PLAINTEXT_3) 
- * 
+ * @param m                     Method type.
  * @param alg                   Hash algorithm to be used.
  * @param[in] th23              th2 ot th3.
  * @param[in] plaintext_23      Plaintext 2 or plaintext 3.
  * @param[in] cred              The credential.
+ * @param[in] ct                Ct_I  or ct_R .  
  * @param[out] th34             The result.
+ * @retval                      Ok or error.
  */
-enum err th34_calculate(enum hash_alg alg, struct byte_array *th23,
-			struct byte_array *plaintext_23,
-			const struct byte_array *cred, struct byte_array *th34);
+enum err th34_calculate(enum method_type m, enum hash_alg alg, struct byte_array *th23, struct byte_array *plaintext_23, const struct byte_array *cred,struct byte_array *ct, struct byte_array *th34);
 
+
+/**
+ * @brief                       Calculates transcript hash th5 
+ *                              TH_5 = H(TH_4, PLAINTEXT_4) 
+ * @param alg                   Hash algorithm to be used.
+ * @param[in] th4               The transcript hash TH_4.
+ * @param[in] plaintext_4       The plaintext 4.
+ * @param[out] th5              The result.
+ * @retval                      Ok or error.
+ */
+enum err th5_calculate(enum hash_alg alg,  struct byte_array *th4, struct byte_array *plaintext_4, struct byte_array *th5);
 #endif
+
+

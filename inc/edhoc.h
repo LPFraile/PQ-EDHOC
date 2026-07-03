@@ -68,6 +68,7 @@ struct edhoc_initiator_context {
 	struct byte_array suites_i;
 	struct byte_array ead_1;
 	struct byte_array ead_3;
+	struct byte_array ead_5;
 	struct byte_array id_cred_i;
 	struct byte_array cred_i;
 	struct byte_array g_x; /*ephemeral dh public key*/

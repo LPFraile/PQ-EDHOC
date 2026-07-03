@@ -292,6 +292,7 @@ static bool decode_plaintext_KEM(
 static bool decode_plaintext_KEM_45(
 		zcbor_state_t *state, struct plaintext *result)
 {
+	printf("decode_plaintext_KEM_45\r\n");
 	zcbor_log("%s\r\n", __func__);
 	bool int_res;
 
@@ -302,8 +303,10 @@ static bool decode_plaintext_KEM_45(
 	if (!tmp_result) {
 		zcbor_trace_file(state);
 		zcbor_log("%s error: %s\r\n", __func__, zcbor_error_str(zcbor_peek_error(state)));
+		printf("%s error: %s\r\n", __func__, zcbor_error_str(zcbor_peek_error(state)));
 	} else {
 		zcbor_log("%s success\r\n", __func__);
+		printf("%s success\r\n", __func__);	
 	}
 
 	return tmp_result;

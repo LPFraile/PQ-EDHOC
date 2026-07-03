@@ -70,6 +70,8 @@ static enum err ciphertext_encrypt_decrypt(
 	} else {
 		PRINT_MSG("AEAD\n");
 		TRY(aead(op, in, key, nonce, aad, out, tag));
+		PRINT_ARRAY("out", out->ptr, out->len);		
+		PRINT_ARRAY("tag", tag->ptr, tag->len);		
 	}
 	return ok;
 }
@@ -91,6 +93,7 @@ static enum err key_gen(enum ciphertext ctxt, enum hash_alg edhoc_hash,
 			struct byte_array *key, struct byte_array *iv)
 {
 	PRINT_MSG("Key gen\n");
+	PRINT_ARRAY("prk", prk->ptr, prk->len);
 	switch (ctxt) {
 	case CIPHERTEXT2:
 		PRINT_MSG("CIPHERTEXT2\n");
@@ -110,6 +113,16 @@ static enum err key_gen(enum ciphertext ctxt, enum hash_alg edhoc_hash,
 
 	case CIPHERTEXT4:
 		PRINT_MSG("CIPHERTEXT4\n");	
+		PRINT_ARRAY("PRK_4e3m", prk->ptr, prk->len);
+		PRINT_ARRAY("TH_4", th->ptr, th->len);
+		TRY(edhoc_kdf(edhoc_hash, prk, K_4, th, key));
+		PRINT_ARRAY("K_4", key->ptr, key->len);
+		TRY(edhoc_kdf(edhoc_hash, prk, IV_4, th, iv));
+		PRINT_ARRAY("IV_4", iv->ptr, iv->len);
+		break;
+
+	case CIPHERTEXT5:
+		PRINT_MSG("CIPHERTEXT5\n");	
 		PRINT_ARRAY("PRK_4e3m", prk->ptr, prk->len);
 		PRINT_ARRAY("TH_4", th->ptr, th->len);
 		TRY(edhoc_kdf(edhoc_hash, prk, K_4, th, key));
@@ -170,7 +183,9 @@ enum err ciphertext_decrypt_split(
 	struct byte_array tag = BYTE_ARRAY_INIT(ciphertext->ptr, tag_len);
 	
     PRINT_ARRAY("ciphertext", ciphertext->ptr, ciphertext->len);
-
+    PRINT_ARRAY("tag", tag.ptr, tag.len);
+	PRINT_ARRAY("key", key.ptr, key.len);
+	PRINT_ARRAY("iv", iv.ptr, iv.len);
 	TRY(ciphertext_encrypt_decrypt(ctxt, DECRYPT, ciphertext, &key, &iv,
 				       &associated_data, plaintext, &tag));
 	PRINT_ARRAY("plaintext", plaintext->ptr, plaintext->len);
@@ -226,7 +241,7 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 {
 	PRINT_MSG("ciphertext gen\n");
 	PRINT_ARRAY("id_cred", id_cred->ptr, id_cred->len);
-	PRINT_ARRAY("plaintext", plaintext->ptr, plaintext->len);	
+	//PRINT_ARRAY("plaintext", plaintext->ptr, plaintext->len);	
 	#ifndef KEM_AUTH
 	BYTE_ARRAY_NEW(signature_or_mac_enc, AS_BSTR_SIZE(SIG_OR_MAC_SIZE),
 		       AS_BSTR_SIZE(signature_or_mac->len));
@@ -250,7 +265,7 @@ enum err ciphertext_gen(enum ciphertext ctxt, struct suite *suite,
 					      ptxt_buf_capacity));
 		}
 	}
-	if (ctxt != CIPHERTEXT4) {
+	if ((ctxt == CIPHERTEXT2) || (ctxt == CIPHERTEXT3)) {
 		BYTE_ARRAY_NEW(kid, KID_SIZE, KID_SIZE);
 		TRY(id_cred2kid(id_cred, &kid));
 

@@ -48,12 +48,19 @@ struct runtime_context {
 	uint8_t id_cred_i_buf[ID_CRED_I_SIZE];
 	struct byte_array id_cred_i;
 	
-#ifdef KEM_AUTH
+
 	/*responder specific*/
+	uint8_t plaintext_2_buf[PLAINTEXT2_SIZE];
+	struct byte_array plaintext_2;
+	uint8_t plaintext_3_buf[PLAINTEXT3_SIZE];
+	struct byte_array plaintext_3;
+	uint8_t plaintext_4_buf[PLAINTEXT4_SIZE];
+	struct byte_array plaintext_4;
 	uint8_t th2_buf[HASH_SIZE];
 	struct byte_array th2;
 	uint8_t prk_2e_buf[PRK_SIZE];
 	struct byte_array prk_2e;
+	//#ifdef KEM_AUTH
 	uint8_t cc_R_buf[G_Y_SIZE];
 	struct byte_array cc_R;
 	uint8_t cc_I_buf[G_Y_SIZE];
@@ -62,7 +69,7 @@ struct runtime_context {
 	struct byte_array ss_R;
 	uint8_t ss_I_buf[ECDH_SECRET_SIZE];
 	struct byte_array ss_I;
-#endif
+	//#endif
 };
 
 #endif

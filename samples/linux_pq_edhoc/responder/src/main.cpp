@@ -278,12 +278,12 @@ int main()
 	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
 		  &suit_in);
 //PRINT_ARRAY("cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
-#ifdef KEM_AUTH
+#ifndef KEM_AUTH
 	PRINTF("INITIATOR SUIT kem: %d, signature %d\n", suit_in.edhoc_ecdh,
 	       suit_in.edhoc_sign)
 	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
 	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
-#elif
+#else
 	PRINTF("INITIATOR SUIT kem: %d\n", suit_in.edhoc_ecdh)
 	PRINTF("responder KEM pk size: %d \n", c_r.r.len);
 	PRINTF("responder KEM sk size: %d \n", c_r.g_r.len);
