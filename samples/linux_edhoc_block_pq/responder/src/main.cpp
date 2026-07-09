@@ -30,8 +30,8 @@ extern "C" {
 #include "coap3/coap.h"
 
 /*Define IPv4 or IPv6*/
-//#define USE_IPV4
-#define USE_IPV6
+#define USE_IPV4
+//#define USE_IPV6
 
 #ifdef USE_COAP_BLOCK_SIZE
 #define COAP_MAX_BLOCK_SIZE USE_COAP_BLOCK_SIZE
@@ -39,7 +39,12 @@ extern "C" {
 #define COAP_MAX_BLOCK_SIZE 512
 #endif
 
-#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#define USE_IPV4
+#if defined(KEM_AUTH) && defined(KYBER_LEVEL_1)
+uint8_t TEST_VEC_NUM = 18;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 1000
+#elif (FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
 #define PQ_PROPOSAL_1
 #define MAX_PAYLOAD_SIZE 1500
@@ -376,7 +381,22 @@ void * edhoc_responder_init(void *arg)
 	cred_i.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_i_pk;
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
-
+	//get_suite(enum suite_label label, struct suite *suite)
+	PRINTF("test vector number: %d\n", vec_num_i + 1);
+	struct suite suit_in;
+	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
+		  &suit_in);
+//PRINT_ARRAY("cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
+#ifndef KEM_AUTH
+	PRINTF("INITIATOR SUIT kem: %d, signature %d\n", suit_in.edhoc_ecdh,
+	       suit_in.edhoc_sign)
+	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
+	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
+#else
+	PRINTF("INITIATOR SUIT kem: %d\n", suit_in.edhoc_ecdh)
+	PRINTF("responder KEM pk size: %d \n", c_r.r.len);
+	PRINTF("responder KEM sk size: %d \n", c_r.g_r.len);
+#endif
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
 	uint8_t Y[32];
@@ -394,22 +414,45 @@ void * edhoc_responder_init(void *arg)
 	c_r.y.len = Y_random.len;
 #endif
 #ifdef PQ_PROPOSAL_1
-	struct suite suit_in;
+	/*struct suite suit_in;
 	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
-		      &suit_in);
+		      &suit_in);*/
 	uint8_t G_Y[get_kem_cc_len(suit_in.edhoc_ecdh)];
 	c_r.g_y.ptr = G_Y;
 	c_r.g_y.len = get_kem_cc_len(suit_in.edhoc_ecdh);
 	c_r.y.ptr = NULL;
 	c_r.y.len = 0;
-	PRINTF("Test vector number: %d\n", vec_num_i+1);
-	PRINTF("Ciphersuit: KEM %d, Signature %d\n",suit_in.edhoc_ecdh,suit_in.edhoc_sign);
-	printsuits(suit_in.edhoc_ecdh);
-	printsuits(suit_in.edhoc_sign);
-	PRINTF("Server authentication pk size: %d \n", c_r.pk_r.len);
-	PRINTF("Server authentication sk size: %d \n", c_r.sk_r.len);
-	PRINT_MSG("-------------------------------------------------------\n");
+#ifdef KEM_AUTH
+	PRINT_ARRAY("static PQ KEM Key public", c_r.g_r.ptr, c_r.g_r.len);
+	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
+	/*Only for test i should delete*/
+
+	/*BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+		       get_kem_cc_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
+	struct byte_array cc_kem_b;
+	struct byte_array ss_kem_b;
+	cc_kem_b.len = get_kem_cc_len(suit_in.edhoc_ecdh);
+	cc_kem_b.ptr = CC_KEM.ptr;
+	ss_kem_b.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b.ptr = SS_KEM.ptr;
+	struct byte_array ss_kem_b_2;
+	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b_2.ptr = SS_KEM.ptr;
+	kem_encapsulate(suit_in.edhoc_ecdh, &c_r.g_r, &cc_kem_b,
+			    &ss_kem_b);
+	PRINT_ARRAY("static SS KEM R:", ss_kem_b.ptr, ss_kem_b.len);
+	PRINT_ARRAY("static CC KEM R :", cc_kem_b.ptr, cc_kem_b.len);
+	kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.r,
+			    &ss_kem_b_2));
+	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);*/
 #endif
+
+#endif
+
 	while (1) {
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 		/*create ephemeral DH keys from seed*/

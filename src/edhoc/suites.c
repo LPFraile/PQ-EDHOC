@@ -64,7 +64,7 @@ enum err get_suite(enum suite_label label, struct suite *suite)
 		suite->app_aead = AES_CCM_16_64_128;
 		suite->app_hash = SHA_256;
 		break;
-	#if defined(PQM4) || defined(LIBOQS) 
+#if defined(PQM4) || defined(LIBOQS) || defined(PQCLEAN)
 	case SUITE__22:
 		suite->suite_label = SUITE__22;
 		suite->edhoc_aead = AES_CCM_16_64_128;
@@ -253,8 +253,8 @@ uint32_t get_signature_len(enum sign_alg alg)
 		return OQS_SIG_ml_dsa_44_ipd_length_signature;
 		//return OQS_SIG_dilithium_2_length_signature;	
 		break;
-	#endif
-	#ifdef PQM4
+#endif
+#if defined(PQM4) || defined(PQCLEAN) || defined (MUPQ)
 	case FALCON_LEVEL1:
 		return 690; //Was working before with 690
 		break;
@@ -262,21 +262,21 @@ uint32_t get_signature_len(enum sign_alg alg)
 		return 2420;	
 		break;
 	case HAWK_LEVEL1:
-		return 555;	
+		return 555;
 		break;
 	case HAETAE_LEVEL2:
-		return 1474;	
+		return 1474;
 		break;
-	#endif
-	
-	#if(defined MUPQ) && (!defined(PQM4))
+#endif
+
+/*#if (defined MUPQ) && (!defined(PQM4))
 	case HAWK_LEVEL1:
 		return 555;	
 		break;
 	case HAETAE_LEVEL2:
 		return 1474;	
 		break;
-	#endif
+	#endif*/
 
 	default: 
 		return 0;
@@ -308,8 +308,8 @@ uint32_t get_sk_len(enum sign_alg alg)
 		//return OQS_SIG_dilithium_2_length_secret_key;	
 		return OQS_SIG_ml_dsa_44_ipd_length_secret_key;	
 		break;
-	#endif
-	#ifdef PQM4
+#endif
+#if defined(PQM4) || defined(PQCLEAN) || defined (MUPQ)
 	case FALCON_LEVEL1:
 		return 1281; //Was working before with 690
 		break;
@@ -317,14 +317,14 @@ uint32_t get_sk_len(enum sign_alg alg)
 		return 2560;	
 		break;
 	case HAWK_LEVEL1:
-		return 184;	
+		return 184;
 		break;
 	case HAETAE_LEVEL2:
-		return 1408;	
+		return 1408;
 		break;
-	#endif
-	
-	#if(defined MUPQ) && (!defined(PQM4))
+#endif
+
+/*#if (defined MUPQ) && (!defined(PQM4))
 	case HAWK_LEVEL1:
 		return 184;	
 		break;
@@ -332,7 +332,7 @@ uint32_t get_sk_len(enum sign_alg alg)
 		return 1404;	
 		break;
 	#endif
-
+*/
 	default: 
 		return 0;
 	}
@@ -363,31 +363,31 @@ uint32_t get_pk_len(enum sign_alg alg)
 		//return OQS_SIG_dilithium_2_length_public_key;	
 		return OQS_SIG_ml_dsa_44_ipd_length_public_key;	
 		break;
-	#endif
-	#ifdef PQM4
+#endif
+#if defined(PQM4) || defined(PQCLEAN) || defined (MUPQ)
 	case FALCON_LEVEL1:
 		return 897; //Was working before with 690
 		break;
 	case DILITHIUM_LEVEL2:
-		return 1312;	
+		return 1312;
 		break;
 	case HAWK_LEVEL1:
-		return 1024;	
+		return 1024;
 		break;
 	case HAETAE_LEVEL2:
-		return 992;	
+		return 992;
 		break;
-	#endif
-	
-	#if(defined MUPQ) && (!defined(PQM4))
-	case HAWK_LEVEL1:
-		return 1024;	
-		break;
-	case HAETAE_LEVEL2:
-		return 992;	
-		break;
-	#endif
+#endif
 
+/*#if (defined MUPQ) && (!defined(PQM4))
+	case HAWK_LEVEL1:
+		return 1024;	
+		break;
+	case HAETAE_LEVEL2:
+		return 992;	
+		break;
+	#endif
+*/
 	default: 
 		return 0;
 	}
@@ -405,7 +405,7 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	case X25519:
 		return 32;
 		break;
-	#ifdef LIBOQS
+	/*#ifdef LIBOQS
 	case KYBER_LEVEL1:
 		return OQS_KEM_ml_kem_512_length_public_key;
 		break;
@@ -435,8 +435,8 @@ uint32_t get_ecdh_pk_len(enum ecdh_alg alg)
 	case BIKE_LEVEL1:
 		return 1541;
 		break;
-	#endif
-	default: 
+	#endif*/
+	default:
 		return 0;
 	}
 	return 0;
@@ -462,7 +462,7 @@ uint32_t get_kem_pk_len(enum ecdh_alg alg)
 		return OQS_KEM_bike_l1_length_public_key;
 		break;
 	#endif
-	#ifdef PQM4
+	#if defined(PQM4) || defined(PQCLEAN)
 	case KYBER_LEVEL1:
 		return 800;
 		break;
@@ -502,7 +502,7 @@ uint32_t get_kem_sk_len(enum ecdh_alg alg)
 		return OQS_KEM_bike_l1_length_secret_key;
 		break;
 	#endif
-	#ifdef PQM4
+	#if defined(PQM4) || defined(PQCLEAN)
 	case KYBER_LEVEL1:
 		return 1632;
 		break;

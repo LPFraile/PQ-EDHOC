@@ -99,7 +99,7 @@
 #endif
 #endif
 
-#ifdef PQM4
+#if defined(PQM4) || defined(PQCLEAN)
 #include <api.h>
 
 #ifdef HQC_LEVEL_1
@@ -230,12 +230,22 @@
 #define G_I_SIZE P_256_PUB_KEY_UNCOMPRESSED_SIZE
 #endif
 
-#ifndef SIGNATURE_SIZE
+/*NOT CORRECT only to work for now*/
+/*#ifndef SIGNATURE_SIZE
+#ifndef KEM_AUTH
 #define SIGNATURE_SIZE 64
+#else
+#define SIGNATURE_SIZE 700
 #endif
+#endif*/
 
+#ifndef KEM_AUTH
 #define CRED_I_SIZE PK_SIZE + SIGNATURE_SIZE + 200
 #define CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
+#else
+#define CRED_I_SIZE 1720
+#define CRED_R_SIZE 1720
+#endif
 
 #if defined(USE_X5CHAIN)
 #define ID_CRED_R_SIZE PK_SIZE + SIGNATURE_SIZE + 200
@@ -279,7 +289,7 @@
 #define SIG_OR_MAC_SIZE_ENCODING_OVERHEAD                                      \
 	3 /*we need 3 bbytes to encode PQ signatures*/
 #define PLAINTEXT3_SIZE_ENCODING_OVERHEAD 4
-#ifndef KEM_AUTHN
+#ifndef KEM_AUTH
 #define PLAINTEXT2_SIZE                                                        \
 	(AS_BSTR_SIZE(C_R_SIZE) + ID_CRED_I_SIZE +                             \
 	 AS_BSTR_SIZE(SIG_OR_MAC_SIZE) + EAD_SIZE)

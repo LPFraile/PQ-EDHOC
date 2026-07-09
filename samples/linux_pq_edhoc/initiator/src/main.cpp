@@ -320,7 +320,7 @@ int main()
 	PRINT_ARRAY("static KEM PQ Key public", c_i.g_i.ptr, c_i.g_i.len);
 	PRINT_ARRAY("static KEM PQ Key private", c_i.i.ptr, c_i.i.len);
 	/*Just for TEST*/
-	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+	/*BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
 		       get_kem_cc_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
 		       get_kem_ss_len(suit_in.edhoc_ecdh));
@@ -341,7 +341,7 @@ int main()
 	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_i.i,
 			    &ss_kem_b_2));
 	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr, ss_kem_b.len);
-	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
+	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);*/
 #endif
 
 #endif

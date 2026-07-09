@@ -20,10 +20,10 @@
 #include "memcpy_s.h"
 
 /* Array with pointer and length.*/
-struct byte_array {
+typedef struct byte_array {
 	uint32_t len;
 	uint8_t *ptr;
-};
+} byte_array;
 
 struct const_byte_array {
 	uint32_t len;

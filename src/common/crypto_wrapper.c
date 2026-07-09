@@ -75,20 +75,32 @@ modify setting in include/psa/crypto_config.h
 #endif
 
 #ifdef MUPQ
-#include <api.h>
+#include <externals/pqm4/mupq/crypto_sign/hawk512/ref/api.h>
 #endif
 
 #ifdef PQCLEAN
+#ifdef KYBER_LEVEL_1
+#include <externals/PQClean/crypto_kem/kyber512/clean/api.h>
+#define crypto_kem_keypair PQCLEAN_KYBER512_CLEAN_crypto_kem_keypair
+#define crypto_kem_enc PQCLEAN_KYBER512_CLEAN_crypto_kem_enc
+#define crypto_kem_dec PQCLEAN_KYBER512_CLEAN_crypto_kem_dec
+/*#define CRYPTO_SECRETKEYBYTES 1632
+#define CRYPTO_PUBLICKEYBYTES 800
+#define CRYPTO_BYTES 32
+#define CRYPTO_CIPHERTEXTBYTES 768*/
+#endif
+#ifdef HQC_LEVEL_1
 #define crypto_kem_keypair PQCLEAN_HQC128_CLEAN_crypto_kem_keypair
 #define crypto_kem_enc PQCLEAN_HQC128_CLEAN_crypto_kem_enc
 #define crypto_kem_dec PQCLEAN_HQC128_CLEAN_crypto_kem_dec
-#define CRYPTO_SECRETKEYBYTES 2305
+/*#define CRYPTO_SECRETKEYBYTES 2305
 #define CRYPTO_PUBLICKEYBYTES 2249
 #define CRYPTO_BYTES 64
-#define CRYPTO_CIPHERTEXTBYTES 4433
+#define CRYPTO_CIPHERTEXTBYTES 4433*/
+#endif
 #endif
 
-#if defined(PQM4) || defined(LIBOQS)
+#if defined(PQM4) || defined(LIBOQS) || defined(PQCLEAN)
 #ifdef LIBOQS
 static const char *OQS_ID2name(int id)
 {
@@ -178,14 +190,13 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, struct byte_array *sk,
 	}
 
 	if (OQS_KEM_keypair(kem, pk->ptr, sk->ptr) != OQS_SUCCESS) {
-		ret = -1; // Na to allaxw
+		ret = -2; // Na to allaxw
 	}
 
 	OQS_KEM_free(kem);
 	return ret;
-
-#else // LIBOQS
-	//This is PQM4
+#else
+	//This is PQM4 or PQCLEAN
 	int ret = 0;
 
 	/* Key lengths */
@@ -222,10 +233,19 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, struct byte_array *sk,
 	PRINTF("sk size %d\n", sk->len);
 	if (crypto_kem_keypair(pk->ptr, sk->ptr) != 0) {
 		ret = -1; // Na to allaxw
+		printf("error in kem keygen\n");
 	}
-
+	printf("Generated KEM keypair\n");
 	return ret;
 
+/*#else // LIBOQS
+	// This is PQCLEAN
+	PRINTF("Thsi is PQCLEAN\n");
+	int ret = 0;
+	if (PQCLEAN_KYBER512_CLEAN_crypto_kem_keypair(pk->ptr, sk->ptr) != 0) {
+		return -1;
+	}
+	return ret;*/
 #endif
 }
 
@@ -405,7 +425,7 @@ enum err WEAK kem_decapsulate(enum ecdh_alg alg, const struct byte_array *ct,
 
 #endif //LIBOQS
 }
-
+#ifndef KEM_AUTH
 enum err WEAK static_signature_key_gen(enum sign_alg alg, struct byte_array *sk,
 				       struct byte_array *pk)
 {
@@ -618,7 +638,7 @@ enum err WEAK sign_verify(enum sign_alg alg, const struct byte_array *pk,
 
 #endif
 }
-
+#endif
 #endif
 
 #ifdef DH
@@ -953,7 +973,8 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
 	else if ((alg <= FALCON_LEVEL1) && (alg >= HAETAE_LEVEL2)) {
-#if defined(PQM4) || defined(LIBOQS)
+#if (defined(PQM4) || defined(LIBOQS) || defined(MUPQ) || defined(PQCLEAN)) && \
+	!defined(KEM_AUTH)
 		PRINT_MSG("PQ signature\n");
 		int ret = sign_signature(alg, sk, msg, out, out_len);
 		PRINT_MSG("PQ signature correct\n");
@@ -1045,7 +1066,8 @@ enum err WEAK verify_edhoc(enum sign_alg alg, const struct byte_array *pk,
 	}
 	//else if ((alg == FALCON_LEVEL1)||(alg == FALCON_LEVEL1)||(alg == FALCON_PADDED_LEVEL1)||(alg == FALCON_PADDED_LEVEL5)){
 	else if ((alg <= FALCON_LEVEL1) && (alg >= HAETAE_LEVEL2)) {
-#if defined(PQM4) || defined(LIBOQS)
+#if (defined(PQM4) || defined(LIBOQS) || defined(MUPQ) || defined(PQCLEAN)) && \
+	!defined(KEM_AUTH)
 		int ret = sign_verify(alg, pk, (const struct byte_array *)msg,
 				      (const struct byte_array *)sgn);
 		if (ret == 0) {
@@ -1284,7 +1306,10 @@ enum err WEAK shared_secret_derive(enum ecdh_alg alg,
 		return ok;
 #endif
 	}
-	if (alg == P256) {
+	if ((alg == P256) || (alg == H_P256_KYBER_LEVEL1) ||
+	    (alg == H_P256_KYBER_LEVEL3) || (alg == H_P256_HQC_LEVEL1) ||
+	    (alg == H_P256_BIKE_LEVEL1)) {
+		PRINT_MSG("P256 in DH\n");
 #if defined(TINYCRYPT)
 		uECC_Curve p256 = uECC_secp256r1();
 		uint8_t pk_decompressed[P_256_PUB_KEY_UNCOMPRESSED_SIZE];

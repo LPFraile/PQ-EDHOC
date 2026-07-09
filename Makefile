@@ -174,6 +174,26 @@ EXTERNAL_LIB_PATH = externals/liboqs/build/lib
 EXTERNAL_STATIC_LIB = liboqs.a
 endif
 
+
+ifeq ($(findstring PQCLEAN,$(EXTENDED_CFLAGS)),PQCLEAN)
+ifeq ($(findstring HQC_LEVEL_1,$(EXTENDED_CFLAGS)),HQC_LEVEL_1)
+C_INCLUDES += -Iexternals/PQClean/crypto_kem/hqc-128/clean
+# Add HQC sources if you use it
+#C_SOURCES += externals/PQClean/crypto_kem/hqc-128/clean/*.c
+endif
+ifeq ($(findstring KYBER_LEVEL_1,$(EXTENDED_CFLAGS)),KYBER_LEVEL_1)
+C_INCLUDES += -Iexternals/PQClean/crypto_kem/kyber512/clean
+# Add Kyber sources
+#C_SOURCES += externals/PQClean/crypto_kem/kyber512/clean/*.c
+endif
+# Add common sources required by PQClean implementations
+#C_SOURCES += externals/PQClean/common/randombytes.c
+#C_SOURCES += externals/PQClean/common/fips202.c
+#C_SOURCES += externals/PQClean/common/keccakf1600.c
+#C_INCLUDES += -Iexternals/PQClean/common
+endif
+
+ifneq ($(findstring PQCLEAN,$(EXTENDED_CFLAGS)),PQCLEAN)
 ifeq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
 C_INCLUDES += -Iexternals/pqm4/common
 #C_INCLUDES += -Iexternals/pqm4/mupq/common
@@ -186,9 +206,6 @@ C_INCLUDES += -Iexternals/pqm4/crypto_kem/kyber768/m4fstack
 endif
 ifeq ($(findstring BIKE_LEVEL_1,$(EXTENDED_CFLAGS)),BIKE_LEVEL_1)
 C_INCLUDES += -Iexternals/pqm4/crypto_kem/bikel1/m4f
-endif
-ifeq ($(findstring HQC_LEVEL_1,$(EXTENDED_CFLAGS)),HQC_LEVEL_1)
-C_INCLUDES += -Iexternals/PQClean/crypto_kem/hqc-128/clean
 endif
 #C_INCLUDES += -Iexternals/pqm4/crypto_sign/dilithium2/m4fstack
 ifeq ($(findstring FALCON_LEVEL_1,$(EXTENDED_CFLAGS)),FALCON_LEVEL_1)
@@ -215,6 +232,7 @@ endif
 
 C_INCLUDES += -Iexternals/pqm4/libopencm3/include
 endif
+endif
 
 ifneq ($(findstring PQM4,$(EXTENDED_CFLAGS)),PQM4)
 ifeq ($(findstring MUPQ,$(EXTENDED_CFLAGS)),MUPQ)
@@ -228,10 +246,12 @@ endif
 endif
 endif
 
+
+
 #add include paths
 EXTENDED_CFLAGS += $(C_INCLUDES)
-
-
+# Add the current directory so full paths like <externals/...> work
+EXTENDED_CFLAGS += -I.
 
 $(info    EXTENDED_CFLAGS are $(EXTENDED_CFLAGS))
 ################################################################################

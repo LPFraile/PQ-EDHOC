@@ -63,7 +63,11 @@ extern "C" {
 TCP/UDP overhead to _mtu_ for the client endpoint's _session_.  The default
 MTU is 1152.*/
 #define COAP_SESSION_MTU COAP_MAX_BLOCK_SIZE + 80
-#if defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
+#if defined(KEM_AUTH) && defined(KYBER_LEVEL_1)
+uint8_t TEST_VEC_NUM = 18;
+#define PQ_PROPOSAL_1
+#define MAX_PAYLOAD_SIZE 1000
+#elif defined(FALCON_LEVEL_1) && defined(KYBER_LEVEL_1) && !defined(USE_X5CHAIN)
 uint8_t TEST_VEC_NUM = 7;
 #define PQ_PROPOSAL_1
 #define MAX_PAYLOAD_SIZE 1500
@@ -420,6 +424,8 @@ int main()
 	c_i.ead_1.ptr = (uint8_t *)test_vectors[vec_num_i].ead_1;
 	c_i.ead_3.len = test_vectors[vec_num_i].ead_3_len;
 	c_i.ead_3.ptr = (uint8_t *)test_vectors[vec_num_i].ead_3;
+	c_i.ead_5.len = 0;
+	//c_i.ead_5.ptr = (uint8_t *)test_vectors[vec_num_i].ead_5;
 	c_i.id_cred_i.len = test_vectors[vec_num_i].id_cred_i_len;
 	c_i.id_cred_i.ptr = (uint8_t *)test_vectors[vec_num_i].id_cred_i;
 	c_i.cred_i.len = test_vectors[vec_num_i].cred_i_len;
@@ -451,7 +457,18 @@ int main()
 	cred_r.ca_pk.ptr = (uint8_t *)test_vectors[vec_num_i].ca_r_pk;
 
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
-
+	PRINTF("initiator test vector number %d:", vec_num_i + 1);
+#ifndef KEM_AUTH
+	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,
+		    c_i.suites_i.len);
+	PRINTF("initiator sk size:%d \n", c_i.sk_i.len);
+	PRINTF("initiator pk size:%d \n", c_i.pk_i.len);
+#else
+	PRINT_ARRAY("initator cipher suit:", c_i.suites_i.ptr,
+		    c_i.suites_i.len);
+	PRINTF("initiator KEM sk size:%d \n", c_i.i.len);
+	PRINTF("initiator KEM pk size:%d \n", c_i.g_i.len);
+#endif
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
 	BYTE_ARRAY_NEW(X_random, 32, 32);
@@ -474,7 +491,11 @@ int main()
 	c_i.x.len = X_random.len;
 	PRINT_ARRAY("secret ephemeral DH key", c_i.g_x.ptr, c_i.g_x.len);
 	PRINT_ARRAY("public ephemeral DH key", c_i.x.ptr, c_i.x.len);
+#endif
 
+#ifdef TINYCRYPT
+	/* Register RNG function */
+	uECC_set_rng(default_CSPRNG);
 #endif
 
 #ifdef PQ_PROPOSAL_1
@@ -500,26 +521,36 @@ int main()
 	c_i.x.ptr = PQ_secret_random.ptr;
 	c_i.x.len = PQ_secret_random.len;
 
-	PRINTF("public ephemeral PQ Key size: %d\n",c_i.g_x.len);
-	PRINTF("secret ephemeral PQ Key size: %d\n",c_i.x.len);
-	//PRINTF("public ephemeral PQ Key: %d\n",c_i.g_x.len);
-	//PRINTF("secret ephemeral PQ Key: %d\n",c_i.x.len);
-	PRINT_ARRAY("public ephemeral PQ Key", c_i.g_x.ptr,
-		    c_i.g_x.len);
-	PRINT_ARRAY("secret ephemeral PQ Key", c_i.x.ptr,
-		    c_i.x.len);		
-
-	PRINT_MSG("-------------------------------------------------------\n");
-	//PRINTF("MAX MSG SIZE: %d\n",edhoc_get_max_msg_size());
-
+#ifdef KEM_AUTH
+	PRINT_ARRAY("static KEM PQ Key public", c_i.g_i.ptr, c_i.g_i.len);
+	PRINT_ARRAY("static KEM PQ Key private", c_i.i.ptr, c_i.i.len);
+	/*Just for TEST*/
+	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+		       get_kem_cc_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
+	BYTE_ARRAY_NEW(SS_KEM_2, get_kem_ss_len(suit_in.edhoc_ecdh),
+		       get_kem_ss_len(suit_in.edhoc_ecdh));
+	struct byte_array cc_kem_b;
+	struct byte_array ss_kem_b;
+	cc_kem_b.len = get_kem_cc_len(suit_in.edhoc_ecdh);
+	cc_kem_b.ptr = CC_KEM.ptr;
+	ss_kem_b.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b.ptr = SS_KEM.ptr;
+	struct byte_array ss_kem_b_2;
+	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
+	ss_kem_b_2.ptr = SS_KEM.ptr;
+	TRY(kem_encapsulate(suit_in.edhoc_ecdh, &c_i.g_i, &cc_kem_b,
+			    &ss_kem_b));
+	PRINT_ARRAY("static CC KEM I :", cc_kem_b.ptr, cc_kem_b.len);
+	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_i.i,
+			    &ss_kem_b_2));
+	PRINT_ARRAY("static SS KEM I:", ss_kem_b.ptr, ss_kem_b.len);
+	PRINT_ARRAY("static SS KEM I 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
+#endif
 
 #endif
 
-
-#ifdef TINYCRYPT
-	/* Register RNG function */
-	uECC_set_rng(default_CSPRNG);
-#endif
        // Set up CoAP context and session
     if (setup() != 0) {
         fprintf(stderr, "Failed to set up CoAP\n");

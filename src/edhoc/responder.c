@@ -269,7 +269,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 		*   Set the g_y with the ciphertex message c   
 		*/
 		PRINT_MSG("PQ KEM encapsulation\n");
-#if defined(PQM4) || defined(LIBOQS)
+#if defined(PQM4) || defined(LIBOQS) || defined(PQCLEAN)
 		PRINT_ARRAY("PQ DEV - g_x ", g_x.ptr, g_x.len);
 		PRINTF("cc size: %d\n", c->g_y.len);
 		PRINTF("ss size: %d\n", g_xy.len);
@@ -518,8 +518,7 @@ enum err msg4_gen(struct edhoc_responder_context *c, struct runtime_context *rc)
 enum err msg4_gen(struct edhoc_responder_context *c, struct runtime_context *rc)
 {
 
-	BYTE_ARRAY_NEW(sign_or_mac_2, SIGNATURE_SIZE,
-		       get_signature_len(rc->suite.edhoc_sign));
+	BYTE_ARRAY_NEW(sign_or_mac_2, MAC_SIZE,MAC_SIZE);
 	TRY(signature_or_mac(GENERATE, rc->static_dh_i, &rc->suite, &c->sk_r,
 			     &c->pk_r, &rc->prk_3e2m, &c->c_r, &rc->th4,
 			     &c->id_cred_r, &c->cred_r, &c->ead_4, MAC_2,

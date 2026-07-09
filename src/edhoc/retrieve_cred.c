@@ -107,7 +107,8 @@ static enum err get_local_cred(bool static_dh_auth,
 				 ID_cred->len))) {
 			PRINT_MSG("ID_CRED_x matches a local credential\n");
 			/*retrieve CRED_x*/
-
+            PRINTF("CRED_X len: %lu\n", (unsigned long)cred_array->ptr[i].cred.len);
+			PRINTF("cred_array->ptr[i].cred.len: %lu\n", (unsigned long)cred_array->ptr[i].cred.len);
 			TRY(_memcpy_s(cred->ptr, cred->len,
 				      cred_array->ptr[i].cred.ptr,
 				      cred_array->ptr[i].cred.len));
@@ -177,7 +178,7 @@ enum err retrieve_cred(bool static_dh_auth, struct cred_array *cred_array,
 			"ID_CRED_x contains a reference to the credential, retrieve it from local storage\n");
 
 		PRINT_ARRAY("ID_CRED_x", id_cred->ptr, id_cred->len);
-
+        
 		TRY(get_local_cred(static_dh_auth, cred_array, id_cred, cred,
 				   pk, g));
 

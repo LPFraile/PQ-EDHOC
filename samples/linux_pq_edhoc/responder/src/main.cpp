@@ -310,7 +310,7 @@ int main()
 	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
 	/*Only for test i should delete*/
 
-	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+	/*BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
 		       get_kem_cc_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
 		       get_kem_ss_len(suit_in.edhoc_ecdh));
@@ -331,7 +331,7 @@ int main()
 	PRINT_ARRAY("static CC KEM R :", cc_kem_b.ptr, cc_kem_b.len);
 	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.r,
 			    &ss_kem_b_2));
-	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
+	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);*/
 #endif
 
 #endif

@@ -223,8 +223,9 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	PRINT_ARRAY("message_2 (CBOR Sequence)", rc->msg.ptr, rc->msg.len);
 	BYTE_ARRAY_NEW(ciphertext, CIPHERTEXT2_SIZE, ciphertext_len);
 	
-	BYTE_ARRAY_NEW(plaintext, PLAINTEXT2_SIZE, ciphertext.len);
-
+	//BYTE_ARRAY_NEW(plaintext, PLAINTEXT2_SIZE, ciphertext.len);
+    
+	
 	/*parse the message*/
 	TRY(msg2_parse(&rc->msg, &g_y, &ciphertext));
 
@@ -237,7 +238,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 		*	Decapsulate the ciphertext to get the shared secret dec(c,eph-sk)->ss (dec(g_y,x)->g_xy)
 		*/
 		PRINT_MSG("KEM decapsulation\n");
-#if defined(PQM4) || defined(LIBOQS)
+#if defined(PQM4) || defined(LIBOQS) || defined(PQCLEAN)
 		PRINT_ARRAY("G_Y (PQ CC) ", g_y.ptr, g_y.len);
 		TRY(kem_decapsulate(rc->suite.edhoc_ecdh, &g_y, &c->x, &g_xy));
 		PRINT_ARRAY("G_XY (PQ SS) ", g_xy.ptr, g_xy.len);
@@ -270,26 +271,31 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 	BYTE_ARRAY_NEW(sign_or_mac, SIG_OR_MAC_SIZE, SIG_OR_MAC_SIZE);
 #endif
 	//BYTE_ARRAY_NEW(id_cred_r, ID_CRED_R_SIZE, ID_CRED_R_SIZE);
-
-    plaintext.len = ciphertext.len;
+    rc->plaintext_2.len = ciphertext.len;
+	rc->plaintext_2.ptr = (uint8_t *)rc->plaintext_2_buf;	
+    //plaintext.len = ciphertext.len;
 	//PRINT_MSG("Arrive here1");
-	TRY(check_buffer_size(PLAINTEXT2_SIZE, plaintext.len));
+	TRY(check_buffer_size(PLAINTEXT2_SIZE, rc->plaintext_2.len));
 	
 #ifndef KEM_AUTH
    
 	TRY(ciphertext_decrypt_split(CIPHERTEXT2, &rc->suite, c_r, &rc->id_cred_r,
 				     &sign_or_mac, &rc->ead, &PRK_2e, &rc->th2,
-				     &ciphertext, &plaintext));
+				     &ciphertext, &rc->plaintext_2));
 #else
 	//PRINT_MSG("Arrive here2");
-
+PRINTF("PLAINTEXT_2_LEN_BEFORE: %d\n", rc->plaintext_2.len);
 	TRY(ciphertext_decrypt_split(CIPHERTEXT2, &rc->suite, c_r,
 				     &rc->id_cred_r, NULL, &rc->ead, &PRK_2e, &rc->th2,
-				     &ciphertext, &plaintext));
+				     &ciphertext, &rc->plaintext_2));
+PRINTF("PLAINTEXT_2_LEN_BEFORE: %d\n", rc->plaintext_2.len);
 #endif
+    PRINT_ARRAY("PLAINTEXT_2", rc->plaintext_2.ptr, rc->plaintext_2.len);
 	//PRINT_MSG("Arrive here3");
 	/*check the authenticity of the responder*/
+	PRINTF("cred_r_size:%d\n", CRED_R_SIZE);
 	BYTE_ARRAY_NEW(cred_r, CRED_R_SIZE, CRED_R_SIZE);
+	PRINTF("cred_r.len:%d\n", cred_r.len);
 	BYTE_ARRAY_NEW(pk, PK_SIZE, PK_SIZE);
 	BYTE_ARRAY_NEW(g_r, G_R_SIZE, G_R_SIZE);
 	PRINTF("static_dh_r:%d\n", static_dh_r);
@@ -327,7 +333,8 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			   th3));*/
 //#ifndef KEM_AUTH
    PRINT_MSG("calculate th3");
-	TRY(th34_calculate(rc->method, rc->suite.edhoc_hash, &rc->th2, &plaintext, &cred_r,
+   PRINT_ARRAY("PLAINTEXT_2_before_th3", rc->plaintext_2.ptr, rc->plaintext_2.len);
+	TRY(th34_calculate(rc->method, rc->suite.edhoc_hash, &rc->th2, &rc->plaintext_2, &cred_r,
 			    &rc->cc_R, th3));
 //#endif
 /*derive prk_4e3m*/
