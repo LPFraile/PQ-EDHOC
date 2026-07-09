@@ -193,11 +193,11 @@ FEATURES += -DI_OPTIONS_BUFF_MAX_LEN=100
 # | EDHOC  | 0/1/2/3 | 0/1/2/3 | MBEDTLS and COMPACT25519
 # | EDHOC  | -22     | 0       | LIBOQS and TINYCRYPT
 
-CRYPTO_ENGINE += -DPQM4
+#CRYPTO_ENGINE += -DPQM4
 CRYPTO_ENGINE += -DTINYCRYPT
 CRYPTO_ENGINE += -DCOMPACT25519
 ###############################################################
-#CRYPTO_ENGINE += -DPQCLEAN
+CRYPTO_ENGINE += -DPQCLEAN
 #CRYPTO_ENGINE += -DMBEDTLS
 ################################################################
 # Enable that for PQ tests in linux

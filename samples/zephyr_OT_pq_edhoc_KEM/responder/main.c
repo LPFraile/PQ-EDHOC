@@ -323,7 +323,7 @@ int internal_main(void)
 	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
 	/*Only for test i should delete*/
 
-/*	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
 		       get_kem_cc_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
 		       get_kem_ss_len(suit_in.edhoc_ecdh));
@@ -338,13 +338,16 @@ int internal_main(void)
 	struct byte_array ss_kem_b_2;
 	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
 	ss_kem_b_2.ptr = SS_KEM.ptr;
+	PRINTF("static KEM CC len: %d\n",cc_kem_b.len);
+	PRINTF("static KEM SS len: %d\n",ss_kem_b.len);
+	
 	TRY(kem_encapsulate(suit_in.edhoc_ecdh, &c_r.g_r, &cc_kem_b,
 			    &ss_kem_b));
 	PRINT_ARRAY("static SS KEM R:", ss_kem_b.ptr, ss_kem_b.len);
 
 	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.r,
 			    &ss_kem_b_2));
-	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);*/
+	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
 #endif
 
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
