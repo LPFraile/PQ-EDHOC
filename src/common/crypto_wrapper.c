@@ -101,8 +101,8 @@ modify setting in include/psa/crypto_config.h
 
 #ifdef FALCON_LEVEL_1
 /*#define crypto_kem_keypair PQCLEAN_FALCON512_CLEAN_crypto_sign_keypair*/
-#define sign_signature PQCLEAN_FALCONPADDED512_CLEAN_crypto_sign_signature
-#define sign_verify PQCLEAN_FALCONPADDED512_CLEAN_crypto_sign_verify
+#define crypto_sign_signature PQCLEAN_FALCONPADDED512_CLEAN_crypto_sign_signature
+#define crypto_sign_verify PQCLEAN_FALCONPADDED512_CLEAN_crypto_sign_verify
 /*#define CRYPTO_SECRETKEYBYTES 2305
 #define CRYPTO_PUBLICKEYBYTES 2249
 #define CRYPTO_BYTES 64
@@ -522,9 +522,10 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 			     const struct byte_array *msg, uint8_t *sign,
 			     uint32_t *sign_len)
 {
+	printf("On sign_signature with alg %d\n", alg);
 #ifdef MUPQ
 	// This is PQM4
-	//printf("This is PQM4\n");
+	printf("This is MUPQ\n");
 	int ret = 0;
 	//print_array(msg->ptr,msg->len);
 	//print_array(sk->ptr,sk->len);
@@ -535,7 +536,7 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 	}
 
 #elif (defined LIBOQS)
-
+    printf("This is liboqs\n");
 	const char *algName = NULL;
 	OQS_SIG *sig = NULL;
 	int ret = 0;
@@ -568,13 +569,21 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 
 #else //LIBOQS
 	// This is PQM4
+	printf("on pqm4 or PQCLEAN\n");
 	int ret = 0;
-	if ((ret == 0) &&
+	/*if ((ret == 0) &&
 	    (crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len,
 				   sk->ptr) != 0)) {
+		printf("Error in sign_signature %d\n",SIG_BAD_FUNC_ARG);
+		ret = SIG_BAD_FUNC_ARG;
+	}*/
+ret = crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len,
+				   sk->ptr);
+	printf("crypto_sign_signature returned %d\n", ret);
+	if (ret != 0) {
+		printf("Error in sign_signature %d\n",SIG_BAD_FUNC_ARG);
 		ret = SIG_BAD_FUNC_ARG;
 	}
-
 	return ret;
 
 #endif
@@ -988,7 +997,7 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 	!defined(KEM_AUTH)
 		PRINT_MSG("PQ signature\n");
 		int ret = sign_signature(alg, sk, msg, out, out_len);
-		PRINT_MSG("PQ signature correct\n");
+		PRINTF("PQ signature correctnes %d\n", ret);
 		if (ret == 0) {
 			PRINT_MSG("sign_signature correct\n");
 			PRINTF("create signature of alg:%d corrected\n", alg);

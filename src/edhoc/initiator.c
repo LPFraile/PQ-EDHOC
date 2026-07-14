@@ -201,6 +201,7 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 			     bool static_dh_r, struct byte_array *th3,
 			     struct byte_array *PRK_3e2m)
 {
+	PRINT_ARRAY("message_2 (CBOR Sequence 1)", rc->msg.ptr, rc->msg.len);
 	uint32_t g_y_size = 0;
 	if ((c->suites_i.ptr[c->suites_i.len - 1] >= SUITE_7) &&
 	    (c->suites_i.ptr[c->suites_i.len - 1] <= SUITE_16)) {
@@ -221,6 +222,9 @@ static enum err msg2_process(const struct edhoc_initiator_context *c,
 
 	ciphertext_len -= BSTR_ENCODING_OVERHEAD(ciphertext_len);
 	PRINT_ARRAY("message_2 (CBOR Sequence)", rc->msg.ptr, rc->msg.len);
+	PRINTF("CIPHERTEXT2_LEN: %d\n", ciphertext_len);
+	PRINTF("CIPHERTEXT2_LEN chgosse: %d\n",
+	       CIPHERTEXT2_SIZE);
 	BYTE_ARRAY_NEW(ciphertext, CIPHERTEXT2_SIZE, ciphertext_len);
 	
 	//BYTE_ARRAY_NEW(plaintext, PLAINTEXT2_SIZE, ciphertext.len);
@@ -427,7 +431,8 @@ enum err msg3_gen(const struct edhoc_initiator_context *c,
 	rc->th3.len = get_hash_len(rc->suite.edhoc_hash);
 	rc->th3.ptr = rc->th3_buf;
 	rc->prk_3e2m.len = PRK_SIZE;
-	rc->prk_3e2m.ptr = rc->prk_3e2m_buf;		 
+	rc->prk_3e2m.ptr = rc->prk_3e2m_buf;		
+	PRINT_ARRAY("message_2 (CBOR Sequence 0)", rc->msg.ptr, rc->msg.len); 
 	TRY(msg2_process(c, rc, cred_r_array, c_r, static_dh_i, static_dh_r,
 			 &rc->th3, &rc->prk_3e2m));
 	/*generate message 3*/
@@ -596,7 +601,7 @@ enum err edhoc_initiator_run_extended(
 	TRY(rx(c->sock, &rc.msg));
 	//printf("MSG 2 size: %d\n",rc.msg.len);
 	PRINTF("Max MSG2 size %d\n", MSG_2_SIZE);
-
+    PRINT_ARRAY("message_2 (RX)", rc.msg.ptr, rc.msg.len); 
 	/*create and send message 3*/
 	//printf("-------------------------------------------------------\n");
 	//printf("Generating message 3...\n");

@@ -29,7 +29,10 @@ LOG_MODULE_REGISTER(coap);
 /* PQClean expects this symbol (alias randombytes via header). Return 0 on success. */
 int PQCLEAN_randombytes(uint8_t *out, size_t outlen)
 {
-    return sys_csrand_get(out, outlen);
+	int ret = sys_csrand_get(out, outlen);
+	printf("PQCLEAN_randombytes: len=%zu, ret=%d\n",
+	       outlen, ret);
+    return ret;
 }
 
 #endif
@@ -50,7 +53,8 @@ int PQCLEAN_randombytes(uint8_t *out, size_t outlen)
 #undef TEST_X5T_NUM
 #define TEST_X5T_NUM 7
 #define TEST_X5CHAIN_NUM 8
-#define MY_STACK_SIZE 25008
+//#define MY_STACK_SIZE 25008
+#define MY_STACK_SIZE 80000
 /* size of stack area used by each thread */
 #define MAX_MSG_SIZE 3200
 #define PQ_PROPOSAL_1

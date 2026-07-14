@@ -319,6 +319,8 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	}
 	BYTE_ARRAY_NEW(sign_or_mac_2, SIGNATURE_SIZE,
 		       get_signature_len(rc->suite.edhoc_sign));
+	PRINTF("Signature len %d - %d\n", SIGNATURE_SIZE,
+	       get_signature_len(rc->suite.edhoc_sign));		   
 	TRY(signature_or_mac(GENERATE, static_dh_r, &rc->suite, &c->sk_r,
 			     &c->pk_r, &rc->prk_3e2m, &c->c_r, &rc->th2,
 			     &c->id_cred_r, &c->cred_r, &c->ead_2, MAC_2,
