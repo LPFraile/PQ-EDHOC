@@ -80,10 +80,10 @@ modify setting in include/psa/crypto_config.h
 
 #ifdef PQCLEAN
 #ifdef KYBER_LEVEL_1
-#include <externals/PQClean/crypto_kem/kyber512/clean/api.h>
-#define crypto_kem_keypair PQCLEAN_KYBER512_CLEAN_crypto_kem_keypair
-#define crypto_kem_enc PQCLEAN_KYBER512_CLEAN_crypto_kem_enc
-#define crypto_kem_dec PQCLEAN_KYBER512_CLEAN_crypto_kem_dec
+#include <externals/PQClean/crypto_kem/ml-kem-512/clean/api.h>
+#define crypto_kem_keypair PQCLEAN_MLKEM512_CLEAN_crypto_kem_keypair
+#define crypto_kem_enc PQCLEAN_MLKEM512_CLEAN_crypto_kem_enc
+#define crypto_kem_dec PQCLEAN_MLKEM512_CLEAN_crypto_kem_dec
 /*#define CRYPTO_SECRETKEYBYTES 1632
 #define CRYPTO_PUBLICKEYBYTES 800
 #define CRYPTO_BYTES 32
@@ -93,6 +93,16 @@ modify setting in include/psa/crypto_config.h
 #define crypto_kem_keypair PQCLEAN_HQC128_CLEAN_crypto_kem_keypair
 #define crypto_kem_enc PQCLEAN_HQC128_CLEAN_crypto_kem_enc
 #define crypto_kem_dec PQCLEAN_HQC128_CLEAN_crypto_kem_dec
+/*#define CRYPTO_SECRETKEYBYTES 2305
+#define CRYPTO_PUBLICKEYBYTES 2249
+#define CRYPTO_BYTES 64
+#define CRYPTO_CIPHERTEXTBYTES 4433*/
+#endif
+
+#ifdef FALCON_LEVEL_1
+/*#define crypto_kem_keypair PQCLEAN_FALCON512_CLEAN_crypto_sign_keypair*/
+#define sign_signature PQCLEAN_FALCONPADDED512_CLEAN_crypto_sign_signature
+#define sign_verify PQCLEAN_FALCONPADDED512_CLEAN_crypto_sign_verify
 /*#define CRYPTO_SECRETKEYBYTES 2305
 #define CRYPTO_PUBLICKEYBYTES 2249
 #define CRYPTO_BYTES 64
@@ -362,7 +372,8 @@ enum err WEAK kem_encapsulate(enum ecdh_alg alg, const struct byte_array *pk,
 			break;
 		}
 	}
-
+    PRINT_ARRAY("ct", ct->ptr, ct->len);
+	PRINT_ARRAY("shared_secret", shared_secret->ptr, shared_secret->len);
 	return ret;
 
 #endif //LIBOQS
@@ -414,7 +425,7 @@ enum err WEAK kem_decapsulate(enum ecdh_alg alg, const struct byte_array *ct,
 	// This is PQM4
 
 	int ret = 0;
-
+    PRINT_MSG("Decapsulating with PQM4/PQClean\n");
 	if (ret == 0) {
 		if (crypto_kem_dec(shared_secret->ptr, ct->ptr, sk->ptr) != 0) {
 			ret = KEM_BAD_FUNC_ARG;

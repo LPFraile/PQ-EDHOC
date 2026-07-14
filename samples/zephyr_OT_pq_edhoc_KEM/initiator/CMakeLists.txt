@@ -51,6 +51,30 @@ target_compile_definitions(app PRIVATE USE_SUIT_2)
 endif()
 
 if(USE_SUIT_7)
+ if(DEFINED USE_CLEAN_IMP)
+  FILE(GLOB app_sources
+  main.c
+  ../src/coap_utils.c
+  ../src/post.c
+  #edhoc_integration_tests/*.c
+  ../../../externals/zcbor/src/*.c
+  ../../../externals/compact25519/src/c25519/*.c
+  ../../../externals/compact25519/src/*.c
+  #../externals/mbedtls/library/*.c
+  #../../../externals/tinycrypt/lib/source/*.c
+  ../../../test_vectors/*.c
+  ../../../externals/PQClean/crypto_kem/ml-kem-512/clean/*.c
+  ../../../externals/PQClean/common/fips202.c
+   ../../../externals/PQClean/crypto_sign/falcon-padded-512/clean/*.c
+  #../../../externals/pqm4/common/randombytes.c
+  #../../../externals/pqm4/mupq/common/keccakf1600.c
+  #../../../externals/pqm4/common/keccakf1600.S
+   #../../../externals/pqm4/mupq/common/crypto_hashblocks_sha512.c
+  #../../../externals/pqm4/common/crypto_hashblocks_sha512*.*
+  #../../../externals/pqm4/common/aes.*
+  #../../../externals/pqm4/mupq/common/fips202.c
+  )
+else()
 FILE(GLOB app_sources 
     main.c
     ../src/coap_utils.c
@@ -76,11 +100,29 @@ FILE(GLOB app_sources
 	../../../externals/pqm4/common/crypto_hashblocks_sha512*.*
 	../../../externals/pqm4/common/aes.*
 	../../../externals/pqm4/mupq/common/fips202.c)
-
+endif()
 # [FIX] Actually add the sources found by GLOB to the application target
 target_sources(app PRIVATE ${app_sources})
 
 target_include_directories(app PRIVATE $ENV{ZEPHYR_BASE}/include)
+if(DEFINED USE_CLEAN_IMP)
+  target_include_directories(app PRIVATE 
+    $ENV{ZEPHYR_BASE}/subsys/net/ip
+    .
+    #../../common
+	../../../inc
+	../../../test_vectors
+    ../../../externals/zcbor/include 
+    #../externals/mbedtls/library 
+    #../externals/mbedtls/include 
+    #../externals/mbedtls/include/mbedtls 
+    #../externals/mbedtls/include/psa
+    #../../../externals/tinycrypt/lib/include
+    ../../../externals/PQClean/crypto_kem/ml-kem-512/clean
+    ../../../externals/PQClean/crypto_sign/falcon-padded-512/clean
+    ../../../externals/PQClean/common
+    ../../../externals/pqm4/libopencm3/include)
+    else()
 target_include_directories(app PRIVATE 
     $ENV{ZEPHYR_BASE}/subsys/net/ip
     .
@@ -99,6 +141,7 @@ target_include_directories(app PRIVATE
 	#../../../externals/pqm4/crypto_sign/dilithium2/m4fstack
 	../../../externals/pqm4/mupq/common
 	../../../externals/pqm4/libopencm3/include)
+  endif()
 target_compile_definitions(app PRIVATE USE_SUIT_7)
 #add_compile_definitions(CONFIG_COAP_CLIENT_STACK_SIZE=2024)
 	#target_include_directories(app PRIVATE ${ZEPHYR_BASE}/include/)
@@ -167,18 +210,19 @@ if(USE_SUIT_14)
   ../../../externals/zcbor/src/*.c
   ../../../externals/compact25519/src/c25519/*.c
   ../../../externals/compact25519/src/*.c
-  #../../../externals/mbedtls/library/*.c
+  #../externals/mbedtls/library/*.c
   #../../../externals/tinycrypt/lib/source/*.c
-  ../test_vectors/*.c
-  ../../../externals/PQClean/crypto_kem/kyber512/clean/*.c
+  ../../../test_vectors/*.c
+  ../../../externals/PQClean/crypto_kem/ml-kem-512/clean/*.c
+  ../../../externals/PQClean/common/fips202.c
   ../../../externals/pqm4/mupq/crypto_sign/hawk512/ref/*.c
-    ../../../externals/pqm4/common/randombytes.c
-    ../../../externals/pqm4/mupq/common/keccakf1600.c
+  #../../../externals/pqm4/common/randombytes.c
+  #../../../externals/pqm4/mupq/common/keccakf1600.c
   #../../../externals/pqm4/common/keccakf1600.S
-   ../../../externals/pqm4/mupq/common/crypto_hashblocks_sha512.c
+   #../../../externals/pqm4/mupq/common/crypto_hashblocks_sha512.c
   #../../../externals/pqm4/common/crypto_hashblocks_sha512*.*
-  ../../../externals/pqm4/common/aes.*
-  ../../../externals/pqm4/mupq/common/fips202.c
+  #../../../externals/pqm4/common/aes.*
+  #../../../externals/pqm4/mupq/common/fips202.c
   )
 else()
  FILE(GLOB app_sources
@@ -189,9 +233,9 @@ else()
   ../../../externals/zcbor/src/*.c
   ../../../externals/compact25519/src/c25519/*.c
   ../../../externals/compact25519/src/*.c
-  #../../../externals/mbedtls/library/*.c
+  #../externals/mbedtls/library/*.c
   #../../../externals/tinycrypt/lib/source/*.c
-  ../test_vectors/*.c
+  ../../../test_vectors/*.c
   ../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.c
   ../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.i
   ../../../externals/pqm4/crypto_kem/kyber512/m4fstack/*.S
@@ -203,36 +247,38 @@ else()
   ../../../externals/pqm4/mupq/common/fips202.c
   )
   endif()
+  target_sources(app PRIVATE ${app_sources})
   target_include_directories(app PRIVATE $ENV{ZEPHYR_BASE}/include)
+  
    if(DEFINED USE_CLEAN_IMP)
   target_include_directories(app PRIVATE 
     $ENV{ZEPHYR_BASE}/subsys/net/ip
     .
-    ../../common
+    #../../common
 	../../../inc
-    ../../../test_vectors
+	../../../test_vectors
     ../../../externals/zcbor/include 
-    #../../../externals/mbedtls/library 
-    #../../../externals/mbedtls/include 
-    #../../../externals/mbedtls/include/mbedtls 
-    #../../../externals/mbedtls/include/psa
-    ../../../externals/tinycrypt/lib/include
-    ../../../externals/PQClean/crypto_kem/kyber512/clean
+    #../externals/mbedtls/library 
+    #../externals/mbedtls/include 
+    #../externals/mbedtls/include/mbedtls 
+    #../externals/mbedtls/include/psa
+    #../../../externals/tinycrypt/lib/include
+    ../../../externals/PQClean/crypto_kem/ml-kem-512/clean
     ../../../externals/pqm4/mupq/crypto_sign/hawk512/ref
-    ../../../externals/pqm4/mupq/common
+    ../../../externals/PQClean/common
     ../../../externals/pqm4/libopencm3/include)
     else()
      target_include_directories(app PRIVATE 
     $ENV{ZEPHYR_BASE}/subsys/net/ip
     .
-   ../../common
-	../../../inc
+    #../../common
+    ../../../inc
     ../../../test_vectors
     ../../../externals/zcbor/include 
-    #../../../externals/mbedtls/library 
-    #../../../externals/mbedtls/include 
-    #../../../externals/mbedtls/include/mbedtls 
-    #../../../externals/mbedtls/include/psa
+    #../externals/mbedtls/library 
+    #../externals/mbedtls/include 
+    #../externals/mbedtls/include/mbedtls 
+    #../externals/mbedtls/include/psa
     #../../../externals/tinycrypt/lib/include
     ../../../externals/pqm4/crypto_kem/kyber512/m4fstack
     ../../../externals/pqm4/mupq/crypto_sign/hawk512/ref
@@ -286,7 +332,6 @@ target_compile_definitions(app PRIVATE USE_SUIT_15)
 #add_compile_definitions(CONFIG_COAP_CLIENT_STACK_SIZE=2024)
     #target_include_directories(app PRIVATE ${ZEPHYR_BASE}/include/)
 endif()
-
 if(USE_SUIT_18)
  if(DEFINED USE_CLEAN_IMP)
   FILE(GLOB app_sources
@@ -300,14 +345,15 @@ if(USE_SUIT_18)
   #../externals/mbedtls/library/*.c
   #../../../externals/tinycrypt/lib/source/*.c
   ../../../test_vectors/*.c
-  ../../../externals/PQClean/crypto_kem/kyber512/clean/*.c
-  ../../../externals/pqm4/common/randombytes.c
-    ../../../externals/pqm4/mupq/common/keccakf1600.c
+  ../../../externals/PQClean/crypto_kem/ml-kem-512/clean/*.c
+	../../../externals/PQClean/common/fips202.c
+  #../../../externals/pqm4/common/randombytes.c
+   # ../../../externals/pqm4/mupq/common/keccakf1600.c
   #../../../externals/pqm4/common/keccakf1600.S
-   ../../../externals/pqm4/mupq/common/crypto_hashblocks_sha512.c
+  # ../../../externals/pqm4/mupq/common/crypto_hashblocks_sha512.c
   #../../../externals/pqm4/common/crypto_hashblocks_sha512*.*
-  ../../../externals/pqm4/common/aes.*
-  ../../../externals/pqm4/mupq/common/fips202.c
+  #../../../externals/pqm4/common/aes.*
+  #../../../externals/pqm4/mupq/common/fips202.c
   )
 else()
 FILE(GLOB app_sources 
@@ -345,8 +391,9 @@ if(DEFINED USE_CLEAN_IMP)
     #../externals/mbedtls/include/mbedtls 
     #../externals/mbedtls/include/psa
     #../../../externals/tinycrypt/lib/include
-    ../../../externals/PQClean/crypto_kem/kyber512/clean
-    ../../../externals/pqm4/mupq/common
+    ../../../externals/PQClean/crypto_kem/ml-kem-512/clean
+	../../../externals/PQClean/common
+    #../../../externals/pqm4/mupq/common
     ../../../externals/pqm4/libopencm3/include)
 else()
 target_include_directories(app PRIVATE 

@@ -178,11 +178,13 @@ endif
 ifeq ($(findstring PQCLEAN,$(EXTENDED_CFLAGS)),PQCLEAN)
 ifeq ($(findstring HQC_LEVEL_1,$(EXTENDED_CFLAGS)),HQC_LEVEL_1)
 C_INCLUDES += -Iexternals/PQClean/crypto_kem/hqc-128/clean
+C_INCLUDES += -Iexternals/PQClean/common
 # Add HQC sources if you use it
 #C_SOURCES += externals/PQClean/crypto_kem/hqc-128/clean/*.c
 endif
 ifeq ($(findstring KYBER_LEVEL_1,$(EXTENDED_CFLAGS)),KYBER_LEVEL_1)
-C_INCLUDES += -Iexternals/PQClean/crypto_kem/kyber512/clean
+C_INCLUDES += -Iexternals/PQClean/crypto_kem/ml-kem-512/clean
+C_INCLUDES += -Iexternals/PQClean/common
 # Add Kyber sources
 #C_SOURCES += externals/PQClean/crypto_kem/kyber512/clean/*.c
 endif

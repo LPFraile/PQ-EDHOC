@@ -115,6 +115,15 @@ int default_CSPRNG(uint8_t *dest, unsigned int size)
 
 #endif
 
+#ifdef USE_CLEAN_IMP
+#include <zephyr/random/random.h>
+/* PQClean expects this symbol (alias randombytes via header). Return 0 on success. */
+int PQCLEAN_randombytes(uint8_t *out, size_t outlen)
+{
+    return sys_csrand_get(out, outlen);
+}
+
+#endif
 #ifdef USE_X5CHAIN
 #define TEST_VEC_NUM TEST_X5CHAIN_NUM
 #elif USE_X5T

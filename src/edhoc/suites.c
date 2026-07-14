@@ -542,7 +542,7 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 		return OQS_KEM_bike_l1_length_ciphertext;
 		break;
 	#endif
-	#ifdef PQM4
+	#if defined(PQM4) || defined(PQCLEAN)
 	case KYBER_LEVEL1:
 		return 768;
 		break;
@@ -566,7 +566,7 @@ uint32_t get_kem_cc_len(enum ecdh_alg alg)
 uint32_t get_kem_ss_len(enum ecdh_alg alg)
 {
 	switch (alg) {
-	#ifdef LIBOQS
+	#if defined LIBOQS || defined PQCLEAN
 	case KYBER_LEVEL1:
 		return 32;
 		break;

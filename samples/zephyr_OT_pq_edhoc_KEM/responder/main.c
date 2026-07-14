@@ -24,11 +24,22 @@ LOG_MODULE_REGISTER(coap);
 #define POST_URI "post_data"
 #define address "ff03::1"
 
+#ifdef USE_CLEAN_IMP
+#include <zephyr/random/random.h>
+/* PQClean expects this symbol (alias randombytes via header). Return 0 on success. */
+int PQCLEAN_randombytes(uint8_t *out, size_t outlen)
+{
+    return sys_csrand_get(out, outlen);
+}
+
+#endif
 #ifdef USE_SUIT_18
 #define MAX_PAYLOAD_SIZE 1000
 #define TEST_X5T_NUM 18
 #define TEST_X5CHAIN_NUM 18
 #define MY_STACK_SIZE 25008
+//#define MY_STACK_SIZE 60008
+/*
 /* size of stack area used by each thread */
 #define MAX_MSG_SIZE 10000
 #define PQ_PROPOSAL_1
@@ -337,17 +348,20 @@ int internal_main(void)
 	ss_kem_b.ptr = SS_KEM.ptr;
 	struct byte_array ss_kem_b_2;
 	ss_kem_b_2.len = get_kem_ss_len(suit_in.edhoc_ecdh);
-	ss_kem_b_2.ptr = SS_KEM.ptr;
+	ss_kem_b_2.ptr = SS_KEM_2.ptr;
 	PRINTF("static KEM CC len: %d\n",cc_kem_b.len);
 	PRINTF("static KEM SS len: %d\n",ss_kem_b.len);
 	
 	TRY(kem_encapsulate(suit_in.edhoc_ecdh, &c_r.g_r, &cc_kem_b,
 			    &ss_kem_b));
+	PRINT_MSG("static KEM encapsulation done\n");			
 	PRINT_ARRAY("static SS KEM R:", ss_kem_b.ptr, ss_kem_b.len);
+	k_msleep(3000);
 
 	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.r,
 			    &ss_kem_b_2));
 	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
+	k_msleep(3000);
 #endif
 
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
