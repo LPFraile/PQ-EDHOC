@@ -108,8 +108,13 @@ modify setting in include/psa/crypto_config.h
 #define CRYPTO_BYTES 64
 #define CRYPTO_CIPHERTEXTBYTES 4433*/
 #endif
+
+#ifdef DILITHIUM_LEVEL_2
+#define crypto_sign_signature PQCLEAN_MLDSA44_CLEAN_crypto_sign_signature
+#define crypto_sign_verify PQCLEAN_MLDSA44_CLEAN_crypto_sign_verify
 #endif
 
+#endif
 #if defined(PQM4) || defined(LIBOQS) || defined(PQCLEAN)
 #ifdef LIBOQS
 static const char *OQS_ID2name(int id)
@@ -577,9 +582,14 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 		printf("Error in sign_signature %d\n",SIG_BAD_FUNC_ARG);
 		ret = SIG_BAD_FUNC_ARG;
 	}*/
-ret = crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len,
+size_t pqclean_sign_len = 0;
+ret = crypto_sign_signature(sign,   &pqclean_sign_len, msg->ptr, msg->len,
 				   sk->ptr);
+
+
 	printf("crypto_sign_signature returned %d\n", ret);
+	*sign_len = pqclean_sign_len;
+	printf("sign length %d\n", *sign_len);
 	if (ret != 0) {
 		printf("Error in sign_signature %d\n",SIG_BAD_FUNC_ARG);
 		ret = SIG_BAD_FUNC_ARG;
@@ -1001,6 +1011,7 @@ enum err WEAK sign_edhoc(enum sign_alg alg, const struct byte_array *sk,
 		if (ret == 0) {
 			PRINT_MSG("sign_signature correct\n");
 			PRINTF("create signature of alg:%d corrected\n", alg);
+			PRINTF("signature length:%d\n", *out_len);
 			return ok;
 		}
 #endif

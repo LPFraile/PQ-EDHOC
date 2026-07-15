@@ -25,7 +25,7 @@ OPT = -Os
 ################################################################################
 # Print helpful debug messages
 ################################################################################
-DEBUG_PRINT += -DDEBUG_PRINT
+#DEBUG_PRINT += -DDEBUG_PRINT
 
 ################################################################################
 # Use Address Sanitizer, e.g. with native_posix
@@ -99,9 +99,9 @@ FEATURES += -DKYBER_LEVEL_1
 
 ################################################################################
 # Select the PQ Signature algorithm to be used
-FEATURES += -DFALCON_LEVEL_1
+#FEATURES += -DFALCON_LEVEL_1
 
-#FEATURES += -DDILITHIUM_LEVEL_2
+FEATURES += -DDILITHIUM_LEVEL_2
 #FEATURES += -DHAWK_LEVEL_1
 #FEATURES += -DHAETAE_LEVEL_2
 
