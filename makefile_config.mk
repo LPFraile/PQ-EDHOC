@@ -25,7 +25,7 @@ OPT = -Os
 ################################################################################
 # Print helpful debug messages
 ################################################################################
-#DEBUG_PRINT += -DDEBUG_PRINT
+DEBUG_PRINT += -DDEBUG_PRINT
 
 ################################################################################
 # Use Address Sanitizer, e.g. with native_posix
@@ -114,7 +114,7 @@ FEATURES += -DKYBER_LEVEL_1
 # Select block wise transfer block size 
 #  The maximum block size a server supports.  Can be 0
 # (reset), or must be  32, 64, 128, 256, 512 or 1024.
-FEATURES += -DUSE_COAP_BLOCK_SIZE=1024
+FEATURES += -DUSE_COAP_BLOCK_SIZE=512
 
 ##################################################################
 # Define to use TCP. By default it use UDP 

@@ -380,7 +380,7 @@ int internal_main(void)
 	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
 	/*Only for test i should delete*/
 
-	BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
+	/*BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
 		       get_kem_cc_len(suit_in.edhoc_ecdh));
 	BYTE_ARRAY_NEW(SS_KEM, get_kem_ss_len(suit_in.edhoc_ecdh),
 		       get_kem_ss_len(suit_in.edhoc_ecdh));
@@ -407,7 +407,7 @@ int internal_main(void)
 	TRY(kem_decapsulate(suit_in.edhoc_ecdh, &cc_kem_b, &c_r.r,
 			    &ss_kem_b_2));
 	PRINT_ARRAY("static SS KEM R 2:", ss_kem_b_2.ptr, ss_kem_b_2.len);
-	k_msleep(3000);
+	k_msleep(3000);*/
 #endif
 
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
