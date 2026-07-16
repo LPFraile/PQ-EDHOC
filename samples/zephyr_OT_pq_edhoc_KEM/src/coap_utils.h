@@ -11,7 +11,7 @@
 #include <openthread/coap.h>
 
 #define COAP_MAX_BUF_SIZE 128
-#define COAP_ENTIRE_MESSAGE_SIZE 4096
+//#define COAP_ENTIRE_MESSAGE_SIZE 8192
 #define COAP_DEVICE_ID_SIZE 25
 
 #ifdef CONFIG_OT_COAP_SAMPLE_SERVER

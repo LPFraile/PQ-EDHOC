@@ -1,8 +1,10 @@
 
-#define COAP_ENTIRE_MESSAGE_SIZE 4096
+#define COAP_ENTIRE_MESSAGE_SIZE 8192
+
 #include <zephyr/net/openthread.h>
 #include <openthread/coap.h>
 #define POST_URI "post_data"
+
 
 // Add this definition:
 #define PRINT_ARRAY(label, buf, len)                                           \
@@ -26,18 +28,20 @@ extern bool into_rx_flag;
 
 #ifdef CONFIG_OT_COAP_SAMPLE_CLIENT
 
-struct post_ctx {
+struct post_ctx{
 	uint8_t *buf;
 	uint16_t len;
 	struct k_sem *sem;
 	bool last_message;
+	otMessage *msg;
 };
 
 #endif /* CONFIG_OT_COAP_SAMPLE_CLIENT */
 
+
 #ifdef CONFIG_OT_COAP_SAMPLE_SERVER
 
-struct post_ctx {
+struct post_ctx{
 	uint8_t *buf;
 	uint16_t len;
 	struct k_sem *post_uedhoc_wait_sem;

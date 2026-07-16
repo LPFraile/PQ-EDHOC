@@ -35,8 +35,6 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
 
 	if (my_ctx->last_message){
-		LOG_PRINTK("last_message flag is set, no need to wait for semaphore\n");
-		//otMessageFree(msg);  // FREE message on early return
 		return;
 	}
 
@@ -44,9 +42,6 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 	if (error != OT_ERROR_NONE || msg == NULL) {
 		LOG_PRINTK("post_callback: error=%d, msg=%p\n", error,
 			   (void *)msg);
-		if (msg != NULL) {
-           // otMessageFree(msg);  // FREE on error
-        }
 		return;
 	}
 
@@ -67,7 +62,6 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 		my_ctx->len = len;
 		if (len < 0) {
 			LOG_PRINTK("post_callback: invalid len\n");
-			//otMessageFree(msg);  // FREE before return
 			return;
 		}
 		if (len >= COAP_ENTIRE_MESSAGE_SIZE) {
@@ -91,7 +85,6 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
         k_sem_give(my_ctx->sem);
     }
 	//LOG_PRINTK("post_callback len: %d\n", my_ctx->len);
-	//otMessageFree(msg);  // ← FREE after done with message
 }
 
 #endif /* CONFIG_OT_COAP_SAMPLE_CLIENT */
@@ -251,7 +244,6 @@ int post_uedhoc(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 	PRINT_ARRAY("Callback Payload end",
 		    my_ctx->buf + my_ctx->len - 2, 2);
 	LOG_PRINTK("Callback Payload len:%d\n", my_ctx->len);
-
 	ret = coap_resp_send(msg, msg_info, my_ctx->buf,
 			      my_ctx->len);
 /*	if (ret != 0){
@@ -267,6 +259,17 @@ int post_uedhoc(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 void post_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 {
 
+	const uint8_t *token = otCoapMessageGetToken(msg);
+	uint8_t token_len = otCoapMessageGetTokenLength(msg);
+
+	printk("CoAP TOKEN: ");
+	for (int i = 0; i < token_len; i++) {
+    	// Print each byte as a 2-digit hex number with leading zeros
+    	printk("%02x", token[i]); 
+	}
+	printk("\n");
+
+
 	coap_req_handler(ctx, msg, msg_info, NULL, NULL, post_uedhoc);
 
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
@@ -275,7 +278,6 @@ void post_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 	PRINT_ARRAY("post_handler Payload end",
 		    my_ctx->buf + my_ctx->len - 2, 2);
 	LOG_PRINTK("post_handler Payload len:%d\n", my_ctx->len);
-	//otMessageFree(msg);
 }
 
 K_SEM_DEFINE(rx_wait_sem, 0, 1);

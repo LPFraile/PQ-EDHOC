@@ -33,6 +33,8 @@ struct post_rsc_data {
 	JSON_OBJ_DESCR_PRIM(struct json_post, post_str, JSON_TOK_STRING),
 };*/
 
+#ifdef CONFIG_OT_COAP_SAMPLE_CLIENT
+
 static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 			 int len, otCoapResponseHandler handler, void *ctx,
 			 otCoapCode code)
@@ -62,6 +64,8 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 	}
 
 	otCoapMessageInit(msg, OT_COAP_TYPE_CONFIRMABLE, code);
+
+	otCoapMessageGenerateToken(msg, OT_COAP_DEFAULT_TOKEN_LENGTH);
 	//printf("entering otCoapMessageAppendUriPathOptions\n");
 	err = otCoapMessageAppendUriPathOptions(msg, uri);
 	if (err != OT_ERROR_NONE) {
@@ -86,15 +90,17 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 	}
 
 	//printf("entering otCoapMessageSetPayloadMarker\n");
-	err = otCoapMessageSetPayloadMarker(msg);
-	if (err != OT_ERROR_NONE) {
-		LOG_ERR("Failed to set payload marker: %s",
-			otThreadErrorToString(err));
-		ret = -EBADMSG;
-		goto err;
+	if (len > 0) {
+		err = otCoapMessageSetPayloadMarker(msg);
+		if (err != OT_ERROR_NONE) {
+			LOG_ERR("Failed to set payload marker: %s",
+				otThreadErrorToString(err));
+			ret = -EBADMSG;
+			goto err;
+		}
 	}
 
-	if (len <= 1024) {
+	if (len <= 1024 && len > 0) {
 		LOG_PRINTK("appending payload no block1\n");
 		err = otMessageAppend(msg, buf, len);
 		if (err != OT_ERROR_NONE) {
@@ -105,16 +111,33 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 		}
 
 		if (ctx) {
-			((struct post_ctx *)ctx)->len = 0;
-		}
+        ((struct post_ctx *)ctx)->len = 0;
+    }
 	}
+
+	const uint8_t *token = otCoapMessageGetToken(msg);
+	uint8_t token_len = otCoapMessageGetTokenLength(msg);
+
+	printk("message TOKEN: ");
+	for (int i = 0; i < token_len; i++) {
+    	// Print each byte as a 2-digit hex number with leading zeros
+    	printk("%02x", token[i]); 
+	}
+	printk("\n");
+
+	((struct post_ctx *)ctx)->msg = msg;
 
 	//LOG_PRINTK("sending with blockwise\n");
 	//if (len > 1024) {
 	//PRINT_ARRAY("buf", ctx->buf, 2);
 	//PRINT_ARRAY("buf", ctx->buf + ctx->len - 2, 2);
 	//LOG_PRINTK("befor otCoapSendRequestBlockWise ctx len:%d\n", ctx->len);
-	err = otCoapSendRequestBlockWise(ot, msg, &msg_info, handler, ctx,
+	otCoapTxParameters tx_params = {0};
+	tx_params.mAckTimeout = 5000;
+	tx_params.mAckRandomFactorNumerator = 3;
+    tx_params.mAckRandomFactorDenominator = 2;
+	tx_params.mMaxRetransmit = 5;
+	err = otCoapSendRequestBlockWiseWithParameters(ot, msg, &msg_info, handler, ctx, &tx_params,
 					 hook_tx, hook_rx);
 	//} else {
 	//	err = otCoapSendRequest(ot, msg, &msg_info, handler, ctx);
@@ -133,6 +156,8 @@ err:
 	otMessageFree(msg);
 	return ret;
 }
+
+#endif /* CONFIG_OT_COAP_SAMPLE_CLIENT */
 
 int coap_post_req_send(const char *addr, const char *uri, uint8_t *buf, int len,
 		       otCoapResponseHandler handler, void *ctx)
@@ -236,22 +261,36 @@ int coap_resp_send(otMessage *req, const otMessageInfo *req_info, uint8_t *buf,
 	//do not like this
 	server_post_ctx.len = len;
 	server_post_ctx.buf = buf;
+	otCoapTxParameters tx_params = {0};
+	tx_params.mAckTimeout = 5000;
+	tx_params.mAckRandomFactorNumerator = 3;
+    tx_params.mAckRandomFactorDenominator = 2;
+	tx_params.mMaxRetransmit = 5;
 	if (len > 1024) {
+		
 		LOG_PRINTK("sending response with blockwise\n");
-		PRINT_ARRAY(
-			"first 2 bytes of resp buf before otCoapSendResponceBlockWise",
-			server_post_ctx.buf, 2);
-		PRINT_ARRAY(
-			"last 2 bytes of resp buf before otCoapSendResponceBlockWise",
-			server_post_ctx.buf + server_post_ctx.len - 2, 2);
-		LOG_PRINTK("len before otCoapSendResponseBlockWise: %d\n",
-			   server_post_ctx.len);
-		err = otCoapSendResponseBlockWise(ot, resp, req_info,
-						  &server_post_ctx, hook_tx);
+		PRINT_ARRAY("first 2 bytes of resp buf before otCoapSendResponceBlockWise", server_post_ctx.buf, 2);
+		PRINT_ARRAY("last 2 bytes of resp buf before otCoapSendResponceBlockWise", server_post_ctx.buf + server_post_ctx.len - 2, 2);
+		LOG_PRINTK("len before otCoapSendResponseBlockWise: %d\n", server_post_ctx.len);
+		const uint8_t *token = otCoapMessageGetToken(resp);
+		uint8_t token_len = otCoapMessageGetTokenLength(resp);
+
+		printk("message TOKEN: ");
+		for (int i = 0; i < token_len; i++) {
+    		// Print each byte as a 2-digit hex number with leading zeros
+    		printk("%02x", token[i]); 
+		}
+		printk("\n");
+		err = otCoapSendResponseBlockWiseWithParameters(ot, resp, req_info, &tx_params, &server_post_ctx,
+						  hook_tx);
 	} else {
 		LOG_PRINTK("sending response without blockwise\n");
-		err = otCoapSendResponse(ot, resp, req_info);
+		err = otCoapSendResponseWithParameters(ot, resp, req_info, &tx_params);
 	}
+
+	//otMessageFree(resp);
+	//k_sleep(K_SECONDS(2));
+
 	//err = otCoapSendResponse(ot, resp, req_info);
 	if (err != OT_ERROR_NONE) {
 		LOG_ERR("Failed to send the response: %s",
@@ -273,6 +312,7 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 		     coap_req_handler_put put_fn, coap_req_handler_get get_fn,
 		     coap_req_handler_post post_fn)
 {
+
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
 	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
 	LOG_PRINTK("START len post: %d\n", my_ctx->len);
@@ -281,7 +321,8 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 		    my_ctx->len);
 */
 	PRINT_ARRAY("POST Payload start", my_ctx->buf, 2);
-	PRINT_ARRAY("POST Payload end", my_ctx->buf + my_ctx->len - 2, 2);
+	PRINT_ARRAY("POST Payload end", my_ctx->buf + my_ctx->len - 2,
+		    2);
 	LOG_PRINTK("POST Payload len:%d\n", my_ctx->len);
 
 	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
@@ -312,15 +353,15 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 			len = COAP_ENTIRE_MESSAGE_SIZE - 1;
 		}
 		LOG_PRINTK("into_rx_flag:%d\n", into_rx_flag);
-		if (!into_rx_flag) {
+		if(!into_rx_flag){
 			my_ctx->len = 0;
 		}
-		into_rx_flag = 0;
+			into_rx_flag = 0;
 		if (my_ctx->len == 0) {
 			my_ctx->len = len;
 			LOG_PRINTK("my_ctx->len == 0\n");
-			otMessageRead(msg, otMessageGetOffset(msg), my_ctx->buf,
-				      my_ctx->len);
+			otMessageRead(msg, otMessageGetOffset(msg),
+				      my_ctx->buf, my_ctx->len);
 
 			LOG_PRINTK(
 				"+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
