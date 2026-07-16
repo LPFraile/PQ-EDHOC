@@ -1,0 +1,13 @@
+# Target labels
+ oscore_edhoc_project
+# Source files and their labels
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/CMakeFiles/oscore_edhoc_project
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/CMakeFiles/oscore_edhoc_project.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/CMakeFiles/oscore_edhoc_project-complete.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-build.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-configure.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-download.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-install.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-mkdir.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-patch.rule
+/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-update.rule

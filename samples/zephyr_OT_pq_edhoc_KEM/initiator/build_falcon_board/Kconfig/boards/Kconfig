@@ -1,0 +1,2 @@
+# Load Zephyr board Kconfig descriptions.
+osource "/home/panosalex/zephyr_v4.2.2/zephyr/boards/nordic/nrf52840dk/Kconfig"

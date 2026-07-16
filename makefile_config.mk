@@ -83,7 +83,7 @@ FEATURES += -DSUITES_I_SIZE=1
 
 ################################################################################
 # Select for use KEM-based EDHOC
-#FEATURES += -DKEM_AUTH
+FEATURES += -DKEM_AUTH
 
 
 ################################################################################
@@ -101,7 +101,7 @@ FEATURES += -DKYBER_LEVEL_1
 # Select the PQ Signature algorithm to be used
 #FEATURES += -DFALCON_LEVEL_1
 
-FEATURES += -DDILITHIUM_LEVEL_2
+#FEATURES += -DDILITHIUM_LEVEL_2
 #FEATURES += -DHAWK_LEVEL_1
 #FEATURES += -DHAETAE_LEVEL_2
 

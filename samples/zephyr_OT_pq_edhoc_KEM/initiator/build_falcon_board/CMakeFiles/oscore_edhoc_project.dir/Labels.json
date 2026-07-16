@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/CMakeFiles/oscore_edhoc_project"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/CMakeFiles/oscore_edhoc_project.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/CMakeFiles/oscore_edhoc_project-complete.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-build.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-configure.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-download.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-install.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-mkdir.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-patch.rule"
+		},
+		{
+			"file" : "/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/uoscore_uedhoc/src/oscore_edhoc_project-stamp/oscore_edhoc_project-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"oscore_edhoc_project"
+		],
+		"name" : "oscore_edhoc_project"
+	}
+}

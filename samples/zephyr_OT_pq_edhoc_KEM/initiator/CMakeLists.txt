@@ -142,7 +142,7 @@ target_include_directories(app PRIVATE
 	../../../externals/pqm4/mupq/common
 	../../../externals/pqm4/libopencm3/include)
   endif()
-target_compile_definitions(app PRIVATE USE_SUIT_)
+target_compile_definitions(app PRIVATE USE_SUIT_7)
 #add_compile_definitions(CONFIG_COAP_CLIENT_STACK_SIZE=2024)
 	#target_include_directories(app PRIVATE ${ZEPHYR_BASE}/include/)
 endif()

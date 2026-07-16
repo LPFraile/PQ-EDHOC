@@ -1,0 +1,62 @@
+cmake:
+  application:
+    configuration-dir: '/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator'
+    source-dir: '/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator'
+  board:
+    name: 'nrf52840dk'
+    path:
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/boards/nordic/nrf52840dk'
+    qualifiers: 'nrf52840'
+    revision: ''
+  devicetree:
+    bindings-dirs:
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/bindings'
+    files:
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/boards/nordic/nrf52840dk/nrf52840dk_nrf52840.dts'
+    include-dirs:
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/ambiq/dts'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/atmel/include'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/bouffalolab/include'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/bouffalolab/include/zephyr'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/gigadevice/include'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/microchip/include'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/microchip/dts'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/nuvoton/dts'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/nxp/dts'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/stm32/dts'
+     - '/home/panosalex/zephyr_v4.2.2/modules/hal/ti/dts'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/include'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/include/zephyr'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/common'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/vendor'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/rx'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/x86'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/xtensa'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/sparc'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/riscv'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/posix'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/arm64'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/arm'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts/arc'
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/dts'
+  kconfig:
+    files:
+     - '/home/panosalex/zephyr_v4.2.2/zephyr/boards/nordic/nrf52840dk/nrf52840dk_nrf52840_defconfig'
+     - '/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/prj_falcon.conf'
+     - '/home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board/zephyr/misc/generated/extra_kconfig_options.conf'
+    user-files:
+     - 'prj_falcon.conf'
+  toolchain:
+    name: 'zephyr'
+    path: '/home/panosalex/ncs/toolchains/911f4c5c26/opt/zephyr-sdk'
+  vendor-specific:
+    nordic:
+      svdfile: '/home/panosalex/zephyr_v4.2.2/modules/hal/nordic/nrfx/mdk/nrf52840.svd'
+  zephyr:
+    version: '4.2.2'
+    zephyr-base: '/home/panosalex/zephyr_v4.2.2/zephyr'
+version: '0.1.0'
+west:
+  command: '/home/panosalex/ncs/toolchains/911f4c5c26/usr/local/bin/west build --build-dir /home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board /home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator --pristine --board nrf52840dk/nrf52840 -- -DNCS_TOOLCHAIN_VERSION=NONE -DCONFIG_DEBUG_THREAD_INFO=y -DCONF_FILE=prj_falcon.conf -DUSE_SUIT_7=ON -DUSE_X5T=1'
+  topdir: '/home/panosalex/zephyr_v4.2.2'
+  version: '1.5.0'

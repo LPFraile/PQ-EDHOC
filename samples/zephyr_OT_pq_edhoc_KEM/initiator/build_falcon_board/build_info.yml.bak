@@ -1,0 +1,8 @@
+west:
+  command: /home/panosalex/ncs/toolchains/911f4c5c26/usr/local/bin/west build --build-dir
+    /home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator/build_falcon_board
+    /home/panosalex/zephyr_v4.2.2/PQ-EDHOC/samples/zephyr_OT_pq_edhoc_KEM/initiator
+    --pristine --board nrf52840dk/nrf52840 -- -DNCS_TOOLCHAIN_VERSION=NONE -DCONFIG_DEBUG_THREAD_INFO=y
+    -DCONF_FILE=prj_falcon.conf -DUSE_SUIT_7=ON -DUSE_X5T=1
+  topdir: /home/panosalex/zephyr_v4.2.2
+  version: 1.5.0

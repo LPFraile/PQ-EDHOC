@@ -22,7 +22,7 @@ LOG_MODULE_REGISTER(coap);
 #include <openthread/udp.h>
 #include "post.h"
 #define POST_URI "post_data"
-#define address "ff03::1"
+#define STATIC_IPV6_ADDRESS "fdde:ad00:beef:0:0:0:0:69"
 
 #ifdef USE_CLEAN_IMP
 #include <zephyr/random/random.h>
@@ -242,6 +242,48 @@ enum err rx(void *sock, struct byte_array *data)
 	return -1;
 }
 
+void set_static_ipv6(otInstance *instance)
+{
+    otNetifAddress unicastAddress;
+    otIp6Address ip6Address;
+    const char *staticIpString = STATIC_IPV6_ADDRESS; // Use full notation or short "::" if supported
+
+    // 1. Parse string to IPv6 struct
+    // Note: otIp6AddressFromString handles "::" compression if your stack supports it.
+    otError error = otIp6AddressFromString(staticIpString, &ip6Address);
+    if (error != OT_ERROR_NONE) {
+        printk("Error parsing static IP string\n");
+        return;
+    }
+
+    // 2. Clear and setup the Unicast Address struct
+    memset(&unicastAddress, 0, sizeof(otNetifAddress));
+    
+    unicastAddress.mAddress = ip6Address;
+    unicastAddress.mPrefixLength = 64;  // Standard for Thread/IPv6 subnets
+    unicastAddress.mPreferred = true;   // We prefer using this address
+    unicastAddress.mValid = true;       // The address is valid
+
+    // 3. Add the address to the Thread Interface
+    error = otIp6AddUnicastAddress(instance, &unicastAddress);
+
+    if (error != OT_ERROR_NONE) {
+        printk("Failed to set static IPv6: %s\n", otThreadErrorToString(error));
+    } else {
+        printk("Successfully added static IPv6: %s\n", staticIpString);
+        
+        // Optional: Verify by printing all assigned addresses
+        const otNetifAddress *addr = otIp6GetUnicastAddresses(instance);
+        while (addr != NULL) {
+            // Check if this is the one we just added
+            if (memcmp(&addr->mAddress, &ip6Address, sizeof(otIp6Address)) == 0) {
+                 printk("Verified address exists in interface.\n");
+            }
+            addr = addr->mNext;
+        }
+    }
+}
+
 int internal_main(void)
 {
 	//int32_t s = 30000;
@@ -425,6 +467,11 @@ void main(void)
 	if (ret) {
 		return ret;
 	}
+	otInstance *instance = openthread_get_default_instance();
+	if (otIp6SetEnabled(instance, true) != OT_ERROR_NONE) {
+        printk("Failed to enable IPv6\n");
+    }
+	set_static_ipv6(instance);
 	server_post_ctx.no_more_message = 0;
 	int r = internal_main();
 	if (r != 0) {

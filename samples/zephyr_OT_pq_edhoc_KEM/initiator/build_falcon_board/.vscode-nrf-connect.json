@@ -1,0 +1,22 @@
+{
+  "toolchainPath": "/home/panosalex/ncs/toolchains/911f4c5c26",
+  "sdkPath": "/home/panosalex/zephyr_v4.2.2",
+  "board": "nrf52840dk/nrf52840",
+  "boardDir": "/home/panosalex/zephyr_v4.2.2/zephyr/boards/nordic/nrf52840dk",
+  "boardDirs": [
+    "/home/panosalex/zephyr_v4.2.2/zephyr/boards/nordic/nrf52840dk"
+  ],
+  "optimizations": "none",
+  "cmakeArgs": [
+    "-DUSE_SUIT_7=ON",
+    "-DUSE_X5T=1"
+  ],
+  "confFiles": [
+    "prj_falcon.conf"
+  ],
+  "buildDirectory": "build_falcon_board",
+  "kconfigFragments": [],
+  "snippets": [],
+  "dtcOverlays": [],
+  "extraDtcOverlays": []
+}
