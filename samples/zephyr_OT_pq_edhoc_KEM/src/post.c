@@ -38,7 +38,7 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 		return;
 	}
 
-		LOG_PRINTK("post_callback\n");
+		//LOG_PRINTK("post_callback\n");
 	if (error != OT_ERROR_NONE || msg == NULL) {
 		LOG_PRINTK("post_callback: error=%d, msg=%p\n", error,
 			   (void *)msg);
@@ -48,20 +48,20 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 	//memset(coap_buf_msg_out, 0, msg_out_utils.len);
 	//msg_out_utils.len = 0;
 
-	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
-	LOG_PRINTK("CLIENT post_callback:\n");
+	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
+	//LOG_PRINTK("CLIENT post_callback:\n");
 
-	PRINT_ARRAY("ACK Payload start", my_ctx->buf, 2);
-	PRINT_ARRAY("ACK Payload end", my_ctx->buf + my_ctx->len - 2,
-		    2);
-	LOG_PRINTK("ACK Payload len:%d\n", my_ctx->len);
-	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
+	//PRINT_ARRAY("ACK Payload start", my_ctx->buf, 2);
+	//PRINT_ARRAY("ACK Payload end", my_ctx->buf + my_ctx->len - 2,
+	//	    2);
+	//LOG_PRINTK("ACK Payload len:%d\n", my_ctx->len);
+	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
 	if (my_ctx->len == 0) {
-		LOG_PRINTK("len=0\n");
+		//LOG_PRINTK("len=0\n");
 		int len = otMessageGetLength(msg) - otMessageGetOffset(msg);
 		my_ctx->len = len;
 		if (len < 0) {
-			LOG_PRINTK("post_callback: invalid len\n");
+			//LOG_PRINTK("post_callback: invalid len\n");
 			return;
 		}
 		if (len >= COAP_ENTIRE_MESSAGE_SIZE) {
@@ -70,18 +70,18 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 		otMessageRead(msg, otMessageGetOffset(msg), my_ctx->buf,
 			      my_ctx->len);
 	}
-	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
-	LOG_PRINTK("CLIENT post_callback:\n");
+	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
+	//LOG_PRINTK("CLIENT post_callback:\n");
 	/*PRINT_ARRAY("post_callback data", coap_buf_msg_in,
 		    my_ctx->len);*/
-	PRINT_ARRAY("ACK Payload start", my_ctx->buf, 2);
-	PRINT_ARRAY("ACK Payload end", my_ctx->buf + my_ctx->len - 2,
-		    2);
-	LOG_PRINTK("ACK Payload len:%d\n", my_ctx->len);
-	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
+	//PRINT_ARRAY("ACK Payload start", my_ctx->buf, 2);
+	//PRINT_ARRAY("ACK Payload end", my_ctx->buf + my_ctx->len - 2,
+	//	    2);
+	//LOG_PRINTK("ACK Payload len:%d\n", my_ctx->len);
+	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
 
 	if (my_ctx->sem) {
-        LOG_PRINTK("Signaling main thread...\n");
+        //LOG_PRINTK("Signaling main thread...\n");
         k_sem_give(my_ctx->sem);
     }
 	//LOG_PRINTK("post_callback len: %d\n", my_ctx->len);
@@ -93,16 +93,16 @@ otError hook_rx(void *aContext, const uint8_t *aBlock, uint32_t aPosition,
 		uint16_t aBlockLength, bool aMore, uint32_t aTotalLength)
 {
 #ifdef CONFIG_OT_COAP_SAMPLE_SERVER
-	LOG_PRINTK("SERVER\n");
+	//LOG_PRINTK("SERVER\n");
 #endif
 
 #ifdef CONFIG_OT_COAP_SAMPLE_CLIENT
-	LOG_PRINTK("CLIENT\n");
+	//LOG_PRINTK("CLIENT\n");
 #endif
 
-	printk("===> hook_rx invoked <===\n");
-	printk("[RX] pos=%u len=%u more=%d total=%u\n\n", aPosition,
-	       aBlockLength, aMore, aTotalLength);
+	//printk("===> hook_rx invoked <===\n");
+	//printk("[RX] pos=%u len=%u more=%d total=%u\n\n", aPosition,
+	//       aBlockLength, aMore, aTotalLength);
 
 	struct post_ctx *my_ctx = (struct post_ctx *)aContext;
 
@@ -118,21 +118,21 @@ otError hook_rx(void *aContext, const uint8_t *aBlock, uint32_t aPosition,
 	if (new_len > (size_t)my_ctx->len) {
 		my_ctx->len = (int)new_len;
 	}
-	LOG_PRINTK("[RX Hook] Received Slice: Pos %d, Len %d\n", aPosition,
-		   aBlockLength);
+	//LOG_PRINTK("[RX Hook] Received Slice: Pos %d, Len %d\n", aPosition,
+	//	   aBlockLength);
 
-	LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
-	PRINT_ARRAY("RX Hook Payload start", aBlock, 2);
-	PRINT_ARRAY("RX Hook Payload end", aBlock + aBlockLength - 2, 2);
-	LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=+=+=+=+\n");
+	//LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
+	//PRINT_ARRAY("RX Hook Payload start", aBlock, 2);
+	//PRINT_ARRAY("RX Hook Payload end", aBlock + aBlockLength - 2, 2);
+	//LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=+=+=+=+\n");
 	// C. Detect End of Transfer (just for logging/debug here)
 	if (aMore == false) {
 		// Ensure null-termination just in case
 		//s_server_reassembly_buf[aPosition + aBlockLength] = '\0';
 		into_rx_flag = 1;
-		LOG_PRINTK(
-			">> Block-wise Transfer Complete! Total Bytes: %d <<\n",
-			my_ctx->len);
+		//LOG_PRINTK(
+		//	">> Block-wise Transfer Complete! Total Bytes: %d <<\n",
+		//	my_ctx->len);
 	}
 	return OT_ERROR_NONE;
 }
@@ -141,14 +141,14 @@ otError hook_tx(void *aContext, uint8_t *aBlock, uint32_t aPosition,
 		uint16_t *aBlockLength, bool *aMore)
 {
 #ifdef CONFIG_OT_COAP_SAMPLE_SERVER
-	LOG_PRINTK("SERVER\n");
+	//LOG_PRINTK("SERVER\n");
 #endif
 
 #ifdef CONFIG_OT_COAP_SAMPLE_CLIENT
-	LOG_PRINTK("CLIENT\n");
+	//LOG_PRINTK("CLIENT\n");
 #endif
 
-	LOG_PRINTK("aContext:%p\n", aContext);
+	//LOG_PRINTK("aContext:%p\n", aContext);
 	struct post_ctx *my_ctx = (struct post_ctx *)aContext;
 /*	LOG_PRINTK("my_ctx len:%d\n", my_ctx->len);
 	PRINT_ARRAY("my_ctx buf start", my_ctx->buf, 2);
@@ -182,14 +182,14 @@ otError hook_tx(void *aContext, uint8_t *aBlock, uint32_t aPosition,
 		my_ctx->len = 0;
 	}
 
-	LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
-	PRINT_ARRAY("TX Hook Payload start", aBlock, 2);
-	PRINT_ARRAY("TX Hook Payload end", aBlock + *aBlockLength - 2, 2);
-	LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=+=+=+=+\n");
+	//LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
+	//PRINT_ARRAY("TX Hook Payload start", aBlock, 2);
+	//PRINT_ARRAY("TX Hook Payload end", aBlock + *aBlockLength - 2, 2);
+	//LOG_PRINTK("=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=+=+=+=+\n");
 		
-	printk("===> hook_tx invoked <===\n");
-	LOG_PRINTK("[TX Hook] Sending Slice: Pos %d, Len %d, More %d\n\n",
-		   aPosition, *aBlockLength, *aMore);
+	//printk("===> hook_tx invoked <===\n");
+	//LOG_PRINTK("[TX Hook] Sending Slice: Pos %d, Len %d, More %d\n\n",
+	//	   aPosition, *aBlockLength, *aMore);
 	return OT_ERROR_NONE;
 }
 
@@ -199,16 +199,16 @@ int post_uedhoc(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 {
 	int ret = 0;
 
-	LOG_PRINTK("in post_uedhoc\n\n");
+	//LOG_PRINTK("in post_uedhoc\n\n");
 
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
 
 	k_sem_give(my_ctx->rx_wait_sem);
 
-	LOG_PRINTK("uedhoc wait\n");
+	//LOG_PRINTK("uedhoc wait\n");
 	k_sem_reset(my_ctx->post_uedhoc_wait_sem);
 	ret = k_sem_take(my_ctx->post_uedhoc_wait_sem, K_SECONDS(10));
-	LOG_PRINTK("after take post_uedhoc_wait_sem\n");
+	//LOG_PRINTK("after take post_uedhoc_wait_sem\n");
 
 	if(my_ctx->no_more_message == 1){
 		//memcpy(my_ctx->buf, NULL, 
@@ -240,10 +240,10 @@ int post_uedhoc(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 */
 	//msg_out_utils.buf = coap_buf_msg_out;
 	//my_ctx->len = strlen(my_ctx->buf);
-	PRINT_ARRAY("Callback Payload start", my_ctx->buf, 2);
-	PRINT_ARRAY("Callback Payload end",
-		    my_ctx->buf + my_ctx->len - 2, 2);
-	LOG_PRINTK("Callback Payload len:%d\n", my_ctx->len);
+	//PRINT_ARRAY("Callback Payload start", my_ctx->buf, 2);
+	//PRINT_ARRAY("Callback Payload end",
+	//	    my_ctx->buf + my_ctx->len - 2, 2);
+	//LOG_PRINTK("Callback Payload len:%d\n", my_ctx->len);
 	ret = coap_resp_send(msg, msg_info, my_ctx->buf,
 			      my_ctx->len);
 /*	if (ret != 0){
@@ -262,22 +262,22 @@ void post_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info)
 	const uint8_t *token = otCoapMessageGetToken(msg);
 	uint8_t token_len = otCoapMessageGetTokenLength(msg);
 
-	printk("CoAP TOKEN: ");
+	/*printk("CoAP TOKEN: ");
 	for (int i = 0; i < token_len; i++) {
     	// Print each byte as a 2-digit hex number with leading zeros
     	printk("%02x", token[i]); 
 	}
-	printk("\n");
+	printk("\n");*/
 
 
 	coap_req_handler(ctx, msg, msg_info, NULL, NULL, post_uedhoc);
 
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
-	LOG_PRINTK("finish post_handler\n");
-	PRINT_ARRAY("post_handler Payload start", my_ctx->buf, 2);
-	PRINT_ARRAY("post_handler Payload end",
-		    my_ctx->buf + my_ctx->len - 2, 2);
-	LOG_PRINTK("post_handler Payload len:%d\n", my_ctx->len);
+	//LOG_PRINTK("finish post_handler\n");
+	//PRINT_ARRAY("post_handler Payload start", my_ctx->buf, 2);
+	//PRINT_ARRAY("post_handler Payload end",
+	//	    my_ctx->buf + my_ctx->len - 2, 2);
+	//LOG_PRINTK("post_handler Payload len:%d\n", my_ctx->len);
 }
 
 K_SEM_DEFINE(rx_wait_sem, 0, 1);
@@ -302,8 +302,8 @@ static otCoapBlockwiseResource post_data = {
 void coap_post_reg_rsc(void)
 {
 	otInstance *ot = openthread_get_default_instance();
-	LOG_PRINTK("Registering CoAP POST resource\n");
-	LOG_PRINTK("post_data.mContext:%p\n", post_data.mContext);
+	//LOG_PRINTK("Registering CoAP POST resource\n");
+	//LOG_PRINTK("post_data.mContext:%p\n", post_data.mContext);
 
 	otCoapAddBlockWiseResource(ot, &post_data);
 }
@@ -315,9 +315,9 @@ void coap_post_reg_rsc(void)
 int send_post(const char *payload, char *addr, char *uri, void *ctx)
 //int send_post(const char *payload)
 {
-	LOG_PRINTK("in send_post\n");
-	LOG_PRINTK("addr:%s\n", addr);
-	LOG_PRINTK("uri:%s\n", uri);
+	//LOG_PRINTK("in send_post\n");
+	//LOG_PRINTK("addr:%s\n", addr);
+	//LOG_PRINTK("uri:%s\n", uri);
 
 	int err = 0;
 
@@ -337,7 +337,7 @@ int send_post(const char *payload, char *addr, char *uri, void *ctx)
 	//my_ctx->len = (uint16_t)payload_len;
 
 	//LOG_PRINTK("sending post message (%zu bytes)\n", payload_len);
-	LOG_PRINTK("my_ctx->len:%d\n", my_ctx->len);
+	//LOG_PRINTK("my_ctx->len:%d\n", my_ctx->len);
 	//LOG_PRINTK("post_str:%.*s\n",strlen(post_str), post_str);
 	//print_in_chunks(post_str, payload_len, 256);
 

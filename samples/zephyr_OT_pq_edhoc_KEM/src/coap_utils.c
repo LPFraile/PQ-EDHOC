@@ -76,7 +76,7 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 	}
 
 	if (len > 1024) {
-		LOG_PRINTK("appending block1 option\n");
+		//LOG_PRINTK("appending block1 option\n");
 		err = otCoapMessageAppendBlock1Option(
 			msg,
 			0, // aNum  = block number (0 for first block)
@@ -84,7 +84,7 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 			OT_COAP_OPTION_BLOCK_SZX_1024 // aSize = block size exponent
 		);
 		if (err != OT_ERROR_NONE) {
-			LOG_PRINTK("Block 1 append error\n");
+			//LOG_PRINTK("Block 1 append error\n");
 			goto err;
 		}
 	}
@@ -101,7 +101,7 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 	}
 
 	if (len <= 1024 && len > 0) {
-		LOG_PRINTK("appending payload no block1\n");
+		//LOG_PRINTK("appending payload no block1\n");
 		err = otMessageAppend(msg, buf, len);
 		if (err != OT_ERROR_NONE) {
 			LOG_ERR("Failed to set append payload to response: %s",
@@ -117,13 +117,13 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 
 	const uint8_t *token = otCoapMessageGetToken(msg);
 	uint8_t token_len = otCoapMessageGetTokenLength(msg);
-
+/*
 	printk("message TOKEN: ");
 	for (int i = 0; i < token_len; i++) {
     	// Print each byte as a 2-digit hex number with leading zeros
     	printk("%02x", token[i]); 
 	}
-	printk("\n");
+	printk("\n");*/
 
 	((struct post_ctx *)ctx)->msg = msg;
 
@@ -142,7 +142,7 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 	//} else {
 	//	err = otCoapSendRequest(ot, msg, &msg_info, handler, ctx);
 	//}
-	LOG_PRINTK("later of messga append block1\n");
+	//LOG_PRINTK("later of messga append block1\n");
 	if (err != OT_ERROR_NONE) {
 		LOG_ERR("Failed to send the request: %s",
 			otThreadErrorToString(err));
@@ -215,7 +215,7 @@ int coap_resp_send(otMessage *req, const otMessageInfo *req_info, uint8_t *buf,
 		break;
 	default:
 		LOG_ERR("Invalid message code");
-		LOG_PRINTK("message code:%d", otCoapMessageGetCode(req));
+		//LOG_PRINTK("message code:%d", otCoapMessageGetCode(req));
 		ret = -EINVAL;
 		goto err;
 	}
@@ -227,9 +227,9 @@ int coap_resp_send(otMessage *req, const otMessageInfo *req_info, uint8_t *buf,
 		ret = -EBADMSG;
 		goto err;
 	}
-	LOG_PRINTK("len inside coap_resp_send: %d\n", len);
+	//LOG_PRINTK("len inside coap_resp_send: %d\n", len);
 	if (len > 1024) {
-		LOG_PRINTK("appending block2 option\n");
+		//LOG_PRINTK("appending block2 option\n");
 		err = otCoapMessageAppendBlock2Option(
 			resp, 0, (len > 1024), OT_COAP_OPTION_BLOCK_SZX_1024);
 		if (err != OT_ERROR_NONE) {
@@ -248,7 +248,7 @@ int coap_resp_send(otMessage *req, const otMessageInfo *req_info, uint8_t *buf,
 	}
 
 	if (len <= 1024) {
-		LOG_PRINTK("appending payload no block2\n");
+		//LOG_PRINTK("appending payload no block2\n");
 		err = otMessageAppend(resp, buf, len);
 		if (err != OT_ERROR_NONE) {
 			LOG_ERR("Failed to set append payload to response: %s",
@@ -268,23 +268,23 @@ int coap_resp_send(otMessage *req, const otMessageInfo *req_info, uint8_t *buf,
 	tx_params.mMaxRetransmit = 5;
 	if (len > 1024) {
 		
-		LOG_PRINTK("sending response with blockwise\n");
-		PRINT_ARRAY("first 2 bytes of resp buf before otCoapSendResponceBlockWise", server_post_ctx.buf, 2);
-		PRINT_ARRAY("last 2 bytes of resp buf before otCoapSendResponceBlockWise", server_post_ctx.buf + server_post_ctx.len - 2, 2);
-		LOG_PRINTK("len before otCoapSendResponseBlockWise: %d\n", server_post_ctx.len);
+		//LOG_PRINTK("sending response with blockwise\n");
+		//PRINT_ARRAY("first 2 bytes of resp buf before otCoapSendResponceBlockWise", server_post_ctx.buf, 2);
+		//PRINT_ARRAY("last 2 bytes of resp buf before otCoapSendResponceBlockWise", server_post_ctx.buf + server_post_ctx.len - 2, 2);
+		//LOG_PRINTK("len before otCoapSendResponseBlockWise: %d\n", server_post_ctx.len);
 		const uint8_t *token = otCoapMessageGetToken(resp);
 		uint8_t token_len = otCoapMessageGetTokenLength(resp);
-
+/*
 		printk("message TOKEN: ");
 		for (int i = 0; i < token_len; i++) {
     		// Print each byte as a 2-digit hex number with leading zeros
     		printk("%02x", token[i]); 
 		}
-		printk("\n");
+		printk("\n");*/
 		err = otCoapSendResponseBlockWiseWithParameters(ot, resp, req_info, &tx_params, &server_post_ctx,
 						  hook_tx);
 	} else {
-		LOG_PRINTK("sending response without blockwise\n");
+		//LOG_PRINTK("sending response without blockwise\n");
 		err = otCoapSendResponseWithParameters(ot, resp, req_info, &tx_params);
 	}
 
@@ -314,18 +314,18 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 {
 
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
-	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
-	LOG_PRINTK("START len post: %d\n", my_ctx->len);
-	LOG_PRINTK("START SERVER post:");
+	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
+	//LOG_PRINTK("START len post: %d\n", my_ctx->len);
+	//LOG_PRINTK("START SERVER post:");
 	/*	PRINT_ARRAY("coap_buf_msg_in", coap_buf_msg_in,
 		    my_ctx->len);
 */
-	PRINT_ARRAY("POST Payload start", my_ctx->buf, 2);
-	PRINT_ARRAY("POST Payload end", my_ctx->buf + my_ctx->len - 2,
-		    2);
-	LOG_PRINTK("POST Payload len:%d\n", my_ctx->len);
+	//PRINT_ARRAY("POST Payload start", my_ctx->buf, 2);
+	//PRINT_ARRAY("POST Payload end", my_ctx->buf + my_ctx->len - 2,
+	//	    2);
+	//LOG_PRINTK("POST Payload len:%d\n", my_ctx->len);
 
-	LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
+	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
 	//int num = otCoapMessageGetBlockWiseBlockNumber(msg);
 	otCoapCode msg_code = otCoapMessageGetCode(msg);
 	otCoapType msg_type =
@@ -336,59 +336,59 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 
 	if (msg_type != OT_COAP_TYPE_CONFIRMABLE &&
 	    msg_type != OT_COAP_TYPE_NON_CONFIRMABLE) {
-		LOG_PRINTK("exiting req handler confirmable out\n");
+		//LOG_PRINTK("exiting req handler confirmable out\n");
 		return -EINVAL;
 	}
 
 	if (msg_code == OT_COAP_CODE_POST && post_fn) {
-		printk("received post message\n");
-		printk("msg_in_util_len inside req handler post: %d\n",
-		       my_ctx->len);
+		//printk("received post message\n");
+		//printk("msg_in_util_len inside req handler post: %d\n",
+		//       my_ctx->len);
 		int len = otMessageGetLength(msg) - otMessageGetOffset(msg);
-		printk("len inside req handler post: %d\n", len);
+		//printk("len inside req handler post: %d\n", len);
 		/*if (len < 1024){
 			my_ctx->len = 0;
 		}*/
 		if (len >= COAP_ENTIRE_MESSAGE_SIZE) {
 			len = COAP_ENTIRE_MESSAGE_SIZE - 1;
 		}
-		LOG_PRINTK("into_rx_flag:%d\n", into_rx_flag);
+		//LOG_PRINTK("into_rx_flag:%d\n", into_rx_flag);
 		if(!into_rx_flag){
 			my_ctx->len = 0;
 		}
 			into_rx_flag = 0;
 		if (my_ctx->len == 0) {
 			my_ctx->len = len;
-			LOG_PRINTK("my_ctx->len == 0\n");
+			//LOG_PRINTK("my_ctx->len == 0\n");
 			otMessageRead(msg, otMessageGetOffset(msg),
 				      my_ctx->buf, my_ctx->len);
 
-			LOG_PRINTK(
-				"+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
-			LOG_PRINTK("ACK Payload length msg (%zu bytes)\n",
-				   my_ctx->len);
+			//LOG_PRINTK(
+			//	"+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
+			//LOG_PRINTK("ACK Payload length msg (%zu bytes)\n",
+			//	   my_ctx->len);
 			//print_in_chunks(g_rx_buf, len, 256);
 			//LOG_PRINTK("POST payload: %s\n", g_rx_buf);
-			PRINT_ARRAY("ACK Payload start", my_ctx->buf, 2);
-			PRINT_ARRAY("ACK Payload end",
-				    my_ctx->buf + my_ctx->len - 2, 2);
+			//PRINT_ARRAY("ACK Payload start", my_ctx->buf, 2);
+			//PRINT_ARRAY("ACK Payload end",
+			//	    my_ctx->buf + my_ctx->len - 2, 2);
 
-			LOG_PRINTK(
-				"+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n");
+			//LOG_PRINTK(
+			//	"+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n");
 		}
 
 		if (msg_type == OT_COAP_TYPE_CONFIRMABLE) {
-			LOG_PRINTK("OT_COAP_TYPE_CONFIRMABLE\n");
+			//LOG_PRINTK("OT_COAP_TYPE_CONFIRMABLE\n");
 			ret = post_fn(my_ctx, msg, msg_info);
 			LOG_PRINTK("%s\n\n\n",
 				   ret ? "could not send ack" : "ack sent");
 		} else {
-			LOG_PRINTK("OT_COAP_TYPE_NONCONFIRMABLE\n\n\n");
+			//LOG_PRINTK("OT_COAP_TYPE_NONCONFIRMABLE\n\n\n");
 		}
 		return ret;
 	}
 
-	LOG_PRINTK("exiting req handler end\n\n");
+	//LOG_PRINTK("exiting req handler end\n\n");
 	return -EINVAL;
 }
 

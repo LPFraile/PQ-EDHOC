@@ -30,8 +30,8 @@ LOG_MODULE_REGISTER(coap);
 int PQCLEAN_randombytes(uint8_t *out, size_t outlen)
 {
 	int ret = sys_csrand_get(out, outlen);
-	printf("PQCLEAN_randombytes: len=%zu, ret=%d\n",
-	       outlen, ret);
+	//printf("PQCLEAN_randombytes: len=%zu, ret=%d\n",
+	//       outlen, ret);
     return ret;
 }
 
@@ -169,7 +169,7 @@ enum err ead_process(void *params, struct byte_array *ead13)
  */
 enum err tx(void *sock, struct byte_array *data)
 {
-	printf("TX RESPONDER-----------------------------\n");
+	//printf("TX RESPONDER-----------------------------\n");
 	if (coap_buf_msg == NULL || data->ptr == NULL) {
 		PRINTF("coap_buf_msg is NULL\n");
 		return -1;
@@ -186,7 +186,7 @@ enum err tx(void *sock, struct byte_array *data)
 	}
 
 	//data->len = strlen((const char *)data->ptr) + 1;
-	PRINTF("data->len before memcpy in tx:%d\n\n", data->len);
+	//PRINTF("data->len before memcpy in tx:%d\n\n", data->len);
 	/*
 	PRINT_ARRAY("server_post_ctx.buf before memcpy in tx start\n", server_post_ctx.buf, 2);
 	PRINT_ARRAY("server_post_ctx.buf before memcpy in tx end\n", server_post_ctx.buf + server_post_ctx.len - 2, 2);
@@ -203,7 +203,7 @@ enum err tx(void *sock, struct byte_array *data)
 	PRINT_ARRAY("server_post_ctx.buf after memcpy in tx end\n", server_post_ctx.buf + server_post_ctx.len - 2, 2);
 	PRINTF("server_post_ctx.len after memcpy in tx:%d\n", server_post_ctx.len);
 */
-	printf("give semaphore who wait for tx finish\n");
+	//printf("give semaphore who wait for tx finish\n");
 	k_sem_give(server_post_ctx.post_uedhoc_wait_sem);
 
 	return 0;
@@ -218,22 +218,22 @@ enum err tx(void *sock, struct byte_array *data)
 enum err rx(void *sock, struct byte_array *data)
 {
 	int ret = 0;
-	PRINTF("RX\n");
+	//PRINTF("RX\n");
 	k_sem_reset(server_post_ctx.rx_wait_sem);
 	ret = k_sem_take(server_post_ctx.rx_wait_sem, K_FOREVER);
 	PRINTF("RX responder receive CoAp POST...\n");
 	if (ret == 0) {
-		PRINTF("Main: Response received! Continuing.\n");
+		//PRINTF("Main: Response received! Continuing.\n");
 
 		memcpy(data->ptr, server_post_ctx.buf, server_post_ctx.len);
 		data->len = server_post_ctx.len;
-
+/*
 		PRINTF("\n\n\n+=+=+=+=+=+=+=+=+=+=MESSAGE in rx=+=+=+=+=+=+=+=+=+=+\n");
 		PRINT_ARRAY("Message start", data->ptr, 2);
 		PRINT_ARRAY("Message end", data->ptr + data->len - 2, 2);
 		PRINTF("data->len in rx:%d\n", data->len);
 		PRINTF("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
-		
+		*/
 		//server_post_ctx.len = 0;
 
 		return 0;
@@ -345,16 +345,16 @@ int internal_main(void)
 
 	struct cred_array cred_i_array = { .len = 1, .ptr = &cred_i };
 	//get_suite(enum suite_label label, struct suite *suite)
-	PRINTF("test vector number: %d\n", vec_num_i + 1);
+	//PRINTF("test vector number: %d\n", vec_num_i + 1);
 	struct suite suit_in;
 	get_suite((enum suite_label)c_r.suites_r.ptr[c_r.suites_r.len - 1],
 		  &suit_in);
 	//PRINT_ARRAY("cipher suit:", c_r.suites_r.ptr,c_r.suites_r.len);
 	#ifndef KEM_AUTH
-	PRINTF("INITIATOR SUIT kem: %d, signature %d\n", suit_in.edhoc_ecdh,
-	       suit_in.edhoc_sign)
-	PRINTF("responder pk size: %d \n", c_r.pk_r.len);
-	PRINTF("responder sk size: %d \n", c_r.sk_r.len);
+	//PRINTF("INITIATOR SUIT kem: %d, signature %d\n", suit_in.edhoc_ecdh,
+	 //      suit_in.edhoc_sign)
+	//PRINTF("responder pk size: %d \n", c_r.pk_r.len);
+	//PRINTF("responder sk size: %d \n", c_r.sk_r.len);
 	#endif
 #ifdef USE_RANDOM_EPHEMERAL_DH_KEY
 	uint32_t seed;
@@ -366,7 +366,7 @@ int internal_main(void)
 	c_r.y.len = Y_random.len;
 #endif
 #ifdef PQ_PROPOSAL_1
-	PRINT_MSG("PQC ciphersuit selected\n");
+	//PRINT_MSG("PQC ciphersuit selected\n");
 	BYTE_ARRAY_NEW(G_Y_ENC, get_kem_cc_len(suit_in.edhoc_ecdh),
 		       get_kem_cc_len(suit_in.edhoc_ecdh));
 	//BYTE_ARRAY_NEW(PQ_secret_random, get_kem_sk_len(suit_in.edhoc_ecdh), get_kem_sk_len(suit_in.edhoc_ecdh));
@@ -376,7 +376,7 @@ int internal_main(void)
 	c_r.y.len = 0;
 #endif
 #ifdef KEM_AUTH
-	PRINT_ARRAY("static PQ KEM Key public", c_r.g_r.ptr, c_r.g_r.len);
+	//PRINT_ARRAY("static PQ KEM Key public", c_r.g_r.ptr, c_r.g_r.len);
 	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
 	/*Only for test i should delete*/
 
@@ -417,24 +417,24 @@ int internal_main(void)
 	fp = fopen("/dev/urandom", "r");
 	uint64_t seed_len = fread((uint8_t *)&seed, 1, sizeof(seed), fp);
 	fclose(fp);
-	PRINT_MSG("Responder ready to receive EDHOC DH request\n")
-	PRINT_ARRAY("seed", (uint8_t *)&seed, seed_len);
+	//PRINT_MSG("Responder ready to receive EDHOC DH request\n")
+	//PRINT_ARRAY("seed", (uint8_t *)&seed, seed_len);
 	c_r.g_y.len = G_Y_random.len;
 	c_r.y.len = Y_random.len;
 	TRY(ephemeral_dh_key_gen(P256, seed, &Y_random, &G_Y_random));
-	PRINT_ARRAY("public ephemeral key", c_r.g_y.ptr, c_r.g_y.len);
-	PRINT_ARRAY("secret ephemeral key", c_r.y.ptr, c_r.y.len);
+	//PRINT_ARRAY("public ephemeral key", c_r.g_y.ptr, c_r.g_y.len);
+	//PRINT_ARRAY("secret ephemeral key", c_r.y.ptr, c_r.y.len);
 
 #endif
 #ifdef TINYCRYPT
 	/* Register RNG function */
 	uECC_set_rng(default_CSPRNG);
 #endif
-	PRINTF("Responer starting EDHOC run\n");
+	//PRINTF("Responer starting EDHOC run\n");
 	//start_socket_client(&sockfd);
 	edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
-	PRINTF("Responer finished EDHOC run\n");
+	//PRINTF("Responer finished EDHOC run\n");
 	/*indicate to the post resource that no more message will be sent*/
 	server_post_ctx.no_more_message = 1;
 	k_sem_give(server_post_ctx.post_uedhoc_wait_sem);

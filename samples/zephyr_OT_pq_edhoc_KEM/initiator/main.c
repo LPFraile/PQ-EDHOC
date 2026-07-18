@@ -180,7 +180,7 @@ enum err ead_process(void *params, struct byte_array *ead13)
  */
 enum err tx(void *sock, struct byte_array *data)
 {
-	printk("TX INITIATOR-----------------------------\n");
+	//printk("TX INITIATOR-----------------------------\n");
 	int ret = 0;
 
 	if (coap_buf_msg == NULL || data->ptr == NULL) {
@@ -199,14 +199,14 @@ enum err tx(void *sock, struct byte_array *data)
 	}
 
 	memcpy(byte_array_buf.buf, data->ptr, data->len);
-	printk("data.len in tx:%d\n", data->len);
+	//printk("data.len in tx:%d\n", data->len);
 	byte_array_buf.len = data->len;
 
 	k_sem_reset(byte_array_buf.sem);
 	tx_message_counter++;
-	printk("TX initiator Sending CoAP POST...%d\n", tx_message_counter);
+	//printk("TX initiator Sending CoAP POST...%d\n", tx_message_counter);
 	if (tx_message_counter == 3) {
-		printk("Setting last_message flag in tx\n");
+		//printk("Setting last_message flag in tx\n");
 		byte_array_buf.last_message = 1;
 	}
 
@@ -230,20 +230,20 @@ enum err rx(void *sock, struct byte_array *data)
 {
 	int ret = 0;
 
-	printk("RX initiator Waiting for CoAP response...\n");
+	//printk("RX initiator Waiting for CoAP response...\n");
 	ret = k_sem_take(byte_array_buf.sem, K_FOREVER);
-	printk("Get it CoAP response...\n");
+	//printk("Get it CoAP response...\n");
 	if (ret == 0) {
 		printk("Main: Response received! Continuing.\n");
 
 		memcpy(data->ptr, byte_array_buf.buf, byte_array_buf.len);
 		data->len = byte_array_buf.len;
-
+/*
 		printk("\n\n\n+=+=+=+=+=+=+=+=+=+=MESSAGE in rx=+=+=+=+=+=+=+=+=+=+\n");
 		PRINT_ARRAY("Message start", data->ptr, 2);
 		PRINT_ARRAY("Message end", data->ptr + data->len - 2, 2);
 		printk("data->len in rx:%d\n", data->len);
-		printk("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");
+		printk("+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+\n\n\n");*/
 		return 0;
 	}
 	//byte_array_buf.len = 0;
@@ -300,7 +300,7 @@ int internal_main(void)
 	//k_msleep(s);
 
 	//int sockfd;
-	PRINT_MSG("Starting EDHOC initiator...\n");
+	//PRINT_MSG("Starting EDHOC initiator...\n");
 	BYTE_ARRAY_NEW(prk_exporter, 32, 32);
 	BYTE_ARRAY_NEW(oscore_master_secret, 16, 16);
 	BYTE_ARRAY_NEW(oscore_master_salt, 8, 8);
@@ -360,10 +360,10 @@ int internal_main(void)
 
 #ifndef USE_SUIT_2
     #ifndef KEM_AUTH
-	printk("use of PQC suits signature %d kem %d\n", suit_in.edhoc_sign,
-	       suit_in.edhoc_ecdh);
-	printk("Signature public key size %d secret key size %d\n",
-	       get_pk_len(suit_in.edhoc_sign), get_sk_len(suit_in.edhoc_sign));
+	//printk("use of PQC suits signature %d kem %d\n", suit_in.edhoc_sign,
+	 //      suit_in.edhoc_ecdh);
+	//printk("Signature public key size %d secret key size %d\n",
+	//       get_pk_len(suit_in.edhoc_sign), get_sk_len(suit_in.edhoc_sign));
 	uint8_t SK[get_sk_len(suit_in.edhoc_sign)];
 	uint8_t PK[get_pk_len(suit_in.edhoc_sign)];
 	memcpy(SK, c_i.sk_i.ptr, c_i.sk_i.len);
@@ -376,9 +376,9 @@ int internal_main(void)
 #endif
 
 #if defined(GEN_EPH_KEYS) && !defined(USE_SUIT_2)
-	printk("Ephemeral KEM public key size %d secret key size %d\n",
-	       get_kem_pk_len(suit_in.edhoc_ecdh),
-	       get_kem_sk_len(suit_in.edhoc_ecdh));
+	//printk("Ephemeral KEM public key size %d secret key size %d\n",
+	//       get_kem_pk_len(suit_in.edhoc_ecdh),
+	//       get_kem_sk_len(suit_in.edhoc_ecdh));
 	uint8_t PQ_public_random[get_kem_pk_len(suit_in.edhoc_ecdh)];
 	uint8_t PQ_secret_random[get_kem_sk_len(suit_in.edhoc_ecdh)];
 	// printk("Arrive here 2\n");
@@ -418,11 +418,11 @@ int internal_main(void)
 
 #endif
 
-	printk("public ephemeral Key size: %d\n", c_i.g_x.len);
+	//printk("public ephemeral Key size: %d\n", c_i.g_x.len);
 	printk("secret ephemeral Key size: %d\n", c_i.x.len);
 // #endif
 #if defined(GEN_EPH_KEYS) && !defined(USE_SUIT_2)
-	printk("Generate ephemeral keys\n");
+	//printk("Generate ephemeral keys\n");
 	ephemeral_kem_key_gen(suit_in.edhoc_ecdh, &c_i.x, &c_i.g_x);
 #endif
 
