@@ -377,7 +377,7 @@ int internal_main(void)
 #endif
 #ifdef KEM_AUTH
 	//PRINT_ARRAY("static PQ KEM Key public", c_r.g_r.ptr, c_r.g_r.len);
-	PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
+	//PRINT_ARRAY("static PQ KEM Key private", c_r.r.ptr, c_r.r.len);
 	/*Only for test i should delete*/
 
 	/*BYTE_ARRAY_NEW(CC_KEM, get_kem_cc_len(suit_in.edhoc_ecdh),
@@ -432,8 +432,10 @@ int internal_main(void)
 #endif
 	//PRINTF("Responer starting EDHOC run\n");
 	//start_socket_client(&sockfd);
+	uint32_t start_messaging = k_cycle_get_32();
 	edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
+	uint32_t end_messaging = k_cycle_get_32();
 	//PRINTF("Responer finished EDHOC run\n");
 	/*indicate to the post resource that no more message will be sent*/
 	server_post_ctx.no_more_message = 1;
@@ -453,6 +455,12 @@ int internal_main(void)
 		       &oscore_master_salt);
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
+
+	uint32_t diff_messaging = k_cyc_to_us_near32(end_messaging - start_messaging);
+	uint32_t sec = diff_messaging / 1000000;
+    uint32_t ms  = (diff_messaging % 1000000) / 1000;
+
+	printk("Messaging took %u.%03u seconds\n", sec, ms);
 
 	//close(sockfd);
 	return 0;

@@ -429,8 +429,10 @@ int internal_main(void)
 	struct cred_array cred_r_array = { .len = 1, .ptr = &cred_r };
 
 	//start_socket_client(&sockfd);
+	uint32_t start_messaging = k_cycle_get_32();
 	edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
+	uint32_t end_messaging = k_cycle_get_32();
 
 	PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
@@ -446,6 +448,12 @@ int internal_main(void)
 		       &oscore_master_salt);
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
+
+	uint32_t diff_messaging = k_cyc_to_us_near32(end_messaging - start_messaging);
+	uint32_t sec = diff_messaging / 1000000;
+    uint32_t ms  = (diff_messaging % 1000000) / 1000;
+
+	printk("Messaging took %u.%03u seconds\n", sec, ms);
 
 	//close(sockfd);
 	return 0;

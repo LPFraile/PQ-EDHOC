@@ -380,8 +380,8 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 		if (msg_type == OT_COAP_TYPE_CONFIRMABLE) {
 			//LOG_PRINTK("OT_COAP_TYPE_CONFIRMABLE\n");
 			ret = post_fn(my_ctx, msg, msg_info);
-			LOG_PRINTK("%s\n\n\n",
-				   ret ? "could not send ack" : "ack sent");
+			//LOG_PRINTK("%s\n\n\n",
+			//	   ret ? "could not send ack" : "ack sent");
 		} else {
 			//LOG_PRINTK("OT_COAP_TYPE_NONCONFIRMABLE\n\n\n");
 		}
