@@ -83,7 +83,7 @@ FEATURES += -DSUITES_I_SIZE=1
 
 ################################################################################
 # Select for use KEM-based EDHOC
-#FEATURES += -DKEM_AUTH
+FEATURES += -DKEM_AUTH
 
 
 ################################################################################
@@ -101,7 +101,7 @@ FEATURES += -DKYBER_LEVEL_1
 # Select the PQ Signature algorithm to be used
 #FEATURES += -DFALCON_LEVEL_1
 
-FEATURES += -DDILITHIUM_LEVEL_2
+#FEATURES += -DDILITHIUM_LEVEL_2
 #FEATURES += -DHAWK_LEVEL_1
 #FEATURES += -DHAETAE_LEVEL_2
 
@@ -114,7 +114,7 @@ FEATURES += -DDILITHIUM_LEVEL_2
 # Select block wise transfer block size 
 #  The maximum block size a server supports.  Can be 0
 # (reset), or must be  32, 64, 128, 256, 512 or 1024.
-FEATURES += -DUSE_COAP_BLOCK_SIZE=512
+FEATURES += -DUSE_COAP_BLOCK_SIZE=1024
 
 ##################################################################
 # Define to use TCP. By default it use UDP 

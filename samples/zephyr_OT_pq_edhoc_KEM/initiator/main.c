@@ -424,7 +424,7 @@ int internal_main(void)
 #endif
 
 	//printk("public ephemeral Key size: %d\n", c_i.g_x.len);
-	printk("secret ephemeral Key size: %d\n", c_i.x.len);
+	//printk("secret ephemeral Key size: %d\n", c_i.x.len);
 // #endif
 #if defined(GEN_EPH_KEYS) && !defined(USE_SUIT_2)
 	//printk("Generate ephemeral keys\n");
@@ -459,7 +459,7 @@ int internal_main(void)
 	uint32_t sec = diff_messaging / 1000000;
     uint32_t ms  = (diff_messaging % 1000000) / 1000;
 
-	printk("Messaging took Initiator %u.%03u seconds\n", sec, ms);
+	printk("Transaction time %u.%03u seconds\n", sec, ms);
 
 	//close(sockfd);
 	return 0;

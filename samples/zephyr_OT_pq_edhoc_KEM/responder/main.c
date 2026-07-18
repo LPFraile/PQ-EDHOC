@@ -468,7 +468,7 @@ int internal_main(void)
 	uint32_t sec = diff_messaging / 1000000;
     uint32_t ms  = (diff_messaging % 1000000) / 1000;
 
-	printk("Messaging took RX handshake %u.%03u seconds\n", sec, ms);
+	//printk("Messaging took RX handshake %u.%03u seconds\n", sec, ms);
 
 	//close(sockfd);
 	return 0;

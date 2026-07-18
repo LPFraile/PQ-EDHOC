@@ -35,7 +35,7 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
     counter++;
 	
-    printk("counter %d \n", counter);
+    //printk("counter %d \n", counter);
     end_messaging = k_cycle_get_32();
 	if (my_ctx->last_message){
 	
