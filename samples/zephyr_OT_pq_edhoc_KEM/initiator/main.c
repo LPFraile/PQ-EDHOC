@@ -31,6 +31,9 @@ LOG_MODULE_REGISTER(coap);
 #define address "fdde:ad00:beef:0:0:0:0:69"
 #define STATIC_IPV6_ADDRESS "fdde:ad00:beef:0:0:0:0:67"
 
+
+
+//uint8_t rx_message_counter = 0;
 #ifdef USE_SUIT_18
 #define MAX_PAYLOAD_SIZE 1000
 #define TEST_X5T_NUM 18
@@ -229,6 +232,8 @@ enum err tx(void *sock, struct byte_array *data)
 enum err rx(void *sock, struct byte_array *data)
 {
 	int ret = 0;
+	//PRINTF("RX INITIATOR counter %d\n", rx_message_counter);
+	//rx_message_counter++;
 
 	//printk("RX initiator Waiting for CoAP response...\n");
 	ret = k_sem_take(byte_array_buf.sem, K_FOREVER);
@@ -432,7 +437,7 @@ int internal_main(void)
 	uint32_t start_messaging = k_cycle_get_32();
 	edhoc_initiator_run(&c_i, &cred_r_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
-	uint32_t end_messaging = k_cycle_get_32();
+	//uint32_t end_messaging = k_cycle_get_32();
 
 	PRINT_ARRAY("PRK_out", PRK_out.ptr, PRK_out.len);
 
@@ -448,7 +453,8 @@ int internal_main(void)
 		       &oscore_master_salt);
 	PRINT_ARRAY("OSCORE Master Salt", oscore_master_salt.ptr,
 		    oscore_master_salt.len);
-
+    
+	k_msleep(3000);		
 	uint32_t diff_messaging = k_cyc_to_us_near32(end_messaging - start_messaging);
 	uint32_t sec = diff_messaging / 1000000;
     uint32_t ms  = (diff_messaging % 1000000) / 1000;

@@ -17,6 +17,7 @@ LOG_MODULE_DECLARE(coap);
 #include "post.h"
 
 static uint8_t coap_dev_id[COAP_DEVICE_ID_SIZE];
+uint32_t end_messaging = 0;
 
 /*static const struct json_obj_descr json_post_data_descr[] = {
 	JSON_OBJ_DESCR_PRIM(struct json_post, post_str, JSON_TOK_STRING),
@@ -314,6 +315,7 @@ int coap_req_handler(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 {
 
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
+ //   end_messaging = k_cycle_get_32();
 	//LOG_PRINTK("+=+=+=+=+=+=+=+=+=+=MESSAGE=+=+=+=+=+=+=+=+=+=+\n");
 	//LOG_PRINTK("START len post: %d\n", my_ctx->len);
 	//LOG_PRINTK("START SERVER post:");

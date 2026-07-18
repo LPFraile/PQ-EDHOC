@@ -5,7 +5,7 @@
 #include <openthread/coap.h>
 #define POST_URI "post_data"
 
-
+extern uint32_t end_messaging;
 // Add this definition:
 #define PRINT_ARRAY(label, buf, len)                                           \
 	do {                                                                   \

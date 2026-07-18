@@ -25,7 +25,7 @@ struct buf_utils msg_out_utils = { .buf = coap_buf_msg_out,
 */
 
 bool into_rx_flag = 0;
-
+uint8_t counter = 0;
 #ifdef CONFIG_OT_COAP_SAMPLE_CLIENT
 
 void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
@@ -33,8 +33,12 @@ void coap_post_req_cb(void *ctx, otMessage *msg, const otMessageInfo *msg_info,
 {
 
 	struct post_ctx *my_ctx = (struct post_ctx *)ctx;
-
+    counter++;
+	
+    printk("counter %d \n", counter);
+    end_messaging = k_cycle_get_32();
 	if (my_ctx->last_message){
+	
 		return;
 	}
 
