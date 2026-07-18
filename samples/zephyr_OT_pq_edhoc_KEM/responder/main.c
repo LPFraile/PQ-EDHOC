@@ -127,7 +127,8 @@ int default_CSPRNG(uint8_t *dest, unsigned int size)
 #else
 #error "need to define x5chain or x5t"
 #endif
-
+uint32_t start_messaging;
+uint8_t rx_counter = 0;	
 uint8_t coap_buf_msg[COAP_ENTIRE_MESSAGE_SIZE];
 /*struct byte_array {
 	uint8_t *buf;
@@ -221,7 +222,14 @@ enum err rx(void *sock, struct byte_array *data)
 	//PRINTF("RX\n");
 	k_sem_reset(server_post_ctx.rx_wait_sem);
 	ret = k_sem_take(server_post_ctx.rx_wait_sem, K_FOREVER);
-	PRINTF("RX responder receive CoAp POST...\n");
+	//PRINTF("RX responder receive CoAp POST...\n");
+ 
+	if (rx_counter == 0) {
+		//PRINTF("RX responder receive CoAp POST...first time\n");
+		rx_counter++;
+		start_messaging = k_cycle_get_32();
+	}
+	
 	if (ret == 0) {
 		//PRINTF("Main: Response received! Continuing.\n");
 
@@ -432,7 +440,7 @@ int internal_main(void)
 #endif
 	//PRINTF("Responer starting EDHOC run\n");
 	//start_socket_client(&sockfd);
-	uint32_t start_messaging = k_cycle_get_32();
+	//uint32_t start_messaging = k_cycle_get_32();
 	edhoc_responder_run(&c_r, &cred_i_array, &err_msg, &PRK_out, tx, rx,
 			    ead_process);
 	uint32_t end_messaging = k_cycle_get_32();
@@ -460,7 +468,7 @@ int internal_main(void)
 	uint32_t sec = diff_messaging / 1000000;
     uint32_t ms  = (diff_messaging % 1000000) / 1000;
 
-	printk("Messaging took %u.%03u seconds\n", sec, ms);
+	printk("Messaging took RX handshake %u.%03u seconds\n", sec, ms);
 
 	//close(sockfd);
 	return 0;

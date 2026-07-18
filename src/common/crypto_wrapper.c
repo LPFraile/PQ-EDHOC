@@ -250,7 +250,7 @@ enum err WEAK ephemeral_kem_key_gen(enum ecdh_alg alg, struct byte_array *sk,
 		ret = -1; // Na to allaxw
 		printf("error in kem keygen\n");
 	}
-	printf("Generated KEM keypair\n");
+	//printf("Generated KEM keypair\n");
 	return ret;
 
 /*#else // LIBOQS
@@ -527,10 +527,10 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 			     const struct byte_array *msg, uint8_t *sign,
 			     uint32_t *sign_len)
 {
-	printf("On sign_signature with alg %d\n", alg);
+	//printf("On sign_signature with alg %d\n", alg);
 #ifdef MUPQ
 	// This is PQM4
-	printf("This is MUPQ\n");
+	//printf("This is MUPQ\n");
 	int ret = 0;
 	//print_array(msg->ptr,msg->len);
 	//print_array(sk->ptr,sk->len);
@@ -541,7 +541,7 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 	}
 
 #elif (defined LIBOQS)
-    printf("This is liboqs\n");
+    //printf("This is liboqs\n");
 	const char *algName = NULL;
 	OQS_SIG *sig = NULL;
 	int ret = 0;
@@ -574,7 +574,7 @@ enum err WEAK sign_signature(const enum sign_alg alg,
 
 #else //LIBOQS
 	// This is PQM4
-	printf("on pqm4 or PQCLEAN\n");
+	//printf("on pqm4 or PQCLEAN\n");
 	int ret = 0;
 	/*if ((ret == 0) &&
 	    (crypto_sign_signature(sign, (size_t *)sign_len, msg->ptr, msg->len,
@@ -587,9 +587,9 @@ ret = crypto_sign_signature(sign,   &pqclean_sign_len, msg->ptr, msg->len,
 				   sk->ptr);
 
 
-	printf("crypto_sign_signature returned %d\n", ret);
+	//printf("crypto_sign_signature returned %d\n", ret);
 	*sign_len = pqclean_sign_len;
-	printf("sign length %d\n", *sign_len);
+	//printf("sign length %d\n", *sign_len);
 	if (ret != 0) {
 		printf("Error in sign_signature %d\n",SIG_BAD_FUNC_ARG);
 		ret = SIG_BAD_FUNC_ARG;

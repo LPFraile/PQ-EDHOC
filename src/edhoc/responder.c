@@ -314,7 +314,7 @@ enum err msg2_gen(struct edhoc_responder_context *c, struct runtime_context *rc,
 	PRINTF("Signature len %d - %d\n", SIGNATURE_SIZE,
 	       get_signature_len(rc->suite.edhoc_sign));
 	if (get_signature_len(rc->suite.edhoc_sign) > SIGNATURE_SIZE) {
-		printf("Set correctly the suits in the external makefile_config.mk\n");
+		//printf("Set correctly the suits in the external makefile_config.mk\n");
 		//return -1;
 	}
 	BYTE_ARRAY_NEW(sign_or_mac_2, SIGNATURE_SIZE,

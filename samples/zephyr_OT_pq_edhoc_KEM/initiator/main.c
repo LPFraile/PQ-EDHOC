@@ -234,7 +234,7 @@ enum err rx(void *sock, struct byte_array *data)
 	ret = k_sem_take(byte_array_buf.sem, K_FOREVER);
 	//printk("Get it CoAP response...\n");
 	if (ret == 0) {
-		printk("Main: Response received! Continuing.\n");
+		//printk("Main: Response received! Continuing.\n");
 
 		memcpy(data->ptr, byte_array_buf.buf, byte_array_buf.len);
 		data->len = byte_array_buf.len;
@@ -453,7 +453,7 @@ int internal_main(void)
 	uint32_t sec = diff_messaging / 1000000;
     uint32_t ms  = (diff_messaging % 1000000) / 1000;
 
-	printk("Messaging took %u.%03u seconds\n", sec, ms);
+	printk("Messaging took Initiator %u.%03u seconds\n", sec, ms);
 
 	//close(sockfd);
 	return 0;
