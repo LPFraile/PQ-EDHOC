@@ -134,10 +134,10 @@ static int coap_req_send(const char *addr, const char *uri, uint8_t *buf,
 	//PRINT_ARRAY("buf", ctx->buf + ctx->len - 2, 2);
 	//LOG_PRINTK("befor otCoapSendRequestBlockWise ctx len:%d\n", ctx->len);
 	otCoapTxParameters tx_params = {0};
-	tx_params.mAckTimeout = 5000;
+	tx_params.mAckTimeout = 2000;
 	tx_params.mAckRandomFactorNumerator = 3;
     tx_params.mAckRandomFactorDenominator = 2;
-	tx_params.mMaxRetransmit = 5;
+	tx_params.mMaxRetransmit = 4;
 	err = otCoapSendRequestBlockWiseWithParameters(ot, msg, &msg_info, handler, ctx, &tx_params,
 					 hook_tx, hook_rx);
 	//} else {
@@ -263,10 +263,10 @@ int coap_resp_send(otMessage *req, const otMessageInfo *req_info, uint8_t *buf,
 	server_post_ctx.len = len;
 	server_post_ctx.buf = buf;
 	otCoapTxParameters tx_params = {0};
-	tx_params.mAckTimeout = 5000;
+	tx_params.mAckTimeout = 2000;
 	tx_params.mAckRandomFactorNumerator = 3;
     tx_params.mAckRandomFactorDenominator = 2;
-	tx_params.mMaxRetransmit = 5;
+	tx_params.mMaxRetransmit = 4;
 	if (len > 1024) {
 		
 		//LOG_PRINTK("sending response with blockwise\n");
